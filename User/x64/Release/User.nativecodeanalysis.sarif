@@ -1,0 +1,59 @@
+{
+  "version": "2.1.0",
+  "$schema": "https://schemastore.azurewebsites.net/schemas/json/sarif-2.1.0-rtm.5.json",
+  "runs": [
+    {
+      "results": [],
+      "tool": {
+        "driver": {
+          "name": "PREfast",
+          "fullName": "MSVC Code Analysis",
+          "version": "14.44.35213.0",
+          "informationUri": "https://aka.ms/cpp/ca"
+        }
+      },
+      "invocations": [
+        {
+          "executionSuccessful": true
+        }
+      ],
+      "artifacts": [
+        {
+          "location": {
+            "uri": "file:///c:/users/liaoshuang/desktop/ls-driver/user/user.cpp"
+          },
+          "roles": [
+            "analysisTarget"
+          ],
+          "hashes": {
+            "sha-256": "57e2fc9f59e75a496c5089c9572fda1254bfdf50f7529af2cb10b27141d4ee81"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/liaoshuang/desktop/ls-driver/user/autodriver.h"
+          },
+          "hashes": {
+            "sha-256": "4b0d0963b6041718339e559fd9ccf84931f1f2d4187b365e2ebf27b132790060"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/liaoshuang/desktop/ls-driver/user/console_menu.h"
+          },
+          "hashes": {
+            "sha-256": "4a09aa57226d16659ba4ecf0f3692045f946176d3f64770c305f5d2bb0cf63c9"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/liaoshuang/desktop/ls-driver/user/driver_data.h"
+          },
+          "hashes": {
+            "sha-256": "a660d30c3ad857c8f71eec0eec9af36f106db85bca4dea25d631ffceeac56cd7"
+          }
+        }
+      ]
+    }
+  ]
+}

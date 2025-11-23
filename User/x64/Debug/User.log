@@ -1,0 +1,29 @@
+﻿  User.cpp
+E:\1.CodeRepository\Windows\Kernel\LS_Driver\User\AutoDriver.h(110,10): warning C4477: “printf”: 格式字符串“%llx”需要类型“unsigned __int64”的参数，但可变参数 1 拥有了类型“AutoDriver::Requests *”
+  (编译源文件“User.cpp”)
+  
+E:\1.CodeRepository\Windows\Kernel\LS_Driver\User\AutoDriver.h(111,10): warning C4477: “printf”: 格式字符串“%llx”需要类型“unsigned __int64”的参数，但可变参数 1 拥有了类型“AutoDriver::req_op *”
+  (编译源文件“User.cpp”)
+  
+E:\1.CodeRepository\Windows\Kernel\LS_Driver\User\AutoDriver.h(112,10): warning C4477: “printf”: 格式字符串“%llx”需要类型“unsigned __int64”的参数，但可变参数 1 拥有了类型“volatile LONG *”
+  (编译源文件“User.cpp”)
+  
+E:\1.CodeRepository\Windows\Kernel\LS_Driver\User\AutoDriver.h(113,10): warning C4477: “printf”: 格式字符串“%llx”需要类型“unsigned __int64”的参数，但可变参数 1 拥有了类型“MOUSE_INPUT_DATA *”
+  (编译源文件“User.cpp”)
+  
+E:\1.CodeRepository\Windows\Kernel\LS_Driver\User\DriverController.h(529,52): warning C4267: “参数”: 从“size_t”转换到“int”，可能丢失数据
+  (编译源文件“../User/User.cpp”)
+  
+E:\1.CodeRepository\Windows\Kernel\LS_Driver\User\DriverController.h(563,54): warning C4267: “+=”: 从“size_t”转换到“int”，可能丢失数据
+  (编译源文件“../User/User.cpp”)
+  
+E:\1.CodeRepository\Windows\Kernel\LS_Driver\User\DriverController.h(591,52): warning C4267: “参数”: 从“size_t”转换到“int”，可能丢失数据
+  (编译源文件“../User/User.cpp”)
+  
+E:\1.CodeRepository\Windows\Kernel\LS_Driver\User\User.cpp(21,10): warning C4200: 使用了非标准扩展: 结构/联合中的零大小数组
+      E:\1.CodeRepository\Windows\Kernel\LS_Driver\User\User.cpp(21,10):
+      默认构造函数或 copy/move 赋值运算符将忽略此成员
+  
+    正在创建库 E:\1.CodeRepository\Windows\Kernel\LS_Driver\x64\Debug\Lark.lib 和对象 E:\1.CodeRepository\Windows\Kernel\LS_Driver\x64\Debug\Lark.exp
+LINK : warning LNK4098: 默认库“libcmt.lib”与其他库的使用冲突；请使用 /NODEFAULTLIB:library
+  User.vcxproj -> E:\1.CodeRepository\Windows\Kernel\LS_Driver\x64\Debug\Lark.exe

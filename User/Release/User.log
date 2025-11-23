@@ -1,0 +1,9 @@
+﻿  User.cpp
+C:\Users\liaoshuang\Desktop\LS-Driver\User\User.hpp(133,30): warning C4244: “=”: 从“ULONG64”转换到“uintptr_t”，可能丢失数据
+  (编译源文件“User.cpp”)
+  
+  正在生成代码
+  Previous IPDB not found, fall back to full compilation.
+  All 850 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  已完成代码的生成
+  User.vcxproj -> C:\Users\liaoshuang\Desktop\LS-Driver\Release\User.exe

@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="DirectPhysicalMemory.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="PEB.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectPhysicalMemoryAPI.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulate keyboard and mouse.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Vad.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Hardware code deception.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Driver hiding.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="strXOR.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Exporting Functions.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="头文件">
+      <UniqueIdentifier>{f158dfc7-9129-42ad-9c23-860e0dc2b874}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件">
+      <UniqueIdentifier>{8927281e-9ce9-4af2-84dd-b11b8975ffe3}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="字节序.txt" />
+  </ItemGroup>
+</Project>

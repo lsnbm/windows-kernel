@@ -1,0 +1,24 @@
+﻿  Building 'LS-Driver' with toolset 'WindowsKernelModeDriver10.0' and the 'Universal' target platform.
+  main.cpp
+E:\1.CodeRepository\Windows\Kernel\LS_Driver\LS-Driver\Exporting Functions.hpp(469,10): warning C4244: “return”: 从“ULONG”转换到“BOOLEAN”，可能丢失数据
+  (编译源文件“main.cpp”)
+  
+E:\1.CodeRepository\Windows\Kernel\LS_Driver\LS-Driver\DirectPhysicalMemory.h(49,19): warning C4018: “>=”: 有符号/无符号不匹配
+  (编译源文件“main.cpp”)
+  
+E:\1.CodeRepository\Windows\Kernel\LS_Driver\LS-Driver\DirectPhysicalMemory.h(49,65): warning C4018: “<”: 有符号/无符号不匹配
+  (编译源文件“main.cpp”)
+  
+  正在生成代码
+  Previous IPDB not found, fall back to full compilation.
+  All 109 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  已完成代码的生成
+  LS-Driver.vcxproj -> E:\1.CodeRepository\Windows\Kernel\LS_Driver\x64\Release\ataport.sys
+  Done Adding Additional Store
+  Successfully signed: E:\1.CodeRepository\Windows\Kernel\LS_Driver\x64\Release\ataport.sys
+  
+  Driver is 'Universal'.
+  Inf2Cat task was skipped as there were no inf files to process
+  
+  DrvCat task was skipped as there was no catalog file to process
+  

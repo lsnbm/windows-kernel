@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="头文件">
+      <UniqueIdentifier>{e95b1733-8a74-4908-96e5-8963a9d8999d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件">
+      <UniqueIdentifier>{10ea1ac0-2ff0-4b3f-9a98-6600252fd244}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{da061ac2-732f-4ce1-b4c9-044121f4c475}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="driver.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="DirectPhysicalMemory.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="driver.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicalMemoryApi.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulate keyboard and mouse.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="PEB.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Handle Elevation.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
