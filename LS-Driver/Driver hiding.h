@@ -1,12 +1,12 @@
 /*
-Ê±¼ä£º2025Äê8ÔÂ22ÈÕ 06:58:59
-Ñ§£¨³­£©Ï°£¨Ï®£©×Ô£ºhttps://github.com/ZhuHuiBeiShaDiao
+æ—¶é—´ï¼š2025å¹´8æœˆ22æ—¥ 06:58:59
+å­¦ï¼ˆæŠ„ï¼‰ä¹ ï¼ˆè¢­ï¼‰è‡ªï¼šhttps://github.com/ZhuHuiBeiShaDiao
 */
 #include <ntddk.h>
 #include"strXOR.h"
 #include "PEB.h"
 
-extern  RTL_OSVERSIONINFOW SystemVersionInf;//ÏµÍ³°æ±¾ÐÅÏ¢
+extern  RTL_OSVERSIONINFOW SystemVersionInf;//ç³»ç»Ÿç‰ˆæœ¬ä¿¡æ¯
 extern "C"  POBJECT_TYPE* IoDriverObjectType;
 extern C_MiProcessLoaderEntry L_MiProcessLoaderEntry;
 
@@ -29,10 +29,10 @@ typedef struct _SYSTEM_MODULE_INFORMATION {
 
 __forceinline BOOLEAN SupportSEH(PDRIVER_OBJECT DriverObject)
 {
-	//ÒòÎªÇý¶¯´ÓÁ´±íÉÏÕª³ýÖ®ºó¾Í²»ÔÙÖ§³ÖSEHÁË
-	//Çý¶¯µÄSEH·Ö·¢ÊÇ¸ù¾Ý´ÓÁ´±íÉÏ»ñÈ¡Çý¶¯µØÖ·£¬ÅÐ¶ÏÒì³£µÄµØÖ·ÊÇ·ñÔÚ¸ÃÇý¶¯ÖÐ
-	//ÒòÎªÁ´±íÉÏÃ»ÁË£¬¾Í»á³öÎÊÌâ
-	//Ñ§Ï°£¨³­Ï®£©µ½µÄ·½·¨ÊÇÓÃ±ðÈËµÄÇý¶¯¶ÔÏó¸ÄËûÁ´±íÉÏµÄµØÖ·
+	//å› ä¸ºé©±åŠ¨ä»Žé“¾è¡¨ä¸Šæ‘˜é™¤ä¹‹åŽå°±ä¸å†æ”¯æŒSEHäº†
+	//é©±åŠ¨çš„SEHåˆ†å‘æ˜¯æ ¹æ®ä»Žé“¾è¡¨ä¸ŠèŽ·å–é©±åŠ¨åœ°å€ï¼Œåˆ¤æ–­å¼‚å¸¸çš„åœ°å€æ˜¯å¦åœ¨è¯¥é©±åŠ¨ä¸­
+	//å› ä¸ºé“¾è¡¨ä¸Šæ²¡äº†ï¼Œå°±ä¼šå‡ºé—®é¢˜
+	//å­¦ä¹ ï¼ˆæŠ„è¢­ï¼‰åˆ°çš„æ–¹æ³•æ˜¯ç”¨åˆ«äººçš„é©±åŠ¨å¯¹è±¡æ”¹ä»–é“¾è¡¨ä¸Šçš„åœ°å€
 
 	PDRIVER_OBJECT BeepDriverObject = NULL;;
 	PLDR_DATA_TABLE_ENTRY LdrEntry = NULL;
@@ -57,11 +57,11 @@ __forceinline BOOLEAN SupportSEH(PDRIVER_OBJECT DriverObject)
 
 
 
-	//ÐÞ¸ÄÁË×Ô¼ºÇý¶¯µÄ LDR_DATA_TABLE_ENTRY ½á¹¹Ìå£¬½«ÆäÖÐµÄ DllBase(Ä£¿é»ùµØÖ·) Ö¸ÏòÁË beep.sys µÄ»ùµØÖ·¡£
-	//ÕâÑùÒ»À´£¬µ±±¾Çý¶¯ÄÚ·¢ÉúÒì³£Ê±£¬ÄÚºË»áÎóÒÔÎªÕâ¸öÒì³£·¢ÉúÔÚ beep.sys Ä£¿éÄÚ¡£
-	//MiProcessLoaderEntryÕâ¸öº¯ÊýÄÚ²¿»á¸ù¾ÝLdrÖÐµÄDllBaseÈ»ºóÈ¥RtlxRemoveInvertedFunctionTable±íÖÐÕÒµ½¶ÔÓ¦µÄÏî
-	//Ö®ºóÔÙÒÆ³ýËû£¬¸ù¾Ý²âÊÔÀ´½²..Õâ¸ö±íÖÐÃ»ÓÐµÄDllBase¾ÍÃ»·¨½ÓÊÕSEH£¬¾ßÌåÔ­Àí»¹Ã»¶®...
-	//ËùÒÔÕâÀïÓÃÏµÍ³µÄDriver\\beepÓÃÀ´ÌæËÀ...
+	//ä¿®æ”¹äº†è‡ªå·±é©±åŠ¨çš„ LDR_DATA_TABLE_ENTRY ç»“æž„ä½“ï¼Œå°†å…¶ä¸­çš„ DllBase(æ¨¡å—åŸºåœ°å€) æŒ‡å‘äº† beep.sys çš„åŸºåœ°å€ã€‚
+	//è¿™æ ·ä¸€æ¥ï¼Œå½“æœ¬é©±åŠ¨å†…å‘ç”Ÿå¼‚å¸¸æ—¶ï¼Œå†…æ ¸ä¼šè¯¯ä»¥ä¸ºè¿™ä¸ªå¼‚å¸¸å‘ç”Ÿåœ¨ beep.sys æ¨¡å—å†…ã€‚
+	//MiProcessLoaderEntryè¿™ä¸ªå‡½æ•°å†…éƒ¨ä¼šæ ¹æ®Ldrä¸­çš„DllBaseç„¶åŽåŽ»RtlxRemoveInvertedFunctionTableè¡¨ä¸­æ‰¾åˆ°å¯¹åº”çš„é¡¹
+	//ä¹‹åŽå†ç§»é™¤ä»–ï¼Œæ ¹æ®æµ‹è¯•æ¥è®²..è¿™ä¸ªè¡¨ä¸­æ²¡æœ‰çš„DllBaseå°±æ²¡æ³•æŽ¥æ”¶SEHï¼Œå…·ä½“åŽŸç†è¿˜æ²¡æ‡‚...
+	//æ‰€ä»¥è¿™é‡Œç”¨ç³»ç»Ÿçš„Driver\\beepç”¨æ¥æ›¿æ­»...
 	LdrEntry = (PLDR_DATA_TABLE_ENTRY)DriverObject->DriverSection;
 	LdrEntry->DllBase = BeepDriverObject->DriverStart;
 	ObDereferenceObject(BeepDriverObject);
@@ -70,16 +70,16 @@ __forceinline BOOLEAN SupportSEH(PDRIVER_OBJECT DriverObject)
 
 __forceinline VOID InitInLoadOrderLinks(PLDR_DATA_TABLE_ENTRY LdrEntry)
 {
-	// ÊÖ¶¯¿Õ»·Á´±í£¬Ìæ´ú InitializeListHead ºê/º¯Êý
-	// ³õÊ¼»¯ InLoadOrderLinks Á´±í
+	// æ‰‹åŠ¨ç©ºçŽ¯é“¾è¡¨ï¼Œæ›¿ä»£ InitializeListHead å®/å‡½æ•°
+	// åˆå§‹åŒ– InLoadOrderLinks é“¾è¡¨
 	LdrEntry->InLoadOrderLinks.Flink = &LdrEntry->InLoadOrderLinks;
 	LdrEntry->InLoadOrderLinks.Blink = &LdrEntry->InLoadOrderLinks;
 
-	// ³õÊ¼»¯ InMemoryOrderLinks Á´±í
+	// åˆå§‹åŒ– InMemoryOrderLinks é“¾è¡¨
 	LdrEntry->InMemoryOrderLinks.Flink = &LdrEntry->InMemoryOrderLinks;
 	LdrEntry->InMemoryOrderLinks.Blink = &LdrEntry->InMemoryOrderLinks;
 
-	// ³õÊ¼»¯ InInitializationOrderLinks Á´±í
+	// åˆå§‹åŒ– InInitializationOrderLinks é“¾è¡¨
 	LdrEntry->InInitializationOrderLinks.Flink = &LdrEntry->InInitializationOrderLinks;
 	LdrEntry->InInitializationOrderLinks.Blink = &LdrEntry->InInitializationOrderLinks;
 }
@@ -91,25 +91,25 @@ VOID Reinitialize(PDRIVER_OBJECT DriverObject, PVOID Context, ULONG Count)
 	UNREFERENCED_PARAMETER(Context);
 	UNREFERENCED_PARAMETER(Count);
 
-	//  »ñÈ¡ MiProcessLoaderEntry º¯ÊýµØÖ·
+	//  èŽ·å– MiProcessLoaderEntry å‡½æ•°åœ°å€
 	if (L_MiProcessLoaderEntry == NULL)return;
 
-	// ÐÞ¸´SEH
+	// ä¿®å¤SEH
 	//if (!SupportSEH(DriverObject))
 	//{
-	//	// ¼´Ê¹SEHÐÞ¸´Ê§°ÜÈÔÈ»¼ÌÐøÒþ²ØÇý¶¯
+	//	// å³ä½¿SEHä¿®å¤å¤±è´¥ä»ç„¶ç»§ç»­éšè—é©±åŠ¨
 	//	KdPrint(("[!] Warning: Failed to fix SEH handler. The driver will be hidden, but any exception may cause a crash.\n"));
 	//}
 
-	// µ÷ÓÃº¯Êý£¬°Ñ×Ô¼º´ÓÁ´±íÖÐÕª³ý,Dbg±àÒëÄ£Ê½ÏÂ»á¸ÅÂÊÀ¶ÆÁ²»ÖªµÀÎªÊ²Ã´
-	L_MiProcessLoaderEntry(DriverObject->DriverSection, 0);// ²ÎÊý bLoad Îª 0 ´ú±íÐ¶ÔØ/ÒÆ³ý
+	// è°ƒç”¨å‡½æ•°ï¼ŒæŠŠè‡ªå·±ä»Žé“¾è¡¨ä¸­æ‘˜é™¤,Dbgç¼–è¯‘æ¨¡å¼ä¸‹ä¼šæ¦‚çŽ‡è“å±ä¸çŸ¥é“ä¸ºä»€ä¹ˆ
+	L_MiProcessLoaderEntry(DriverObject->DriverSection, 0);// å‚æ•° bLoad ä¸º 0 ä»£è¡¨å¸è½½/ç§»é™¤
 
 
-	//ÇåÀí×Ô¼ºµÄÁ´±íÖ¸Õë
+	//æ¸…ç†è‡ªå·±çš„é“¾è¡¨æŒ‡é’ˆ
 	InitInLoadOrderLinks((PLDR_DATA_TABLE_ENTRY)DriverObject->DriverSection);
 
 
-	///Ä¨³ýÇý¶¯¶ÔÏóÖÐµÄºÛ¼£
+	///æŠ¹é™¤é©±åŠ¨å¯¹è±¡ä¸­çš„ç—•è¿¹
 	DriverObject->DriverSection = NULL;
 	DriverObject->DriverStart = NULL;
 	DriverObject->DriverSize = NULL;

@@ -15,9 +15,9 @@
 #define WINDOWS_24H2 26100
 
 
-inline  RTL_OSVERSIONINFOW SystemVersionInf;//ÏµÍ³°æ±¾ĞÅÏ¢
+inline  RTL_OSVERSIONINFOW SystemVersionInf;//ç³»ç»Ÿç‰ˆæœ¬ä¿¡æ¯
 
-// ÓÃÓÚ ZwQuerySystemInformation µÄĞÅÏ¢Àà±ğÃ¶¾Ù
+// ç”¨äº ZwQuerySystemInformation çš„ä¿¡æ¯ç±»åˆ«æšä¸¾
 typedef enum _SystemInformationClass
 {
 	SystemBasicInformation,
@@ -34,7 +34,7 @@ typedef enum _SystemInformationClass
 	SystemModuleInformation = 0x0B
 } SystemInformationClass, * PSystemInformationClass;
 
-// ÏµÍ³Ä£¿éĞÅÏ¢½á¹¹Ìå
+// ç³»ç»Ÿæ¨¡å—ä¿¡æ¯ç»“æ„ä½“
 typedef struct _RtlProcessModuleInformation
 {
 	HANDLE Section;
@@ -49,14 +49,14 @@ typedef struct _RtlProcessModuleInformation
 	UCHAR  FullPathName[256];
 } RtlProcessModuleInformation, * PRtlProcessModuleInformation;
 
-// °üº¬ËùÓĞÏµÍ³Ä£¿éĞÅÏ¢µÄ½á¹¹Ìå
+// åŒ…å«æ‰€æœ‰ç³»ç»Ÿæ¨¡å—ä¿¡æ¯çš„ç»“æ„ä½“
 typedef struct _RtlProcessModules
 {
 	ULONG NumberOfModules;
 	RtlProcessModuleInformation Modules[1];
 } RtlProcessModules, * PRtlProcessModules;
 
-// (Î´ÎÄµµ»¯) ¼ÓÔØÆ÷Êı¾İ±íÌõÄ¿½á¹¹Ìå
+// (æœªæ–‡æ¡£åŒ–) åŠ è½½å™¨æ•°æ®è¡¨æ¡ç›®ç»“æ„ä½“
 typedef struct _LdrDataTableEntry {
 	LIST_ENTRY InLoadOrderModuleList;
 	LIST_ENTRY InMemoryOrderModuleList;
@@ -161,7 +161,7 @@ inline C_MiProcessLoaderEntry L_MiProcessLoaderEntry = nullptr;
 
 
 
-// ÎªÁË±ÜÃâÃüÃû³åÍ»£¬½«½á¹¹ÌåÃû³ÆÇ°¼ÓÉÏ "MY_" Ç°×º
+// ä¸ºäº†é¿å…å‘½åå†²çªï¼Œå°†ç»“æ„ä½“åç§°å‰åŠ ä¸Š "MY_" å‰ç¼€
 typedef struct _MY_SYSTEM_MODULE {
 	PVOID  Reserved1;
 	PVOID  Reserved2;
@@ -175,7 +175,7 @@ typedef struct _MY_SYSTEM_MODULE {
 	CHAR   ImageName[256];
 } MY_SYSTEM_MODULE, * PMY_SYSTEM_MODULE;
 
-// Í¬Ñù£¬ĞŞ¸ÄÕâ¸ö½á¹¹ÌåµÄÃû³Æ
+// åŒæ ·ï¼Œä¿®æ”¹è¿™ä¸ªç»“æ„ä½“çš„åç§°
 typedef struct _MY_SYSTEM_MODULE_INFORMATION {
 	ULONG             ModulesCount;
 	MY_SYSTEM_MODULE  Modules[1];
@@ -193,77 +193,77 @@ namespace EPROCESS_MEMBER_OFFSET {
 	inline ULONG VAD_ROOT = 0;
 
 
-	// ³õÊ¼»¯pidÔÚeprocessµÄÆ«ÒÆÁ¿
+	// åˆå§‹åŒ–pidåœ¨eprocessçš„åç§»é‡
 	inline BOOLEAN InitializeUniqueProcessIdOffset() {
 
 		PUCHAR functionCode = (PUCHAR)L_PsGetProcessId;
 
 		if (functionCode == NULL) {
-			KdPrint(("EPROCESS_OFFSETS: ´íÎó: ÎŞ·¨½âÎö PsGetProcessId º¯ÊıµØÖ·¡£\n"));
+			KdPrint(("EPROCESS_OFFSETS: é”™è¯¯: æ— æ³•è§£æ PsGetProcessId å‡½æ•°åœ°å€ã€‚\n"));
 			return FALSE;
 		}
 
 		for (ULONG i = 0; i < 64; ++i) {
-			// ½«Á½ÖÖÄ£Ê½µÄ¼ì²éºÏ²¢£¬¼õÉÙ´úÂëÖØ¸´
-			// Ä£Ê½ 1: mov eax, [ecx+offset] (8B 81 ?? ?? ?? ??)
+			// å°†ä¸¤ç§æ¨¡å¼çš„æ£€æŸ¥åˆå¹¶ï¼Œå‡å°‘ä»£ç é‡å¤
+			// æ¨¡å¼ 1: mov eax, [ecx+offset] (8B 81 ?? ?? ?? ??)
 			if (functionCode[i] == 0x8B && functionCode[i + 1] == 0x81) {
 				UniqueProcessId = *(PULONG)(functionCode + i + 2);
-				// ³É¹¦Ê±²»Êä³ö£¬Ö±½Ó·µ»Ø
+				// æˆåŠŸæ—¶ä¸è¾“å‡ºï¼Œç›´æ¥è¿”å›
 				return TRUE;
 			}
-			// Ä£Ê½ 2: mov rax, [rcx+offset] (48 8B 81 ?? ?? ?? ??)
+			// æ¨¡å¼ 2: mov rax, [rcx+offset] (48 8B 81 ?? ?? ?? ??)
 			if (functionCode[i] == 0x48 && functionCode[i + 1] == 0x8B && functionCode[i + 2] == 0x81) {
 				UniqueProcessId = *(PULONG)(functionCode + i + 3);
-				// ³É¹¦Ê±²»Êä³ö£¬Ö±½Ó·µ»Ø
+				// æˆåŠŸæ—¶ä¸è¾“å‡ºï¼Œç›´æ¥è¿”å›
 				return TRUE;
 			}
 		}
 
-		KdPrint(("EPROCESS_OFFSETS: ´íÎó: Î´ÄÜÕÒµ½ UniqueProcessId µÄÌØÕ÷Ö¸Áî¡£\n"));
+		KdPrint(("EPROCESS_OFFSETS: é”™è¯¯: æœªèƒ½æ‰¾åˆ° UniqueProcessId çš„ç‰¹å¾æŒ‡ä»¤ã€‚\n"));
 		return FALSE;
 	}
 
-	//³õÊ¼»¯½ø³ÌÃûÔÚeprocessµÄÆ«ÒÆÁ¿
+	//åˆå§‹åŒ–è¿›ç¨‹ååœ¨eprocessçš„åç§»é‡
 	inline BOOLEAN InitializeImageFileNameOffset() {
 
 		PUCHAR functionCode =(PUCHAR)L_PsGetProcessImageFileName;
 
 		if (functionCode == NULL) {
-			KdPrint(("EPROCESS_OFFSETS: ´íÎó: ÎŞ·¨½âÎö PsGetProcessImageFileName º¯ÊıµØÖ·¡£\n"));
+			KdPrint(("EPROCESS_OFFSETS: é”™è¯¯: æ— æ³•è§£æ PsGetProcessImageFileName å‡½æ•°åœ°å€ã€‚\n"));
 			return FALSE;
 		}
 
-		// ÔÚº¯ÊıµÄÇ°64¸ö×Ö½ÚÄÚËÑË÷ÌØÕ÷Âë
+		// åœ¨å‡½æ•°çš„å‰64ä¸ªå­—èŠ‚å†…æœç´¢ç‰¹å¾ç 
 		for (ULONG i = 0; i < 64; ++i) {
-			// ÌØÕ÷Âë: lea rax, [rcx+offset] (48 8D 81 ?? ?? ?? ??)
+			// ç‰¹å¾ç : lea rax, [rcx+offset] (48 8D 81 ?? ?? ?? ??)
 			if (functionCode[i] == 0x48 &&
 				functionCode[i + 1] == 0x8D &&
 				functionCode[i + 2] == 0x81)
 			{
-				// ÕÒµ½ÁË! ½ÓÏÂÀ´µÄ4¸ö×Ö½Ú¾ÍÊÇÆ«ÒÆÁ¿
+				// æ‰¾åˆ°äº†! æ¥ä¸‹æ¥çš„4ä¸ªå­—èŠ‚å°±æ˜¯åç§»é‡
 				ImageFileNameOffset = *(PULONG)(functionCode + i + 3);
-				KdPrint(("EPROCESS_OFFSETS: ³É¹¦ÕÒµ½ ImageFileName Æ«ÒÆÁ¿: 0x%X\n", ImageFileNameOffset));
+				KdPrint(("EPROCESS_OFFSETS: æˆåŠŸæ‰¾åˆ° ImageFileName åç§»é‡: 0x%X\n", ImageFileNameOffset));
 				return TRUE;
 			}
 		}
 
-		KdPrint(("EPROCESS_OFFSETS: ´íÎó: Î´ÄÜÕÒµ½ ImageFileName µÄÌØÕ÷Ö¸Áî¡£\n"));
+		KdPrint(("EPROCESS_OFFSETS: é”™è¯¯: æœªèƒ½æ‰¾åˆ° ImageFileName çš„ç‰¹å¾æŒ‡ä»¤ã€‚\n"));
 		return FALSE;
 	}
 
 
-	// ³õÊ¼»¯ ActiveProcessLinks Æ«ÒÆÁ¿
+	// åˆå§‹åŒ– ActiveProcessLinks åç§»é‡
 	inline BOOLEAN InitializeActiveProcessLinksOffset() {
-		// ÒÀÀµ¼ì²é±£³Ö²»±ä£¬ÕâÊÇÕıÈ·µÄÂß¼­
+		// ä¾èµ–æ£€æŸ¥ä¿æŒä¸å˜ï¼Œè¿™æ˜¯æ­£ç¡®çš„é€»è¾‘
 		if (UniqueProcessId == 0) {
-			KdPrint(("EPROCESS_OFFSETS: ´íÎó: ±ØĞëÏÈ³É¹¦³õÊ¼»¯ UniqueProcessId Æ«ÒÆÁ¿¡£\n"));
+			KdPrint(("EPROCESS_OFFSETS: é”™è¯¯: å¿…é¡»å…ˆæˆåŠŸåˆå§‹åŒ– UniqueProcessId åç§»é‡ã€‚\n"));
 			return FALSE;
 		}
 
 		PEPROCESS systemProcess = PsInitialSystemProcess;
 
 		for (ULONG offset = 0; offset < 2048; offset += sizeof(PVOID)) {
-			// Ìø¹ı UniqueProcessId Æ«ÒÆÁ¿£¬±ÜÃâÎóÅĞ
+			// è·³è¿‡ UniqueProcessId åç§»é‡ï¼Œé¿å…è¯¯åˆ¤
 			if (offset == UniqueProcessId) {
 				continue;
 			}
@@ -271,39 +271,39 @@ namespace EPROCESS_MEMBER_OFFSET {
 			__try {
 				PLIST_ENTRY links = (PLIST_ENTRY)((PUCHAR)systemProcess + offset);
 
-				// ÓÅ»¯ÑéÖ¤Âß¼­£ºÏÈ×ö×î¿ì¡¢×î²»¿ÉÄÜÍ¨¹ıµÄ¼ì²é
-				// 1. ¼ì²éÖ¸ÕëÊÇ·ñ¿´ÆğÀ´ÏñÒ»¸öÓĞĞ§µÄË«ÏòÁ´±í
+				// ä¼˜åŒ–éªŒè¯é€»è¾‘ï¼šå…ˆåšæœ€å¿«ã€æœ€ä¸å¯èƒ½é€šè¿‡çš„æ£€æŸ¥
+				// 1. æ£€æŸ¥æŒ‡é’ˆæ˜¯å¦çœ‹èµ·æ¥åƒä¸€ä¸ªæœ‰æ•ˆçš„åŒå‘é“¾è¡¨
 				if (links->Flink->Blink != links || links->Blink->Flink != links) {
-					continue; // Èç¹û²»ÊÇ£¬Á¢¼´½øĞĞÏÂÒ»´ÎÑ­»·
+					continue; // å¦‚æœä¸æ˜¯ï¼Œç«‹å³è¿›è¡Œä¸‹ä¸€æ¬¡å¾ªç¯
 				}
 
-				// 2. Ö»ÓĞÍ¨¹ıÁË³õ²½¼ì²é£¬²Å½øĞĞ¸üºÄ·Ñ×ÊÔ´µÄÏÂÒ»²½ÑéÖ¤
+				// 2. åªæœ‰é€šè¿‡äº†åˆæ­¥æ£€æŸ¥ï¼Œæ‰è¿›è¡Œæ›´è€—è´¹èµ„æºçš„ä¸‹ä¸€æ­¥éªŒè¯
 				PEPROCESS nextProcess = (PEPROCESS)((PUCHAR)links->Flink - offset);
 
-				// ¼ì²é nextProcess ÊÇ·ñÊÇÒ»¸öÓĞĞ§µÄ EPROCESS Ö¸Õë£¬ÇÒ²»ÊÇ×ÔÉí
+				// æ£€æŸ¥ nextProcess æ˜¯å¦æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„ EPROCESS æŒ‡é’ˆï¼Œä¸”ä¸æ˜¯è‡ªèº«
 				if (nextProcess == systemProcess || !MmIsAddressValid(nextProcess)) {
 					continue;
 				}
 
 				HANDLE nextPid = *(PHANDLE)((PUCHAR)nextProcess + UniqueProcessId);
 
-				// ×îºóµÄÈ·ÈÏ£ºÏÂÒ»¸ö½ø³ÌµÄPIDÊÇ·ñÓĞĞ§
+				// æœ€åçš„ç¡®è®¤ï¼šä¸‹ä¸€ä¸ªè¿›ç¨‹çš„PIDæ˜¯å¦æœ‰æ•ˆ
 				if (HandleToUlong(nextPid) != 0) {
 					ActiveProcessLinks = offset;
-					// ³É¹¦Ê±²»Êä³ö
+					// æˆåŠŸæ—¶ä¸è¾“å‡º
 					return TRUE;
 				}
 			}
 			__except (EXCEPTION_EXECUTE_HANDLER) {
-				// ·ÃÎÊÒì³£ÊÇÉ¨Ãè¹ı³ÌÖĞµÄÕı³£ÏÖÏó£¬Ö±½Ó¼ÌĞø
+				// è®¿é—®å¼‚å¸¸æ˜¯æ‰«æè¿‡ç¨‹ä¸­çš„æ­£å¸¸ç°è±¡ï¼Œç›´æ¥ç»§ç»­
 			}
 		}
 
-		KdPrint(("EPROCESS_OFFSETS: ´íÎó: Î´ÄÜÕÒµ½ ActiveProcessLinks µÄÓĞĞ§Æ«ÒÆÁ¿¡£\n"));
+		KdPrint(("EPROCESS_OFFSETS: é”™è¯¯: æœªèƒ½æ‰¾åˆ° ActiveProcessLinks çš„æœ‰æ•ˆåç§»é‡ã€‚\n"));
 		return FALSE;
 	}
 
-	// ³õÊ¼»¯ PEB Æ«ÒÆÁ¿
+	// åˆå§‹åŒ– PEB åç§»é‡
 	inline BOOLEAN InitializePebOffset() {
 		PEPROCESS explorerProcess = NULL;
 
@@ -319,76 +319,76 @@ namespace EPROCESS_MEMBER_OFFSET {
 			} while (currentProcess != PsInitialSystemProcess);
 		}
 		__except (EXCEPTION_EXECUTE_HANDLER) {
-			// Òì³£·¢ÉúÊ±£¬explorerProcess ±£³ÖÎª NULL
+			// å¼‚å¸¸å‘ç”Ÿæ—¶ï¼ŒexplorerProcess ä¿æŒä¸º NULL
 		}
 
 		if (explorerProcess == NULL) {
-			KdPrint(("EPROCESS_OFFSETS: ´íÎó: Î´ÄÜÕÒµ½ explorer.exe ½ø³Ì¡£\n"));
+			KdPrint(("EPROCESS_OFFSETS: é”™è¯¯: æœªèƒ½æ‰¾åˆ° explorer.exe è¿›ç¨‹ã€‚\n"));
 			return FALSE;
 		}
 
 		PPEB explorerPeb = L_PsGetProcessPeb(explorerProcess);
 		if (explorerPeb == NULL) {
-			KdPrint(("EPROCESS_OFFSETS: ´íÎó: PsGetProcessPeb Î´ÄÜ·µ»Ø explorer.exe µÄ PEB¡£\n"));
+			KdPrint(("EPROCESS_OFFSETS: é”™è¯¯: PsGetProcessPeb æœªèƒ½è¿”å› explorer.exe çš„ PEBã€‚\n"));
 			return FALSE;
 		}
 
-		// É¨ÃèÂß¼­±£³Ö²»±ä£¬ËüÒÑ¾­ºÜ¸ßĞ§
+		// æ‰«æé€»è¾‘ä¿æŒä¸å˜ï¼Œå®ƒå·²ç»å¾ˆé«˜æ•ˆ
 		for (ULONG offset = 0; offset < 4096; offset += sizeof(PVOID)) {
 			__try {
 				if (*(PVOID*)((PUCHAR)explorerProcess + offset) == explorerPeb) {
 					Peb = offset;
-					// ³É¹¦Ê±²»Êä³ö
+					// æˆåŠŸæ—¶ä¸è¾“å‡º
 					return TRUE;
 				}
 			}
 			__except (EXCEPTION_EXECUTE_HANDLER) {
-				// ºöÂÔÎŞĞ§ÄÚ´æ·ÃÎÊ
+				// å¿½ç•¥æ— æ•ˆå†…å­˜è®¿é—®
 			}
 		}
 
-		KdPrint(("EPROCESS_OFFSETS: ´íÎó: ÔÚ EPROCESS ÖĞÉ¨ÃèÎ´ÕÒµ½ Peb µØÖ·¡£\n"));
+		KdPrint(("EPROCESS_OFFSETS: é”™è¯¯: åœ¨ EPROCESS ä¸­æ‰«ææœªæ‰¾åˆ° Peb åœ°å€ã€‚\n"));
 		return FALSE;
 	}
 
-	//³õÊ¼»¯½ø³Ì¼ÓÔØµØÖ·Æ«ÒÆ
+	//åˆå§‹åŒ–è¿›ç¨‹åŠ è½½åœ°å€åç§»
 	inline BOOLEAN InitializeSectionBaseAddressOffset() {
 		PUCHAR functionCode = (PUCHAR)L_PsGetProcessSectionBaseAddress;
 
 		if (functionCode == NULL) {
-			KdPrint(("EPROCESS_OFFSETS: ´íÎó: PsGetProcessSectionBaseAddress º¯ÊıµØÖ·Îª¿Õ¡£\n"));
+			KdPrint(("EPROCESS_OFFSETS: é”™è¯¯: PsGetProcessSectionBaseAddress å‡½æ•°åœ°å€ä¸ºç©ºã€‚\n"));
 			return FALSE;
 		}
 
-		// ËÑË÷ÌØÕ÷Âë: 48 8B 81 ?? ?? ?? ?? 
-		// ÕâÊÇ "mov rax, [rcx+offset]" Ö¸Áî
+		// æœç´¢ç‰¹å¾ç : 48 8B 81 ?? ?? ?? ??
+		// è¿™æ˜¯ "mov rax, [rcx+offset]" æŒ‡ä»¤
 		for (ULONG i = 0; i < 32; ++i) {
 			if (functionCode[i] == 0x48 &&
 				functionCode[i + 1] == 0x8B &&
 				functionCode[i + 2] == 0x81) {
 
-				// Èç¹ûÕÒµ½ÌØÕ÷Âë£¬ÄÇÃ´½ÓÏÂÀ´µÄ4¸ö×Ö½Ú¾ÍÊÇÎÒÃÇĞèÒªµÄÆ«ÒÆÁ¿
+				// å¦‚æœæ‰¾åˆ°ç‰¹å¾ç ï¼Œé‚£ä¹ˆæ¥ä¸‹æ¥çš„4ä¸ªå­—èŠ‚å°±æ˜¯æˆ‘ä»¬éœ€è¦çš„åç§»é‡
 				SectionBaseAddress = *(PULONG)(functionCode + i + 3);
 
 
-				KdPrint(("EPROCESS_OFFSETS: ³É¹¦¶¨Î» SectionBaseAddress Æ«ÒÆ: 0x%p\n", SectionBaseAddress));
+				KdPrint(("EPROCESS_OFFSETS: æˆåŠŸå®šä½ SectionBaseAddress åç§»: 0x%p\n", SectionBaseAddress));
 
 				return TRUE;
 			}
 		}
 
-		KdPrint(("EPROCESS_OFFSETS: ´íÎó: Î´ÄÜÔÚ PsGetProcessSectionBaseAddress ÖĞÕÒµ½ÌØÕ÷Ö¸Áî¡£\n"));
+		KdPrint(("EPROCESS_OFFSETS: é”™è¯¯: æœªèƒ½åœ¨ PsGetProcessSectionBaseAddress ä¸­æ‰¾åˆ°ç‰¹å¾æŒ‡ä»¤ã€‚\n"));
 		return FALSE;
 	}
 
 
-	//³õÊ¼»¯VAD_ROOTÆ«ÒÆÁ¿
+	//åˆå§‹åŒ–VAD_ROOTåç§»é‡
 	inline BOOLEAN InitializeVAD_ROOTOffset() {
 
 		PVOID ntoskrnlBase = NULL;
 		SIZE_T ntoskrnlSize = 0;
 
-		// --- ÄÚÁª GetNtoskrnlInfo µÄÂß¼­ ---
+		// --- å†…è” GetNtoskrnlInfo çš„é€»è¾‘ ---
 		NTSTATUS status = STATUS_INSUFFICIENT_RESOURCES;
 		ULONG neededSize = 0;
 		PMY_SYSTEM_MODULE_INFORMATION pModuleInfo = NULL;
@@ -396,21 +396,21 @@ namespace EPROCESS_MEMBER_OFFSET {
 		L_ZwQuerySystemInformation(11, NULL, 0, &neededSize);
 		if (neededSize == 0)
 		{
-		
+
 			return 0;
 		}
 
 		pModuleInfo = (PMY_SYSTEM_MODULE_INFORMATION)ExAllocatePool2(POOL_FLAG_PAGED, neededSize, 'VADT');
 		if (!pModuleInfo)
 		{
-		
+
 			return 0;
 		}
 
 		status = L_ZwQuerySystemInformation(11, pModuleInfo, neededSize, NULL);
 		if (!NT_SUCCESS(status))
 		{
-			
+
 			ExFreePoolWithTag(pModuleInfo, 'VADT');
 			return 0;
 		}
@@ -419,11 +419,11 @@ namespace EPROCESS_MEMBER_OFFSET {
 		{
 			ntoskrnlBase = pModuleInfo->Modules[0].ImageBase;
 			ntoskrnlSize = pModuleInfo->Modules[0].ImageSize;
-			
+
 		}
 		else
 		{
-			
+
 			ExFreePoolWithTag(pModuleInfo, 'VADT');
 			return 0;
 		}
@@ -431,15 +431,15 @@ namespace EPROCESS_MEMBER_OFFSET {
 		ExFreePoolWithTag(pModuleInfo, 'VADT');
 
 
-		// --- ÄÚÁª FindPattern µÄÂß¼­ ---
-		// ÌØÕ÷Âë: lea r11, [rbx + offset]
-		// »úÆ÷Âë: 4C 8D 9B XX XX XX XX
+		// --- å†…è” FindPattern çš„é€»è¾‘ ---
+		// ç‰¹å¾ç : lea r11, [rbx + offset]
+		// æœºå™¨ç : 4C 8D 9B XX XX XX XX
 		UCHAR pattern[] = { 0x4C, 0x8D, 0x9B };
 		PVOID foundAddress = NULL;
 
 		if (!ntoskrnlBase || !ntoskrnlSize)
 		{
-			
+
 			return 0;
 		}
 
@@ -451,23 +451,23 @@ namespace EPROCESS_MEMBER_OFFSET {
 			if (RtlCompareMemory(current, pattern, sizeof(pattern)) == sizeof(pattern))
 			{
 				foundAddress = current;
-				break; // ÕÒµ½ºóÁ¢¼´ÍË³öÑ­»·
+				break; // æ‰¾åˆ°åç«‹å³é€€å‡ºå¾ªç¯
 			}
 		}
 
-		// --- ÌáÈ¡Æ«ÒÆÁ¿ ---
+		// --- æå–åç§»é‡ ---
 		if (foundAddress)
 		{
-		
 
-			// Æ«ÒÆÁ¿ÊÇ½ô¸úÔÚÌØÕ÷ÂëºóÃæµÄ4¸ö×Ö½Ú (32Î»ÓĞ·ûºÅÕûÊı)
+
+			// åç§»é‡æ˜¯ç´§è·Ÿåœ¨ç‰¹å¾ç åé¢çš„4ä¸ªå­—èŠ‚ (32ä½æœ‰ç¬¦å·æ•´æ•°)
 			VAD_ROOT = *(PULONG)((PUCHAR)foundAddress + sizeof(pattern));
-			KdPrint(("EPROCESS_OFFSETS: ³É¹¦¶¨Î» VAD_ROOT Æ«ÒÆ: 0x%p\n", VAD_ROOT));
+			KdPrint(("EPROCESS_OFFSETS: æˆåŠŸå®šä½ VAD_ROOT åç§»: 0x%p\n", VAD_ROOT));
 		}
 
 
 		return VAD_ROOT;
-		
+
 	}
 
 
@@ -477,20 +477,20 @@ namespace EPROCESS_MEMBER_OFFSET {
 
 
 
-	//·µ»ØÖ¸¶¨PIDµÄEPROCESS½á¹¹Ìå
+	//è¿”å›æŒ‡å®šPIDçš„EPROCESSç»“æ„ä½“
 	inline PEPROCESS FindEprocessByProcessId(IN HANDLE targetPid) {
 		if (targetPid==0) {
 			return 0;
 		}
-		//Ö±½ÓÊ¹ÓÃÃüÃû¿Õ¼äÄÚµÄÆ«ÒÆÁ¿£¬±ÜÃâ´´½¨¾Ö²¿±äÁ¿
+		//ç›´æ¥ä½¿ç”¨å‘½åç©ºé—´å†…çš„åç§»é‡ï¼Œé¿å…åˆ›å»ºå±€éƒ¨å˜é‡
 		PEPROCESS startProcess = PsInitialSystemProcess;
 		PEPROCESS currentProcess = startProcess;
 
 		__try {
 			do {
-				// Ö±½Ó±È½Ï HANDLE£¬±È×ª»»³É ULONG ¸ü¸ßĞ§¡¢¸ü°²È«
+				// ç›´æ¥æ¯”è¾ƒ HANDLEï¼Œæ¯”è½¬æ¢æˆ ULONG æ›´é«˜æ•ˆã€æ›´å®‰å…¨
 				if (*(PHANDLE)((PUCHAR)currentProcess + UniqueProcessId) == targetPid) {
-					return currentProcess; // ÕÒµ½ºóÁ¢¼´·µ»Ø
+					return currentProcess; // æ‰¾åˆ°åç«‹å³è¿”å›
 				}
 
 				PLIST_ENTRY processLinksEntry = (PLIST_ENTRY)((PUCHAR)currentProcess + ActiveProcessLinks);
@@ -499,18 +499,18 @@ namespace EPROCESS_MEMBER_OFFSET {
 			} while (currentProcess != startProcess);
 		}
 		__except (EXCEPTION_EXECUTE_HANDLER) {
-			KdPrint(("ÑÏÖØ´íÎó: ÔÚ±éÀú½ø³ÌÁ´±íÊ±·¢ÉúÄÚ´æ·ÃÎÊÒì³£¡£\n"));
-			return NULL; // ·¢ÉúÒì³£Ê±·µ»Ø NULL
+			KdPrint(("ä¸¥é‡é”™è¯¯: åœ¨éå†è¿›ç¨‹é“¾è¡¨æ—¶å‘ç”Ÿå†…å­˜è®¿é—®å¼‚å¸¸ã€‚\n"));
+			return NULL; // å‘ç”Ÿå¼‚å¸¸æ—¶è¿”å› NULL
 		}
 
-		// Ñ­»·×ßÍê¶¼Ã»ÕÒµ½£¬ËµÃ÷½ø³Ì²»´æÔÚ
+		// å¾ªç¯èµ°å®Œéƒ½æ²¡æ‰¾åˆ°ï¼Œè¯´æ˜è¿›ç¨‹ä¸å­˜åœ¨
 		return NULL;
 	}
 
-	//ÓÃ½ø³ÌÃû»ñÈ¡pid
+	//ç”¨è¿›ç¨‹åè·å–pid
 	inline ULONG FindEprocessByProcessName(IN PCSTR pProcessName) {
 		if (pProcessName == NULL) {
-			KdPrint(("´íÎó: ÊäÈëµÄ½ø³ÌÃûÖ¸Õë (pProcessName) Îª NULL¡£\n"));
+			KdPrint(("é”™è¯¯: è¾“å…¥çš„è¿›ç¨‹åæŒ‡é’ˆ (pProcessName) ä¸º NULLã€‚\n"));
 			return NULL;
 		}
 		PEPROCESS startProcess = PsInitialSystemProcess;
@@ -518,29 +518,29 @@ namespace EPROCESS_MEMBER_OFFSET {
 
 		__try {
 			do {
-				// »ñÈ¡µ±Ç°½ø³ÌµÄÃû³ÆÖ¸Õë
+				// è·å–å½“å‰è¿›ç¨‹çš„åç§°æŒ‡é’ˆ
 				PCHAR currentName = (PCHAR)((PUCHAR)currentProcess + ImageFileNameOffset);
 
-				// ±È½Ï½ø³ÌÃû
+				// æ¯”è¾ƒè¿›ç¨‹å
 				if (_stricmp(currentName, pProcessName) == 0) {
 					return *(ULONG*)((PUCHAR)currentProcess + UniqueProcessId);
 				}
 
-				// Í¨¹ı ActiveProcessLinks Á´±íÒÆ¶¯µ½ÏÂÒ»¸ö½ø³Ì
+				// é€šè¿‡ ActiveProcessLinks é“¾è¡¨ç§»åŠ¨åˆ°ä¸‹ä¸€ä¸ªè¿›ç¨‹
 				PLIST_ENTRY processLinksEntry = (PLIST_ENTRY)((PUCHAR)currentProcess + ActiveProcessLinks);
-				// ´ÓÁ´±íÏîÖ¸Õë·´Ïò¼ÆËã³öÏÂÒ»¸ö EPROCESS ½á¹¹µÄ»ùµØÖ·
+				// ä»é“¾è¡¨é¡¹æŒ‡é’ˆåå‘è®¡ç®—å‡ºä¸‹ä¸€ä¸ª EPROCESS ç»“æ„çš„åŸºåœ°å€
 				currentProcess = (PEPROCESS)((PUCHAR)processLinksEntry->Flink - ActiveProcessLinks);
 
-				// Ñ­»·Ö±µ½»Øµ½Æğµã£¬±íÊ¾ÒÑ±éÀúÍêËùÓĞ»î¶¯½ø³Ì
+				// å¾ªç¯ç›´åˆ°å›åˆ°èµ·ç‚¹ï¼Œè¡¨ç¤ºå·²éå†å®Œæ‰€æœ‰æ´»åŠ¨è¿›ç¨‹
 			} while (currentProcess != startProcess);
 		}
 		__except (EXCEPTION_EXECUTE_HANDLER) {
-			// ²¶»ñµ½ÈÎºÎÄÚ´æ·ÃÎÊÒì³£
-			KdPrint(("ÑÏÖØ´íÎó: ÔÚ±éÀú½ø³ÌÁ´±íÊ±·¢ÉúÄÚ´æ·ÃÎÊÒì³£¡£¿ÉÄÜÔ­Òò£ºÁ´±íËğ»µ»ò²¢·¢ĞŞ¸Ä¡£\n"));
-			return NULL; 
+			// æ•è·åˆ°ä»»ä½•å†…å­˜è®¿é—®å¼‚å¸¸
+			KdPrint(("ä¸¥é‡é”™è¯¯: åœ¨éå†è¿›ç¨‹é“¾è¡¨æ—¶å‘ç”Ÿå†…å­˜è®¿é—®å¼‚å¸¸ã€‚å¯èƒ½åŸå› ï¼šé“¾è¡¨æŸåæˆ–å¹¶å‘ä¿®æ”¹ã€‚\n"));
+			return NULL;
 		}
 
-		KdPrint(("ĞÅÏ¢: Î´ÄÜÕÒµ½ÃûÎª \"%s\" µÄ½ø³Ì¡£\n", pProcessName));
+		KdPrint(("ä¿¡æ¯: æœªèƒ½æ‰¾åˆ°åä¸º \"%s\" çš„è¿›ç¨‹ã€‚\n", pProcessName));
 		return NULL;
 	}
 
@@ -548,13 +548,13 @@ namespace EPROCESS_MEMBER_OFFSET {
 }
 
 
-// ´ÓÖ¸¶¨µÄÄÚºËÄ£¿éÖĞ²éÕÒµ¼³öº¯ÊıµÄµØÖ·
+// ä»æŒ‡å®šçš„å†…æ ¸æ¨¡å—ä¸­æŸ¥æ‰¾å¯¼å‡ºå‡½æ•°çš„åœ°å€
 inline PVOID GetSystemModuleExport(LPCWSTR moduleName, LPCSTR routineName)
 {
 	PVOID pModuleBase = NULL;
 	UNICODE_STRING name;
 	L_RtlInitUnicodeString(&name, OBFUSCATE(L"PsLoadedModuleList").decrypt());
-	// »ñÈ¡ PsLoadedModuleList µÄµØÖ·
+	// è·å– PsLoadedModuleList çš„åœ°å€
 	PLIST_ENTRY pModuleList = (PLIST_ENTRY)L_MmGetSystemRoutineAddress(&name);
 	if (!pModuleList)
 	{
@@ -564,23 +564,23 @@ inline PVOID GetSystemModuleExport(LPCWSTR moduleName, LPCSTR routineName)
 	UNICODE_STRING searchModuleName;
 	L_RtlInitUnicodeString(&searchModuleName, moduleName);
 
-	// ±éÀúÁ´±í
+	// éå†é“¾è¡¨
 	for (PLIST_ENTRY pLink = pModuleList->Flink; pLink != pModuleList; pLink = pLink->Flink)
 	{
-		// ´ÓÁ´±íÏî»ñÈ¡LDR_DATA_TABLE_ENTRY½á¹¹
+		// ä»é“¾è¡¨é¡¹è·å–LDR_DATA_TABLE_ENTRYç»“æ„
 		PLdrDataTableEntry pEntry = CONTAINING_RECORD(pLink, LdrDataTableEntry, InLoadOrderModuleList);
 
-		// ±È½ÏÄ£¿éÃû (²»Çø·Ö´óĞ¡Ğ´)
+		// æ¯”è¾ƒæ¨¡å—å (ä¸åŒºåˆ†å¤§å°å†™)
 		if (L_RtlEqualUnicodeString(&pEntry->BaseDllName, &searchModuleName, TRUE))
 		{
 			pModuleBase = pEntry->DllBase;
-			break; // ÕÒµ½ºóÍË³öÑ­»·
+			break; // æ‰¾åˆ°åé€€å‡ºå¾ªç¯
 		}
 	}
 
 	if (pModuleBase)
 	{
-		// Èç¹ûÕÒµ½ÁËÄ£¿é»ùÖ·£¬Ôò´ÓÖĞ²éÕÒµ¼³öº¯Êı
+		// å¦‚æœæ‰¾åˆ°äº†æ¨¡å—åŸºå€ï¼Œåˆ™ä»ä¸­æŸ¥æ‰¾å¯¼å‡ºå‡½æ•°
 		return L_RtlFindExportedRoutineByName(pModuleBase, routineName);
 	}
 
@@ -592,12 +592,12 @@ inline ULONG_PTR getprocessdirbase(PEPROCESS targetprocess)
 {
 	if (!targetprocess) return 0;
 
-	// Ö÷ÒªÆ«ÒÆ
+	// ä¸»è¦åç§»
 	ULONG_PTR dirbase = *(PULONG_PTR)((PUCHAR)targetprocess + 0x28);
 	if (dirbase == 0)
 	{
 		static UINT32 offset = 0;
-		if (offset == 0) // Ö»ÔÚµÚÒ»´Îµ÷ÓÃÊ±¼ÆËã
+		if (offset == 0) // åªåœ¨ç¬¬ä¸€æ¬¡è°ƒç”¨æ—¶è®¡ç®—
 		{
 			switch (SystemVersionInf.dwBuildNumber)
 			{
@@ -615,7 +615,7 @@ inline ULONG_PTR getprocessdirbase(PEPROCESS targetprocess)
 			}
 		}
 
-		// »ØÍËÆ«ÒÆ
+		// å›é€€åç§»
 		dirbase = *(PULONG_PTR)((PUCHAR)targetprocess + offset);
 	}
 	return dirbase;
@@ -628,7 +628,7 @@ inline void initFun() {
 
 	UNICODE_STRING routineName;
 
-	// »ù´¡º¯ÊıÖ±½Ó¸³Öµ
+	// åŸºç¡€å‡½æ•°ç›´æ¥èµ‹å€¼
 	L_RtlInitUnicodeString = &RtlInitUnicodeString;
 	KdPrint((OBFUSCATE("L_RtlInitUnicodeString=%p\n").decrypt(), L_RtlInitUnicodeString));
 
@@ -645,48 +645,48 @@ inline void initFun() {
 	L_RtlInitUnicodeString(&routineName, OBFUSCATE(L"7").decrypt());
 
 
-	// ³õÊ¼»¯ RtlInitAnsiString º¯ÊıÖ¸Õë
+	// åˆå§‹åŒ– RtlInitAnsiString å‡½æ•°æŒ‡é’ˆ
 	L_RtlInitUnicodeString(&routineName, OBFUSCATE(L"RtlInitAnsiString").decrypt());
 	L_RtlInitAnsiString = (C_RtlInitAnsiString)L_MmGetSystemRoutineAddress(&routineName);
 	KdPrint((OBFUSCATE("L_RtlInitAnsiString=%p\n").decrypt(), L_RtlInitAnsiString));
 
-	// ³õÊ¼»¯ RtlAnsiStringToUnicodeString º¯ÊıÖ¸Õë
+	// åˆå§‹åŒ– RtlAnsiStringToUnicodeString å‡½æ•°æŒ‡é’ˆ
 	L_RtlInitUnicodeString(&routineName, OBFUSCATE(L"RtlAnsiStringToUnicodeString").decrypt());
 	L_RtlAnsiStringToUnicodeString = (C_RtlAnsiStringToUnicodeString)L_MmGetSystemRoutineAddress(&routineName);
 	KdPrint((OBFUSCATE("L_RtlAnsiStringToUnicodeString=%p\n").decrypt(), L_RtlAnsiStringToUnicodeString));
 
-	// ³õÊ¼»¯ RtlSuffixUnicodeString º¯ÊıÖ¸Õë
+	// åˆå§‹åŒ– RtlSuffixUnicodeString å‡½æ•°æŒ‡é’ˆ
 	L_RtlInitUnicodeString(&routineName, OBFUSCATE(L"RtlSuffixUnicodeString").decrypt());
 	L_RtlSuffixUnicodeString = (C_RtlSuffixUnicodeString)L_MmGetSystemRoutineAddress(&routineName);
 	KdPrint((OBFUSCATE("L_RtlSuffixUnicodeString=%p\n").decrypt(), L_RtlSuffixUnicodeString));
 
-	// ³õÊ¼»¯ RtlFreeUnicodeString º¯ÊıÖ¸Õë
+	// åˆå§‹åŒ– RtlFreeUnicodeString å‡½æ•°æŒ‡é’ˆ
 	L_RtlInitUnicodeString(&routineName, OBFUSCATE(L"RtlFreeUnicodeString").decrypt());
 	L_RtlFreeUnicodeString = (C_RtlFreeUnicodeString)L_MmGetSystemRoutineAddress(&routineName);
 	KdPrint((OBFUSCATE("L_RtlFreeUnicodeString=%p\n").decrypt(), L_RtlFreeUnicodeString));
 
-	// ³õÊ¼»¯ ExAllocatePool2 º¯ÊıÖ¸Õë
+	// åˆå§‹åŒ– ExAllocatePool2 å‡½æ•°æŒ‡é’ˆ
 	L_RtlInitUnicodeString(&routineName, OBFUSCATE(L"ExAllocatePool2").decrypt());
 	L_ExAllocatePool2 = (C_ExAllocatePool2)L_MmGetSystemRoutineAddress(&routineName);
 	KdPrint((OBFUSCATE("L_ExAllocatePool2=%p\n").decrypt(), L_ExAllocatePool2));
 
-	// ³õÊ¼»¯ ExFreePoolWithTag º¯ÊıÖ¸Õë
+	// åˆå§‹åŒ– ExFreePoolWithTag å‡½æ•°æŒ‡é’ˆ
 	L_RtlInitUnicodeString(&routineName, OBFUSCATE(L"ExFreePoolWithTag").decrypt());
 	L_ExFreePoolWithTag = (C_ExFreePoolWithTag)L_MmGetSystemRoutineAddress(&routineName);
 	KdPrint((OBFUSCATE("L_ExFreePoolWithTag=%p\n").decrypt(), L_ExFreePoolWithTag));
 
-	// ³õÊ¼»¯ ObOpenObjectByPointer º¯ÊıÖ¸Õë
+	// åˆå§‹åŒ– ObOpenObjectByPointer å‡½æ•°æŒ‡é’ˆ
 	L_RtlInitUnicodeString(&routineName, OBFUSCATE(L"ObOpenObjectByPointer").decrypt());
 	L_ObOpenObjectByPointer = (C_ObOpenObjectByPointer)L_MmGetSystemRoutineAddress(&routineName);
 	KdPrint((OBFUSCATE("L_ObOpenObjectByPointer=%p\n").decrypt(), L_ObOpenObjectByPointer));
 
-	// ³õÊ¼»¯ ObCloseHandle º¯ÊıÖ¸Õë
+	// åˆå§‹åŒ– ObCloseHandle å‡½æ•°æŒ‡é’ˆ
 	L_RtlInitUnicodeString(&routineName, OBFUSCATE(L"ObCloseHandle").decrypt());
 	L_ObCloseHandle = (C_ObCloseHandle)L_MmGetSystemRoutineAddress(&routineName);
 	KdPrint((OBFUSCATE("L_ObCloseHandle=%p\n").decrypt(), L_ObCloseHandle));
 
 
-	// »ñÈ¡ÏµÍ³ĞÅÏ¢
+	// è·å–ç³»ç»Ÿä¿¡æ¯
 	L_RtlInitUnicodeString(&routineName, OBFUSCATE(L"ZwQuerySystemInformation").decrypt());
 	L_ZwQuerySystemInformation = (C_ZwQuerySystemInformation)L_MmGetSystemRoutineAddress(&routineName);
 	KdPrint(("L_ZwQuerySystemInformation=%p\n", L_ZwQuerySystemInformation));
@@ -696,25 +696,25 @@ inline void initFun() {
 	L_RtlEqualUnicodeString = (C_RtlEqualUnicodeString)L_MmGetSystemRoutineAddress(&routineName);
 	KdPrint(("L_RtlEqualUnicodeString=%p\n", L_RtlEqualUnicodeString));
 
-	// »ñÈ¡Ö¸¶¨½ø³ÌµÄ PEB
+	// è·å–æŒ‡å®šè¿›ç¨‹çš„ PEB
 	L_RtlInitUnicodeString(&routineName, OBFUSCATE(L"PsGetProcessPeb").decrypt());
 	L_PsGetProcessPeb = (C_PsGetProcessPeb)L_MmGetSystemRoutineAddress(&routineName);
 	KdPrint(("L_PsGetProcessPeb=%p\n", L_PsGetProcessPeb));
 
 
-	// »ñÈ¡Ö¸¶¨½ø³ÌÃû
+	// è·å–æŒ‡å®šè¿›ç¨‹å
 	L_RtlInitUnicodeString(&routineName, OBFUSCATE(L"PsGetProcessImageFileName").decrypt());
 	L_PsGetProcessImageFileName = (C_PsGetProcessImageFileName)L_MmGetSystemRoutineAddress(&routineName);
 	KdPrint(("L_PsGetProcessImageFileName=%p\n", L_PsGetProcessImageFileName));
 
 
-	// »ñÈ¡Çı¶¯¶ÔÏó
+	// è·å–é©±åŠ¨å¯¹è±¡
 	L_RtlInitUnicodeString(&routineName, OBFUSCATE(L"ObReferenceObjectByName").decrypt());
 	L_ObReferenceObjectByName = (C_ObReferenceObjectByName)L_MmGetSystemRoutineAddress(&routineName);
 	KdPrint(("L_ObReferenceObjectByName=%p\n", L_ObReferenceObjectByName));
 
 
-	// »ñÈ¡½ø³Ìpid
+	// è·å–è¿›ç¨‹pid
 	L_RtlInitUnicodeString(&routineName, OBFUSCATE(L"PsGetProcessId").decrypt());
 	L_PsGetProcessId = (C_PsGetProcessId)L_MmGetSystemRoutineAddress(&routineName);
 	KdPrint(("L_PsGetProcessId=%p\n", L_PsGetProcessId));
@@ -756,19 +756,19 @@ inline void initFun() {
 	KdPrint(("L_PsGetProcessSectionBaseAddress=%p\n", L_PsGetProcessSectionBaseAddress));
 
 
-	
 
 
-	// »ñÈ¡ÏµÍ³°æ±¾ĞÅÏ¢Windows 
+
+	// è·å–ç³»ç»Ÿç‰ˆæœ¬ä¿¡æ¯Windows
 	L_RtlGetVersion(&SystemVersionInf);
 
-	// ½öµ±ÊÇ Windows 10 »ò 11 Ê±Ö´ĞĞ
+	// ä»…å½“æ˜¯ Windows 10 æˆ– 11 æ—¶æ‰§è¡Œ
 	if (SystemVersionInf.dwMajorVersion == 10 || SystemVersionInf.dwMajorVersion == 11)
 	{
-		// Ê¹ÓÃ do-while(false) ½á¹¹·½±ã´íÎó´¦Àí
+		// ä½¿ç”¨ do-while(false) ç»“æ„æ–¹ä¾¿é”™è¯¯å¤„ç†
 		do
 		{
-			// ¶¨ÒåÒªËÑË÷µÄÌØÕ÷Âë (Ê¹ÓÃ UCHAR/BYTE ¸ü±ê×¼)
+			// å®šä¹‰è¦æœç´¢çš„ç‰¹å¾ç  (ä½¿ç”¨ UCHAR/BYTE æ›´æ ‡å‡†)
 			const UCHAR MmUnloadSystemImage_Code[] = { 0x40, 0xB7, 0x01, 0x48, 0x8B, 0xCE, 0xE8 };
 			const ULONG SearchLength1 = sizeof(MmUnloadSystemImage_Code);
 
@@ -776,28 +776,28 @@ inline void initFun() {
 			ULONG_PTR MiUnloadSystemImageAddress = 0;
 			ULONG_PTR StartAddress = 0;
 
-			// Ä¬ÈÏ½«½á¹ûÉèÎªÊ§°Ü
+			// é»˜è®¤å°†ç»“æœè®¾ä¸ºå¤±è´¥
 			L_MiProcessLoaderEntry = nullptr;
 
-			// »ñÈ¡ MmUnloadSystemImage µÄµØÖ·
+			// è·å– MmUnloadSystemImage çš„åœ°å€
 			UNICODE_STRING u_FuncName;
 			L_RtlInitUnicodeString(&u_FuncName, OBFUSCATE(L"MmUnloadSystemImage").decrypt());
 			MmUnloadSystemImageAddress = (ULONG_PTR)L_MmGetSystemRoutineAddress(&u_FuncName);
 			if (MmUnloadSystemImageAddress == 0)
 			{
 				KdPrint((OBFUSCATE("[-] [Win10/11] Failed to get MmUnloadSystemImage address.\n").decrypt()));
-				break; // Ê§°Ü£¬Ìø³ö do-while
+				break; // å¤±è´¥ï¼Œè·³å‡º do-while
 			}
 
-			//  ÔÚ MmUnloadSystemImage ÖĞÉ¨ÃèÌØÕ÷ÂëÒÔ¶¨Î» MiUnloadSystemImage
+			//  åœ¨ MmUnloadSystemImage ä¸­æ‰«æç‰¹å¾ç ä»¥å®šä½ MiUnloadSystemImage
 			StartAddress = MmUnloadSystemImageAddress;
 			while (StartAddress < MmUnloadSystemImageAddress + 0x500)
 			{
 				if (RtlCompareMemory((VOID*)StartAddress, MmUnloadSystemImage_Code, SearchLength1) == SearchLength1)
 				{
-					StartAddress += SearchLength1; // Ìøµ½ call Ö¸ÁîµÄÏà¶ÔµØÖ·²¿·Ö
+					StartAddress += SearchLength1; // è·³åˆ° call æŒ‡ä»¤çš„ç›¸å¯¹åœ°å€éƒ¨åˆ†
 					MiUnloadSystemImageAddress = (*(LONG*)StartAddress) + StartAddress + 4;
-					break; // ÕÒµ½ºóÁ¢¼´Ìø³ö while Ñ­»·
+					break; // æ‰¾åˆ°åç«‹å³è·³å‡º while å¾ªç¯
 				}
 				++StartAddress;
 			}
@@ -805,27 +805,27 @@ inline void initFun() {
 			if (MiUnloadSystemImageAddress == 0)
 			{
 				KdPrint((OBFUSCATE("[-] [Win10/11] Step 1: Feature scan for MiUnloadSystemImage failed.\n").decrypt()));
-				break; // Ê§°Ü£¬Ìø³ö do-while
+				break; // å¤±è´¥ï¼Œè·³å‡º do-while
 			}
 
-			// ÔÚ MiUnloadSystemImage ÖĞÉ¨ÃèÌØÕ÷ÂëÒÔ¶¨Î» MiProcessLoaderEntry
+			// åœ¨ MiUnloadSystemImage ä¸­æ‰«æç‰¹å¾ç ä»¥å®šä½ MiProcessLoaderEntry
 			StartAddress = MiUnloadSystemImageAddress;
 			while (StartAddress < MiUnloadSystemImageAddress + 0x600)
 			{
-				// ÌØÕ÷Âë: call; ...; mov eax, [rip+...]
+				// ç‰¹å¾ç : call; ...; mov eax, [rip+...]
 				if (*(UCHAR*)StartAddress == 0xE8 &&
 					*(UCHAR*)(StartAddress + 5) == 0x8B && *(UCHAR*)(StartAddress + 6) == 0x05)
 				{
-					StartAddress++; // Ìø¹ı call µÄ 0xE8
+					StartAddress++; // è·³è¿‡ call çš„ 0xE8
 					L_MiProcessLoaderEntry = (C_MiProcessLoaderEntry)((*(LONG*)StartAddress) + StartAddress + 4);
 					break;
 				}
 				++StartAddress;
 			}
 
-		} while (false); // Õâ¸öÑ­»·Ö»»áÖ´ĞĞÒ»´Î
+		} while (false); // è¿™ä¸ªå¾ªç¯åªä¼šæ‰§è¡Œä¸€æ¬¡
 
-		// ¹Ø¼üĞŞ¸´£ºÔÚËùÓĞ²Ù×÷Íê³Éºó£¬¸ù¾İ L_MiProcessLoaderEntry µÄ×îÖÕÖµÀ´ÅĞ¶Ï²¢´òÓ¡ĞÅÏ¢
+		// å…³é”®ä¿®å¤ï¼šåœ¨æ‰€æœ‰æ“ä½œå®Œæˆåï¼Œæ ¹æ® L_MiProcessLoaderEntry çš„æœ€ç»ˆå€¼æ¥åˆ¤æ–­å¹¶æ‰“å°ä¿¡æ¯
 		if (L_MiProcessLoaderEntry != nullptr)
 		{
 			KdPrint((OBFUSCATE("[+] [Win10/11] Successfully found MiProcessLoaderEntry at: %p\n").decrypt(), L_MiProcessLoaderEntry));
@@ -839,44 +839,44 @@ inline void initFun() {
 }
 
 
-//°ó¶¨µ½Ö¸¶¨ºËĞÄ
+//ç»‘å®šåˆ°æŒ‡å®šæ ¸å¿ƒ
 NTSTATUS BindThreadToLogicalCore(ULONG targetCoreIndex)
 {
 	NTSTATUS status;
-	PROCESSOR_NUMBER procNumber; // ÓÃÓÚ´æ´¢×ª»»ºóµÄ´¦ÀíÆ÷×éºÅºÍ×éÄÚ±àºÅ
+	PROCESSOR_NUMBER procNumber; // ç”¨äºå­˜å‚¨è½¬æ¢åçš„å¤„ç†å™¨ç»„å·å’Œç»„å†…ç¼–å·
 	GROUP_AFFINITY newAffinity, oldAffinity;
 
-	//  ¼ì²éÄ¿±êºËĞÄË÷ÒıÊÇ·ñÓĞĞ§
-	// Ê×ÏÈ»ñÈ¡ÏµÍ³ÖĞËùÓĞ»î¶¯Âß¼­ºËĞÄµÄ×ÜÊı
+	//  æ£€æŸ¥ç›®æ ‡æ ¸å¿ƒç´¢å¼•æ˜¯å¦æœ‰æ•ˆ
+	// é¦–å…ˆè·å–ç³»ç»Ÿä¸­æ‰€æœ‰æ´»åŠ¨é€»è¾‘æ ¸å¿ƒçš„æ€»æ•°
 	ULONG totalLogicalProcessors = KeQueryActiveProcessorCountEx(ALL_PROCESSOR_GROUPS);
 
 	if (targetCoreIndex >= totalLogicalProcessors) {
-		// Èç¹ûÄ¿±êË÷Òı³¬³öÁË·¶Î§£¬Ôò·µ»Ø²ÎÊı´íÎó
-		KdPrint(("´íÎó£ºÄ¿±êºËĞÄË÷Òı %u ³¬³ö·¶Î§ (×ÜºËĞÄÊı: %u)\n", targetCoreIndex, totalLogicalProcessors));
+		// å¦‚æœç›®æ ‡ç´¢å¼•è¶…å‡ºäº†èŒƒå›´ï¼Œåˆ™è¿”å›å‚æ•°é”™è¯¯
+		KdPrint(("é”™è¯¯ï¼šç›®æ ‡æ ¸å¿ƒç´¢å¼• %u è¶…å‡ºèŒƒå›´ (æ€»æ ¸å¿ƒæ•°: %u)\n", targetCoreIndex, totalLogicalProcessors));
 		return STATUS_INVALID_PARAMETER;
 	}
 
-	// ½«È«¾ÖºËĞÄË÷Òı×ª»»Îª´¦ÀíÆ÷×éºÅºÍ×éÄÚ±àºÅ
+	// å°†å…¨å±€æ ¸å¿ƒç´¢å¼•è½¬æ¢ä¸ºå¤„ç†å™¨ç»„å·å’Œç»„å†…ç¼–å·
 	status = KeGetProcessorNumberFromIndex(targetCoreIndex, &procNumber);
 	if (!NT_SUCCESS(status)) {
-		KdPrint(("´íÎó£ºKeGetProcessorNumberFromIndex Ê§°Ü£¬×´Ì¬Âë: 0x%X\n", status));
+		KdPrint(("é”™è¯¯ï¼šKeGetProcessorNumberFromIndex å¤±è´¥ï¼ŒçŠ¶æ€ç : 0x%X\n", status));
 		return status;
 	}
 
-	//  ¹¹ÔìĞÂµÄ GROUP_AFFINITY ½á¹¹Ìå
-	RtlZeroMemory(&newAffinity, sizeof(GROUP_AFFINITY)); // Çå¿Õ½á¹¹Ìå
-	newAffinity.Group = procNumber.Group; // ÉèÖÃ×éºÅ
-	// ÉèÖÃÇ×ºÍĞÔÑÚÂë£¬Ö»ÔÊĞíÔÚÄ¿±êºËĞÄÉÏÔËĞĞ
-	// (KAFFINITY)1 << procNumber.Number µÄ½á¹ûÊÇÒ»¸öÖ»ÓĞÒ»Î»Îª1µÄ64Î»ÑÚÂë
+	//  æ„é€ æ–°çš„ GROUP_AFFINITY ç»“æ„ä½“
+	RtlZeroMemory(&newAffinity, sizeof(GROUP_AFFINITY)); // æ¸…ç©ºç»“æ„ä½“
+	newAffinity.Group = procNumber.Group; // è®¾ç½®ç»„å·
+	// è®¾ç½®äº²å’Œæ€§æ©ç ï¼Œåªå…è®¸åœ¨ç›®æ ‡æ ¸å¿ƒä¸Šè¿è¡Œ
+	// (KAFFINITY)1 << procNumber.Number çš„ç»“æœæ˜¯ä¸€ä¸ªåªæœ‰ä¸€ä½ä¸º1çš„64ä½æ©ç 
 	newAffinity.Mask = (KAFFINITY)1 << procNumber.Number;
 
-	// Ó¦ÓÃĞÂµÄÇ×ºÍĞÔÉèÖÃ£¬²¢±£´æ¾ÉµÄÉèÖÃ
+	// åº”ç”¨æ–°çš„äº²å’Œæ€§è®¾ç½®ï¼Œå¹¶ä¿å­˜æ—§çš„è®¾ç½®
 	KeSetSystemGroupAffinityThread(&newAffinity, &oldAffinity);
 
-	// --- °ó¶¨³É¹¦ ---
-	// ´Ó´Ë¿ÌÆğ£¬µ±Ç°Ïß³Ì½«Ö»»áÔÚÄãÖ¸¶¨µÄºËĞÄÉÏÔËĞĞ¡£
-	// Äã¿ÉÒÔÔÚÕâÀïÖ´ĞĞĞèÒªÓëÌØ¶¨ºËĞÄ°ó¶¨µÄ´úÂë¡£
-	KdPrint(("Ïß³ÌÒÑ³É¹¦°ó¶¨µ½Âß¼­ºËĞÄ %u (×é: %d, ×éÄÚ±àºÅ: %d)\n", targetCoreIndex, procNumber.Group, procNumber.Number));
+	// --- ç»‘å®šæˆåŠŸ ---
+	// ä»æ­¤åˆ»èµ·ï¼Œå½“å‰çº¿ç¨‹å°†åªä¼šåœ¨ä½ æŒ‡å®šçš„æ ¸å¿ƒä¸Šè¿è¡Œã€‚
+	// ä½ å¯ä»¥åœ¨è¿™é‡Œæ‰§è¡Œéœ€è¦ä¸ç‰¹å®šæ ¸å¿ƒç»‘å®šçš„ä»£ç ã€‚
+	KdPrint(("çº¿ç¨‹å·²æˆåŠŸç»‘å®šåˆ°é€»è¾‘æ ¸å¿ƒ %u (ç»„: %d, ç»„å†…ç¼–å·: %d)\n", targetCoreIndex, procNumber.Group, procNumber.Number));
 
 
 	return STATUS_SUCCESS;

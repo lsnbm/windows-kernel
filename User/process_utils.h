@@ -7,18 +7,18 @@
 #include <windows.h>
 #include <tlhelp32.h>  // For CreateToolhelp32Snapshot
 
-// ÓÃÓÚ´æ´¢½ø³ÌĞÅÏ¢µÄ¸¨Öú½á¹¹Ìå
+// ç”¨äºå­˜å‚¨è¿›ç¨‹ä¿¡æ¯çš„è¾…åŠ©ç»“æ„ä½“
 struct ProcessInfo {
     uint32_t pid;
     uint32_t parentPid;
 };
 
-//´Ëº¯ÊıµÄÔöÇ¿°æÄÜ¹»´¦ÀíÒ»¸ö½ø³Ì£¨ÈçÆô¶¯Æ÷£©Æô¶¯ÁíÒ»¸öÍ¬Ãû½ø³Ì£¨ÈçÓÎÏ·Ö÷³ÌĞò£©µÄÇé¿ö¡£
-//Ëü»áÓÅÏÈ·µ»ØÄÇ¸ö×÷Îª×Ó½ø³ÌµÄPID¡£
+//æ­¤å‡½æ•°çš„å¢å¼ºç‰ˆèƒ½å¤Ÿå¤„ç†ä¸€ä¸ªè¿›ç¨‹ï¼ˆå¦‚å¯åŠ¨å™¨ï¼‰å¯åŠ¨å¦ä¸€ä¸ªåŒåè¿›ç¨‹ï¼ˆå¦‚æ¸¸æˆä¸»ç¨‹åºï¼‰çš„æƒ…å†µã€‚
+//å®ƒä¼šä¼˜å…ˆè¿”å›é‚£ä¸ªä½œä¸ºå­è¿›ç¨‹çš„PIDã€‚
 uint32_t GetPidByName(const wchar_t* procName) {
     std::vector<ProcessInfo> matchingProcs;
 
-    // 1. »ñÈ¡ËùÓĞ½ø³ÌµÄ¿ìÕÕ
+    // 1. è·å–æ‰€æœ‰è¿›ç¨‹çš„å¿«ç…§
     HANDLE hSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
     if (hSnap == INVALID_HANDLE_VALUE) {
         return 0;
@@ -27,7 +27,7 @@ uint32_t GetPidByName(const wchar_t* procName) {
     PROCESSENTRY32W pe;
     pe.dwSize = sizeof(pe);
 
-    // 2. ±éÀúËùÓĞ½ø³Ì£¬ÕÒ³öËùÓĞÆ¥ÅäµÄ½ø³Ì²¢´æ´¢ĞÅÏ¢
+    // 2. éå†æ‰€æœ‰è¿›ç¨‹ï¼Œæ‰¾å‡ºæ‰€æœ‰åŒ¹é…çš„è¿›ç¨‹å¹¶å­˜å‚¨ä¿¡æ¯
     if (Process32FirstW(hSnap, &pe)) {
         do {
             if (_wcsicmp(pe.szExeFile, procName) == 0) {
@@ -37,7 +37,7 @@ uint32_t GetPidByName(const wchar_t* procName) {
     }
     CloseHandle(hSnap);
 
-    // 3. ·ÖÎö½á¹û
+    // 3. åˆ†æç»“æœ
     if (matchingProcs.empty()) {
         return 0;
     }

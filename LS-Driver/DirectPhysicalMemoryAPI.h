@@ -4,26 +4,26 @@
 
 
 
-// ±ê×¼µÄÎïÀíµØÖ·ÑÚÂë£¬ÓÃÓÚ´ÓÒ³±íÏî(PTE/PDEµÈ)ÖÐÌáÈ¡Ò³Ö¡ºÅ
-// ÊÊÓÃÓÚPAEºÍx64£¬¸²¸ÇÁË¸ß´ï52Î»µÄÎïÀíµØÖ·¿Õ¼ä
+// ï¿½ï¿½×¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö·ï¿½ï¿½ï¿½ë£¬ï¿½ï¿½ï¿½Ú´ï¿½Ò³ï¿½ï¿½ï¿½ï¿½(PTE/PDEï¿½ï¿½)ï¿½ï¿½ï¿½ï¿½È¡Ò³Ö¡ï¿½ï¿½
+// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½PAEï¿½ï¿½x64ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë¸ß´ï¿½52Î»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö·ï¿½Õ¼ï¿½
 constexpr ULONG64 PFN_MASK = 0x000FFFFFFFFFF000;
 
-//ÒýÈëÒ»¸öÉÏÏÂÎÄ½á¹¹ÌåÀ´»º´æÒ³±íÐÅÏ¢£¬±ÜÃâÖØ¸´µÄÎïÀí¶ÁÈ¡
+//ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä½á¹¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò³ï¿½ï¿½ï¿½ï¿½Ï¢ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ø¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¡
 struct VA_TRANSLATION_CONTEXT
 {
-	ULONG64 TargetCr3;         // »º´æÄ¿±êµÄCR3
-	ULONG64 CachedPdpPhysAddr; // »º´æµÄÒ³Ä¿Â¼Ö¸Õë±íµÄÎïÀí»ùÖ·
-	ULONG64 CachedPdPhysAddr;  // »º´æµÄÒ³Ä¿Â¼µÄÎïÀí»ùÖ·
-	ULONG64 CachedPtPhysAddr;  // »º´æµÄÒ³±íµÄÎïÀí»ùÖ·
+	ULONG64 TargetCr3;         // ï¿½ï¿½ï¿½ï¿½Ä¿ï¿½ï¿½ï¿½CR3
+	ULONG64 CachedPdpPhysAddr; // ï¿½ï¿½ï¿½ï¿½ï¿½Ò³Ä¿Â¼Ö¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö·
+	ULONG64 CachedPdPhysAddr;  // ï¿½ï¿½ï¿½ï¿½ï¿½Ò³Ä¿Â¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö·
+	ULONG64 CachedPtPhysAddr;  // ï¿½ï¿½ï¿½ï¿½ï¿½Ò³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö·
 
-	// ÓÃÓÚÅÐ¶ÏVAÊÇ·ñ»¹ÔÚ»º´æ·¶Î§ÄÚ
+	// ï¿½ï¿½ï¿½ï¿½ï¿½Ð¶ï¿½VAï¿½Ç·ï¿½ï¿½Ú»ï¿½ï¿½æ·¶Î§ï¿½ï¿½
 	ULONG64 CachedPdpVaRange;
 	ULONG64 CachedPdVaRange;
 	ULONG64 CachedPtVaRange;
 };
 
 
-// ´ÓÎïÀíµØÖ·¸´ÖÆÊý¾Ý
+// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 __forceinline NTSTATUS readphysaddress(PVOID address, PVOID buffer, SIZE_T size, SIZE_T* read)
 {
 	MM_COPY_ADDRESS addr;
@@ -31,7 +31,7 @@ __forceinline NTSTATUS readphysaddress(PVOID address, PVOID buffer, SIZE_T size,
 	return MmCopyMemory(buffer, addr, size, MM_COPY_MEMORY_PHYSICAL, read);
 }
 
-// ´Ó»º³åÇø¸´ÖÆÊý¾Ýµ½ÎïÀíµØÖ· (ÎÞ±ä¶¯£¬µ«ÆäµÍÐ§ÐÔÊÇÒÑÖªÎÊÌâ)
+// ï¿½Ó»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ýµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö· (ï¿½Þ±ä¶¯ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð§ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öªï¿½ï¿½ï¿½ï¿½)
 __forceinline NTSTATUS writephysaddress(PVOID address, PVOID buffer, SIZE_T size, SIZE_T* written)
 {
 	PHYSICAL_ADDRESS addr;
@@ -48,12 +48,12 @@ __forceinline NTSTATUS writephysaddress(PVOID address, PVOID buffer, SIZE_T size
 	return STATUS_SUCCESS;
 }
 
-// Ê¹ÓÃ»º´æµÄµØÖ··­Òëº¯Êý
+// Ê¹ï¿½Ã»ï¿½ï¿½ï¿½Äµï¿½Ö·ï¿½ï¿½ï¿½ëº¯ï¿½ï¿½
 __forceinline ULONG64 translateaddress_cached(ULONG64 processdirbase, ULONG64 address, VA_TRANSLATION_CONTEXT* context)
 {
-	if (!context) return 0; // ±ØÐëÌá¹©ÉÏÏÂÎÄ
+	if (!context) return 0; // ï¿½ï¿½ï¿½ï¿½ï¿½á¹©ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
-	// ¼ì²éÄ¿±ê½ø³ÌÊÇ·ñÒÑ¸ü¸Ä£¬Èç¹û¸ü¸ÄÔòÇå¿Õ»º´æ
+	// ï¿½ï¿½ï¿½Ä¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½Ñ¸ï¿½ï¿½Ä£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Õ»ï¿½ï¿½ï¿½
 	if (context->TargetCr3 != processdirbase)
 	{
 		memset(context, 0, sizeof(VA_TRANSLATION_CONTEXT));
@@ -72,7 +72,7 @@ __forceinline ULONG64 translateaddress_cached(ULONG64 processdirbase, ULONG64 ad
 
 	SIZE_T read_size;
 
-	// 1. PML4E -> PDPT ×ª»»
+	// 1. PML4E -> PDPT ×ªï¿½ï¿½
 	if (context->CachedPdpVaRange != pdp_va_range)
 	{
 		ULONG64 pdpe;
@@ -80,36 +80,36 @@ __forceinline ULONG64 translateaddress_cached(ULONG64 processdirbase, ULONG64 ad
 		if (!NT_SUCCESS(status) || (pdpe & 1) == 0) return 0;
 		context->CachedPdpPhysAddr = pdpe & PFN_MASK;
 		context->CachedPdpVaRange = pdp_va_range;
-		// ÏÂ¼¶»º´æ±ØÐëÊ§Ð§
+		// ï¿½Â¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê§Ð§
 		context->CachedPdVaRange = (ULONG64)-1;
 		context->CachedPtVaRange = (ULONG64)-1;
 	}
 
-	// 2. PDPTE -> PD ×ª»»
+	// 2. PDPTE -> PD ×ªï¿½ï¿½
 	if (context->CachedPdVaRange != pd_va_range)
 	{
 		ULONG64 pde;
 		NTSTATUS status = readphysaddress((void*)(context->CachedPdpPhysAddr + pd_index * 8), &pde, sizeof(pde), &read_size);
 		if (!NT_SUCCESS(status) || (pde & 1) == 0) return 0;
-		if ((pde & 0x80)) return (pde & 0x000FFFFFC0000000) + (address & ~0x3FFFFFFF); // 1GB´óÒ³
+		if ((pde & 0x80)) return (pde & 0x000FFFFFC0000000) + (address & ~0x3FFFFFFF); // 1GBï¿½ï¿½Ò³
 		context->CachedPdPhysAddr = pde & PFN_MASK;
 		context->CachedPdVaRange = pd_va_range;
-		// ÏÂ¼¶»º´æ±ØÐëÊ§Ð§
+		// ï¿½Â¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê§Ð§
 		context->CachedPtVaRange = (ULONG64)-1;
 	}
 
-	// 3. PDE -> PT ×ª»»
+	// 3. PDE -> PT ×ªï¿½ï¿½
 	if (context->CachedPtVaRange != pt_va_range)
 	{
 		ULONG64 pte;
 		NTSTATUS status = readphysaddress((void*)(context->CachedPdPhysAddr + pt_index * 8), &pte, sizeof(pte), &read_size);
 		if (!NT_SUCCESS(status) || (pte & 1) == 0) return 0;
-		if ((pte & 0x80)) return (pte & 0x000FFFFFFE00000) + (address & ~0x1FFFFF); // 2MB´óÒ³
+		if ((pte & 0x80)) return (pte & 0x000FFFFFFE00000) + (address & ~0x1FFFFF); // 2MBï¿½ï¿½Ò³
 		context->CachedPtPhysAddr = pte & PFN_MASK;
 		context->CachedPtVaRange = pt_va_range;
 	}
 
-	// 4. PTE -> Page ×ª»» (PTE±¾Éí²»»º´æ£¬ÒòÎª·ÃÎÊÆµÂÊ×î¸ß)
+	// 4. PTE -> Page ×ªï¿½ï¿½ (PTEï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½æ£¬ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½Æµï¿½ï¿½ï¿½ï¿½ï¿½)
 	ULONG64 final_pte;
 	NTSTATUS status = readphysaddress((void*)(context->CachedPtPhysAddr + pte_index * 8), &final_pte, sizeof(final_pte), &read_size);
 	if (!NT_SUCCESS(status) || (final_pte & 1) == 0) return 0;
@@ -118,13 +118,13 @@ __forceinline ULONG64 translateaddress_cached(ULONG64 processdirbase, ULONG64 ad
 }
 
 
-// Ê¹ÓÃ»º´æºÍ¸ßÐ§Ñ­»·Âß¼­¶Áº¯Êý
+// Ê¹ï¿½Ã»ï¿½ï¿½ï¿½Í¸ï¿½Ð§Ñ­ï¿½ï¿½ï¿½ß¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 inline NTSTATUS ReadPhysMemoryAPI(ULONG_PTR process_dirbase, PVOID address, PVOID buffer, SIZE_T size, SIZE_T* bytes_read)
 {
 	if (bytes_read) *bytes_read = 0;
 	if (!address || !buffer || !size || !process_dirbase) return STATUS_INVALID_PARAMETER;
 
-	// Îª´Ë²Ù×÷³õÊ¼»¯Ò»¸ö»º´æÉÏÏÂÎÄ
+	// Îªï¿½Ë²ï¿½ï¿½ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	VA_TRANSLATION_CONTEXT context = { 0 };
 
 	PUCHAR current_buffer = (PUCHAR)buffer;
@@ -133,26 +133,26 @@ inline NTSTATUS ReadPhysMemoryAPI(ULONG_PTR process_dirbase, PVOID address, PVOI
 
 	while (remaining_size > 0)
 	{
-		// ½«µ±Ç°ÐéÄâµØÖ··­ÒëÎªÎïÀíµØÖ·
+		// ï¿½ï¿½ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½ï¿½Ö·ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½ï¿½Ö·
 		const ULONG64 physical_address = translateaddress_cached(process_dirbase, current_va, &context);
-		if (physical_address == 0) return STATUS_PARTIAL_COPY; // ±íÊ¾²¿·Ö³É¹¦
+		if (physical_address == 0) return STATUS_PARTIAL_COPY; // ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½Ö³É¹ï¿½
 
-		//  ¼ÆËã¿ÉÒÔÔÚµ±Ç°4KBÒ³ÄÚÁ¬Ðø¶ÁÈ¡¶àÉÙ×Ö½Ú
+		//  ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Úµï¿½Ç°4KBÒ³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½Ö½ï¿½
 		SIZE_T bytes_in_page = PAGE_SIZE - (physical_address & 0xFFF);
 		SIZE_T bytes_to_read = min(remaining_size, bytes_in_page);
 
-		// Ö´ÐÐÎïÀí¶ÁÈ¡
+		// Ö´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¡
 		SIZE_T read_return = 0;
 		NTSTATUS status = readphysaddress((void*)physical_address, current_buffer, bytes_to_read, &read_return);
 
 		if (!NT_SUCCESS(status) || read_return == 0)
 		{
-			// Èç¹û·¢Éú´íÎó£¬¸üÐÂ×Ü¶ÁÈ¡×Ö½ÚÊý²¢·µ»Ø
+			// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ó£¬¸ï¿½ï¿½ï¿½ï¿½Ü¶ï¿½È¡ï¿½Ö½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 			if (bytes_read) *bytes_read = size - remaining_size;
 			return STATUS_PARTIAL_COPY;
 		}
 
-		// ¸üÐÂ¼ÆÊýÆ÷
+		// ï¿½ï¿½ï¿½Â¼ï¿½ï¿½ï¿½ï¿½ï¿½
 		remaining_size -= read_return;
 		current_buffer += read_return;
 		current_va += read_return;

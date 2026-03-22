@@ -1,8 +1,7 @@
-#pragma once  // ·ÀÖ¹Í·ÎÄ¼şÖØ¸´°üº¬
-#include<ntifs.h>
-#include <ntddmou.h>   // Êó±ê ½á¹¹Ìå MOUSE_INPUT_DATA
-#include <ntddkbd.h>   // ¼üÅÌ ½á¹¹ÌåKEYBOARD_INPUT_DATA
-#include<ntstrsafe.h>
+#include <ntifs.h>
+#include <ntddmou.h>   // mouse input structures
+#include <ntddkbd.h>   // keyboard input structures
+#include <ntstrsafe.h>
 #include"Exporting Functions.hpp"
 #include"Driver hiding.h"
 #include "DirectPhysicalMemory.h"
@@ -17,55 +16,55 @@ static  ULONG_PTR TarGetprocess_dirbase;
 
 
 
-// ¶¨ÒåÇëÇó²Ù×÷µÄÃ¶¾ÙÀàĞÍ
+// å®šä¹‰è¯·æ±‚æ“ä½œçš„æšä¸¾ç±»å‹
 typedef enum _req_op {
-	op_o = 0,           //¿Õµ÷ÓÃ
-	op_r = 1,           // ¶Á²Ù×÷
-	op_w = 2,           // Ğ´²Ù×÷
-	op_m = 3,				//»ñÈ¡Ä£¿é»ùµØÖ·
-	op_j = 4,				//¼üÅÌÊÂ¼ş
-	op_s = 5,				//Êó±êÊÂ¼ş
-	op_z = 6,				//ÖÕÖ¹½ø³Ì
+	op_o = 0,           //ç©ºè°ƒç”¨
+	op_r = 1,           // è¯»æ“ä½œ
+	op_w = 2,           // å†™æ“ä½œ
+	op_m = 3,				//è·å–æ¨¡å—åŸºåœ°å€
+	op_j = 4,				//é”®ç›˜äº‹ä»¶
+	op_s = 5,				//é¼ æ ‡äº‹ä»¶
+	op_z = 6,				//ç»ˆæ­¢è¿›ç¨‹
 
 
-	exit = 444//ÓÃ»§½ø³ÌÍË³ö
+	exit = 444//ç”¨æˆ·è¿›ç¨‹é€€å‡º
 } req_op;
 
-// ½«ÔÚ¶ÓÁĞÖĞÊ¹ÓÃµÄÇëÇóÊµÀı½á¹¹Ìå
+// å°†åœ¨é˜Ÿåˆ—ä¸­ä½¿ç”¨çš„è¯·æ±‚å®ä¾‹ç»“æ„ä½“
 typedef struct _req_Obj {
 
 
-	volatile LONG kernel;        //ÓÉÓÃ»§Ä£Ê½ÉèÖÃ 1 = ÄÚºËÓĞ´ı´¦ÀíµÄÇëÇó, 0 = ÇëÇóÒÑÍê³É
-	volatile LONG user;       //ÓÉÄÚºËÄ£Ê½ÉèÖÃ 1 = ÓÃ»§Ä£Ê½ÓĞ´ı´¦ÀíµÄÇëÇó, 0 = ÇëÇóÒÑÍê³É
-	req_op Op;                  // ÇëÇó²Ù×÷ÀàĞÍ
-	NTSTATUS status = -1;            // ²Ù×÷×´Ì¬
+	volatile LONG kernel;        //ç”±ç”¨æˆ·æ¨¡å¼è®¾ç½® 1 = å†…æ ¸æœ‰å¾…å¤„ç†çš„è¯·æ±‚, 0 = è¯·æ±‚å·²å®Œæˆ
+	volatile LONG user;       //ç”±å†…æ ¸æ¨¡å¼è®¾ç½® 1 = ç”¨æˆ·æ¨¡å¼æœ‰å¾…å¤„ç†çš„è¯·æ±‚, 0 = è¯·æ±‚å·²å®Œæˆ
+	req_op Op;                  // è¯·æ±‚æ“ä½œç±»å‹
+	NTSTATUS status = -1;            // æ“ä½œçŠ¶æ€
 
-	//ÄÚ´æ¶ÁÈ¡
+	//å†…å­˜è¯»å–
 	UINT32      TargetProcessId;
 	PVOID       TargetAddress;
-	char       UserBufferAddress[4096];
+	char       UserBufferAddress[1024];
 	ULONG       TransferSize;
 
-	//Ä£¿é»ùµØÖ·»ñÈ¡
-	char	ModuleName[100];
+	//æ¨¡å—åŸºåœ°å€è·å–
+	char	ModuleName[46];
 	ULONG64     ModuleBaseAddress;
 	ULONG64     ModuleSize;
 
-	//Ä£Äâ¼üÅÌºÍÊó±êÊäÈë
+	//æ¨¡æ‹Ÿé”®ç›˜å’Œé¼ æ ‡è¾“å…¥
 	MOUSE_INPUT_DATA    MouseData;
 	KEYBOARD_INPUT_DATA KeyboardData;
 
 } Requests;
 
 
-// È«¾Ö±äÁ¿£¬ÓÃÓÚ±£´æMDLºÍÓ³ÉäºóµÄµØÖ·
+// å…¨å±€å˜é‡ï¼Œç”¨äºä¿å­˜MDLå’Œæ˜ å°„åçš„åœ°å€
 PMDL        g_pMdl = NULL;
 PVOID       g_pKernelAddress = NULL;
-HANDLE      g_hThread = NULL;             // ÄÚºËÏß³ÌµÄ¾ä±ú
-HANDLE      g_hThread2 = NULL;             // ÄÚºËÏß³ÌµÄ¾ä±ú
-volatile bool  PerocessExit = 1;			//ÓÃ»§Ïß³ÌÄ¬ÈÏÍË³ö×´Ì¬  
- 
-Requests* req;                      // Ö¸Ïò¹²ÏíÇëÇó¶ÔÏóµÄÖ¸Õë
+HANDLE      g_hThread = NULL;             // å†…æ ¸çº¿ç¨‹çš„å¥æŸ„
+HANDLE      g_hThread2 = NULL;             // å†…æ ¸çº¿ç¨‹çš„å¥æŸ„
+volatile bool  PerocessExit = 1;			//ç”¨æˆ·çº¿ç¨‹é»˜è®¤é€€å‡ºçŠ¶æ€
+
+Requests* req;                      // æŒ‡å‘å…±äº«è¯·æ±‚å¯¹è±¡çš„æŒ‡é’ˆ
 
 
 
@@ -73,34 +72,34 @@ VOID DriverMainLoop(PVOID StartContext) {
 	UNREFERENCED_PARAMETER(StartContext);
 
 
-	KdPrint(("[+] ÅÉÇ²Ïß³Ì´¦ÀíÆ÷Ë÷Òı: %d\n", KeGetCurrentProcessorIndex())); // ´òÓ¡´¦ÀíÆ÷Ë÷Òı
+	KdPrint(("[+] æ´¾é£çº¿ç¨‹å¤„ç†å™¨ç´¢å¼•: %d\n", KeGetCurrentProcessorIndex())); // æ‰“å°å¤„ç†å™¨ç´¢å¼•
 
-	//Ö»Òª²»ÊÇÍË³ö¾Í²»µÈ´ı
+	//åªè¦ä¸æ˜¯é€€å‡ºå°±ä¸ç­‰å¾…
 	while (1) {
-		//ÇëÇó½ø³Ì²»ÊÇÍË³ö×´Ì¬²Å¿ÉÒÔÖ´ĞĞ
+		//è¯·æ±‚è¿›ç¨‹ä¸æ˜¯é€€å‡ºçŠ¶æ€æ‰å¯ä»¥æ‰§è¡Œ
 		if (!PerocessExit) {
 
-			// Ê¹ÓÃÔ­×Ó²Ù×÷¼ì²é`Ready`×Ö¶ÎÊÇ·ñÎª1¡£Èç¹ûÊÇ£¬±íÊ¾ÓĞĞÂÇëÇó£¬²¢½«ÆäÉèÖÃÎª0¡£
+			// ä½¿ç”¨åŸå­æ“ä½œæ£€æŸ¥`Ready`å­—æ®µæ˜¯å¦ä¸º1ã€‚å¦‚æœæ˜¯ï¼Œè¡¨ç¤ºæœ‰æ–°è¯·æ±‚ï¼Œå¹¶å°†å…¶è®¾ç½®ä¸º0ã€‚
 			if (InterlockedCompareExchange(&req->kernel, 0, 1) == 1) {
-				InterlockedExchange(&req->kernel, 0);//ÇëÇóÒÑ´¦Àí
+				InterlockedExchange(&req->kernel, 0);//è¯·æ±‚å·²å¤„ç†
 
-				//Èç¹ûÄ¿±ê½ø³Ì¸ü»»ÁË£¬ÖØĞÂ»ñÈ¡
+				//å¦‚æœç›®æ ‡è¿›ç¨‹æ›´æ¢äº†ï¼Œé‡æ–°è·å–
 				if (TargetProcessId != req->TargetProcessId && req->TargetProcessId != 0) {
 
 					TargetProcessId = req->TargetProcessId;
-					KdPrint(("Ä¿±ê½ø³Ì¸ü»»:%d\n", TargetProcessId));
+					KdPrint(("ç›®æ ‡è¿›ç¨‹æ›´æ¢:%d\n", TargetProcessId));
 
 					TarGetprocess = EPROCESS_MEMBER_OFFSET::FindEprocessByProcessId((HANDLE)TargetProcessId);
-					KdPrint(("Ä¿±ê½ø³ÌPEPROCESS:%p\n", TarGetprocess));
+					KdPrint(("ç›®æ ‡è¿›ç¨‹PEPROCESS:%p\n", TarGetprocess));
 
 					TarGetprocess_dirbase = getprocessdirbase(TarGetprocess);
-					KdPrint(("Ä¿±ê½ø³ÌÒ³Ä¿Â¼»ùµØÖ·:%p\n", TarGetprocess_dirbase));
+					KdPrint(("ç›®æ ‡è¿›ç¨‹é¡µç›®å½•åŸºåœ°å€:%p\n", TarGetprocess_dirbase));
 				}
 
 				switch (req->Op) {
 				case op_r: {
 
-					//Ö»ÄÜ´¦Àí64Î»µØÖ·
+					//åªèƒ½å¤„ç†64ä½åœ°å€
 					req->status = ReadPhysMemory(&g_TransferPage, TarGetprocess_dirbase, req->TargetAddress, req->UserBufferAddress, req->TransferSize, &rwCtx);
 					break;
 				}
@@ -119,10 +118,18 @@ VOID DriverMainLoop(PVOID StartContext) {
 						WIN11_24H2::GetModuleBaseByVad_NoAttach(TarGetprocess, req->ModuleName, &req->ModuleBaseAddress, &req->ModuleSize);
 
 					}
-					else {
+					else if(SystemVersionInf.dwBuildNumber >= WINDOWS_23H2) {
+
+						KdPrint(("ModuleName=%s\n", req->ModuleName));
+
 						WIN11_23H2::GetModuleBaseByVad_NoAttach(TarGetprocess, req->ModuleName, &req->ModuleBaseAddress, &req->ModuleSize);
 					}
-	
+					else {
+						KdPrint(("ModuleName=%s\n", req->ModuleName));
+
+						WIN11_22H2::GetModuleBaseByVad_NoAttach(TarGetprocess, req->ModuleName, &req->ModuleBaseAddress, &req->ModuleSize);
+					}
+
 					break;
 				}
 				case op_j: {
@@ -135,17 +142,17 @@ VOID DriverMainLoop(PVOID StartContext) {
 				}
 				case op_z: {
 
-					// ¸ù¾İPID²éÕÒEPROCESS½á¹¹
+					// æ ¹æ®PIDæŸ¥æ‰¾EPROCESSç»“æ„
 					PEPROCESS process = EPROCESS_MEMBER_OFFSET::FindEprocessByProcessId((HANDLE)TargetProcessId);;
-					//±ØĞëÔö¼ÓÒıÓÃ¼ÆÊıÒòÎª£¬ÏÂÃæ´úÂëÖÕÖ¹½ø³Ì»áÊÍ·ÅÒıÓÃ¼ÆÊı£¬Èç¹û¹ı¶ÈÊÍ·Å±ä-1»áÀ¶ÆÁ
+					//å¿…é¡»å¢åŠ å¼•ç”¨è®¡æ•°å› ä¸ºï¼Œä¸‹é¢ä»£ç ç»ˆæ­¢è¿›ç¨‹ä¼šé‡Šæ”¾å¼•ç”¨è®¡æ•°ï¼Œå¦‚æœè¿‡åº¦é‡Šæ”¾å˜-1ä¼šè“å±
 					ObReferenceObjectSafe(process);
 					HANDLE processHandle = NULL;
-					// »ñÈ¡½ø³ÌµÄÄÚºË¾ä±ú£¬ÒÔ±ãÊ¹ÓÃZwTerminateProcess
+					// è·å–è¿›ç¨‹çš„å†…æ ¸å¥æŸ„ï¼Œä»¥ä¾¿ä½¿ç”¨ZwTerminateProcess
 					req->status = L_ObOpenObjectByPointer(
 						process,
-						OBJ_KERNEL_HANDLE, // Ö¸¶¨´´½¨µÄÊÇÄÚºË¾ä±ú
+						OBJ_KERNEL_HANDLE, // æŒ‡å®šåˆ›å»ºçš„æ˜¯å†…æ ¸å¥æŸ„
 						NULL,
-						STANDARD_RIGHTS_ALL, // ËùÓĞ·ÃÎÊÈ¨ÏŞ
+						STANDARD_RIGHTS_ALL, // æ‰€æœ‰è®¿é—®æƒé™
 						*PsProcessType,
 						KernelMode,
 						&processHandle
@@ -157,10 +164,10 @@ VOID DriverMainLoop(PVOID StartContext) {
 						break;
 					}
 
-					// Ê¹ÓÃ»ñÈ¡µ½µÄ¾ä±úÖÕÖ¹½ø³Ì
-					req->status = ZwTerminateProcess(processHandle, 0); // 0 ±íÊ¾³É¹¦µÄÍË³öÂë
+					// ä½¿ç”¨è·å–åˆ°çš„å¥æŸ„ç»ˆæ­¢è¿›ç¨‹
+					req->status = ZwTerminateProcess(processHandle, 0); // 0 è¡¨ç¤ºæˆåŠŸçš„é€€å‡ºç 
 
-					// ²»ÂÛÖÕÖ¹ÊÇ·ñ³É¹¦£¬ÎÒÃÇ¶¼ĞèÒª¹Ø±Õ¾ä±ú²¢ÊÍ·Å¶Ôprocess¶ÔÏóµÄÒıÓÃ
+					// ä¸è®ºç»ˆæ­¢æ˜¯å¦æˆåŠŸï¼Œæˆ‘ä»¬éƒ½éœ€è¦å…³é—­å¥æŸ„å¹¶é‡Šæ”¾å¯¹processå¯¹è±¡çš„å¼•ç”¨
 					L_ObCloseHandle(processHandle, KernelMode);
 					ObDereferenceObject(process);
 
@@ -175,9 +182,9 @@ VOID DriverMainLoop(PVOID StartContext) {
 					break;
 				}
 				case exit: {
-					KdPrint(("¿ªÊ¼ÇåÀí¾É½ø³Ì×ÊÔ´\n"));
+					KdPrint(("å¼€å§‹æ¸…ç†æ—§è¿›ç¨‹èµ„æº\n"));
 
-					// ÇåÀí¹²ÏíÄÚ´æÓ³ÉäºÍMdl
+					// æ¸…ç†å…±äº«å†…å­˜æ˜ å°„å’ŒMdl
 					if (g_pKernelAddress && g_pMdl)
 					{
 						MmUnmapLockedPages(g_pKernelAddress, g_pMdl);
@@ -186,96 +193,96 @@ VOID DriverMainLoop(PVOID StartContext) {
 						g_pMdl = NULL;
 					}
 
-					PerocessExit = TRUE;//½ø³ÌÍË³ö×´Ì¬ÎªÕæ
+					PerocessExit = TRUE;//è¿›ç¨‹é€€å‡ºçŠ¶æ€ä¸ºçœŸ
 					break;
 
 
 				}
 				default:break;
 				}
-				InterlockedExchange(&req->user, 1);//Í¨ÖªÓÃ»§´¦ÀíÍê³É
+				InterlockedExchange(&req->user, 1);//é€šçŸ¥ç”¨æˆ·å¤„ç†å®Œæˆ
 			}
 
 		}
-		YieldProcessor();//×ÔĞıµÈ
+		YieldProcessor();//è‡ªæ—‹ç­‰
 
 	}
 }
 
 
 
-//¹²ÏíÄÚ´æÍ¨ĞÅ
+//å…±äº«å†…å­˜é€šä¿¡
 VOID InitializeAndMapCommunication(PVOID)
 {
-	KdPrint(("[+] Á¬½ÓÏß³Ì´¦ÀíÆ÷Ë÷Òı: %d\n", KeGetCurrentProcessorIndex())); // ´òÓ¡´¦ÀíÆ÷Ë÷Òı
+	KdPrint(("[+] è¿æ¥çº¿ç¨‹å¤„ç†å™¨ç´¢å¼•: %d\n", KeGetCurrentProcessorIndex())); // æ‰“å°å¤„ç†å™¨ç´¢å¼•
 
-	//¹Ì¶¨3ÃëµÈ´ı
+	//å›ºå®š3ç§’ç­‰å¾…
 	for (;;)
 	{
-		//ÇëÇó½ø³ÌÍË³ö£¬¿ªÊ¼²éÕÒ
+		//è¯·æ±‚è¿›ç¨‹é€€å‡ºï¼Œå¼€å§‹æŸ¥æ‰¾
 		if (PerocessExit) {
 
 			ULONG pid = EPROCESS_MEMBER_OFFSET::FindEprocessByProcessName("Lark.exe");
-			KdPrint(("ÇëÇó½ø³ÌPID:%d\n", pid));
+			KdPrint(("è¯·æ±‚è¿›ç¨‹PID:%d\n", pid));
 			if (pid)
 			{
 				PEPROCESS eproc = EPROCESS_MEMBER_OFFSET::FindEprocessByProcessId((HANDLE)pid);
-				KdPrint(("ÇëÇó½ø³ÌPEPROCESS:%p\n", eproc));
+				KdPrint(("è¯·æ±‚è¿›ç¨‹PEPROCESS:%p\n", eproc));
 				if (eproc) {
 					ULONG64 dirbase = getprocessdirbase(eproc);
-					KdPrint(("ÇëÇó½ø³ÌÒ³Ä¿Â¼»ùµØÖ·:%llx\n", dirbase));
+					KdPrint(("è¯·æ±‚è¿›ç¨‹é¡µç›®å½•åŸºåœ°å€:%llx\n", dirbase));
 					if (dirbase) {
 
-						//ÓÉÓÃ»§·ÖÅä¹Ì¶¨ĞéÄâÄÚ´æ
+						//ç”±ç”¨æˆ·åˆ†é…å›ºå®šè™šæ‹Ÿå†…å­˜
 						ULONG64 buffer = 0x20258270000;
 						NTSTATUS status;
 
-						// ÎªÁËÇåÎú£¬ĞŞ¸ÄÁË´Ë´¦µÄÃèÊö
-						KdPrint(("¶ÁÈ¡³É¹¦: ½ø³ÌÈ«¾Ö¹²ÏíÄÚ´æÖ¸ÕëÖ¸ÏòµÄµØÖ·ÊÇ: %llx\n", buffer));
+						// ä¸ºäº†æ¸…æ™°ï¼Œä¿®æ”¹äº†æ­¤å¤„çš„æè¿°
+						KdPrint(("è¯»å–æˆåŠŸ: è¿›ç¨‹å…¨å±€å…±äº«å†…å­˜æŒ‡é’ˆæŒ‡å‘çš„åœ°å€æ˜¯: %llx\n", buffer));
 
-						// --- [¿ªÊ¼MDLÓ³ÉäÁ÷³Ì] ---
-						const SIZE_T Size = sizeof(Requests); // ¼ÙÉè 'Requests' ÊÇÒ»¸öÒÑ¶¨ÒåµÄ½á¹¹Ìå»òÀàĞÍ
-						KdPrint(("[MDL] ×¼±¸Îª´óĞ¡Îª %zu ×Ö½ÚµÄ¹²ÏíÄÚ´æ´´½¨MDL¡£\n", Size));
-						KdPrint(("[MDL] ¹²ÏíÄÚ´æµÄÆğÊ¼ĞéÄâµØÖ·Îª: %llx\n", buffer));
+						// --- [å¼€å§‹MDLæ˜ å°„æµç¨‹] ---
+						const SIZE_T Size = sizeof(Requests); // å‡è®¾ 'Requests' æ˜¯ä¸€ä¸ªå·²å®šä¹‰çš„ç»“æ„ä½“æˆ–ç±»å‹
+						KdPrint(("[MDL] å‡†å¤‡ä¸ºå¤§å°ä¸º %zu å­—èŠ‚çš„å…±äº«å†…å­˜åˆ›å»ºMDLã€‚\n", Size));
+						KdPrint(("[MDL] å…±äº«å†…å­˜çš„èµ·å§‹è™šæ‹Ÿåœ°å€ä¸º: %llx\n", buffer));
 
 						if (buffer && Size) {
-							KdPrint(("[MDL] µØÖ·ºÍ´óĞ¡ÓĞĞ§£¬¿ªÊ¼·ÖÅäMDL...\n"));
+							KdPrint(("[MDL] åœ°å€å’Œå¤§å°æœ‰æ•ˆï¼Œå¼€å§‹åˆ†é…MDL...\n"));
 							PMDL mdl = IoAllocateMdl(NULL, (ULONG)Size, FALSE, FALSE, NULL);
 							if (mdl) {
-								KdPrint(("[MDL] IoAllocateMdl ³É¹¦, MDL at: %p\n", mdl));
+								KdPrint(("[MDL] IoAllocateMdl æˆåŠŸ, MDL at: %p\n", mdl));
 
-								// ÉèÖÃMDL×Ö¶Î
+								// è®¾ç½®MDLå­—æ®µ
 								mdl->StartVa = (PVOID)(buffer & ~(PAGE_SIZE - 1));
 								mdl->ByteOffset = (USHORT)(buffer & (PAGE_SIZE - 1));
 								mdl->ByteCount = (ULONG)Size;
-								KdPrint(("[MDL] MDL ÉèÖÃ: StartVa=%p, ByteOffset=%u, ByteCount=%u\n", mdl->StartVa, mdl->ByteOffset, mdl->ByteCount));
+								KdPrint(("[MDL] MDL è®¾ç½®: StartVa=%p, ByteOffset=%u, ByteCount=%u\n", mdl->StartVa, mdl->ByteOffset, mdl->ByteCount));
 
 								PPFN_NUMBER pfns = (PPFN_NUMBER)(mdl + 1);
 								ULONG pageCount = (ULONG)ADDRESS_AND_SIZE_TO_SPAN_PAGES(buffer, Size);
-								KdPrint(("[MDL] ÄÚ´æ¿çÔ½ %u ¸öÎïÀíÒ³£¬¿ªÊ¼ÊÖ¶¯×ª»»PFN...\n", pageCount));
+								KdPrint(("[MDL] å†…å­˜è·¨è¶Š %u ä¸ªç‰©ç†é¡µï¼Œå¼€å§‹æ‰‹åŠ¨è½¬æ¢PFN...\n", pageCount));
 
 								BOOLEAN translationSuccess = TRUE;
 								for (ULONG i = 0; i < pageCount; i++) {
 									ULONG_PTR currentVa = buffer + (i * PAGE_SIZE);
-									ULONG_PTR pa = 0; //×ª»»ºóµÄÎïÀíµØÖ·
-									ULONG_PTR currentPageSize = 0; //·µ»ØÖµÎïÀíÒ³ÓĞ¶à´ó
+									ULONG_PTR pa = 0; //è½¬æ¢åçš„ç‰©ç†åœ°å€
+									ULONG_PTR currentPageSize = 0; //è¿”å›å€¼ç‰©ç†é¡µæœ‰å¤šå¤§
 
-									KdPrint(("[MDL] [Page %u/%u] ÕıÔÚ×ª»»ĞéÄâµØÖ·: %llx\n", i + 1, pageCount, currentVa));
+									KdPrint(("[MDL] [Page %u/%u] æ­£åœ¨è½¬æ¢è™šæ‹Ÿåœ°å€: %llx\n", i + 1, pageCount, currentVa));
 
 									GetPhysPageInfoStealth(&g_TransferPage, dirbase, (void*)currentVa, &pa, &currentPageSize, &rwCtx);
 
 									if (!pa) {
-										KdPrint(("[MDL] !! ´íÎó: [Page %u/%u] ĞéÄâµØÖ· %llx ×ª»»ÎªÎïÀíµØÖ·Ê§°Ü!\n", i + 1, pageCount, currentVa));
+										KdPrint(("[MDL] !! é”™è¯¯: [Page %u/%u] è™šæ‹Ÿåœ°å€ %llx è½¬æ¢ä¸ºç‰©ç†åœ°å€å¤±è´¥!\n", i + 1, pageCount, currentVa));
 										translationSuccess = FALSE;
 										break;
 									}
 
 									pfns[i] = (PFN_NUMBER)(pa >> PAGE_SHIFT);
-									KdPrint(("[MDL] [Page %u/%u] ×ª»»³É¹¦: VA=%llx -> PA=%llx (PFN=%llx)\n", i + 1, pageCount, currentVa, pa, pfns[i]));
+									KdPrint(("[MDL] [Page %u/%u] è½¬æ¢æˆåŠŸ: VA=%llx -> PA=%llx (PFN=%llx)\n", i + 1, pageCount, currentVa, pa, pfns[i]));
 								}
 
 								if (translationSuccess) {
-									KdPrint(("[MDL] ËùÓĞÒ³ÃæµÄPFN×ª»»³É¹¦¡£×¼±¸Ó³ÉäMDLµ½ÄÚºË¿Õ¼ä...\n"));
+									KdPrint(("[MDL] æ‰€æœ‰é¡µé¢çš„PFNè½¬æ¢æˆåŠŸã€‚å‡†å¤‡æ˜ å°„MDLåˆ°å†…æ ¸ç©ºé—´...\n"));
 									PVOID kernelAddress = NULL;
 									NTSTATUS mapStatus = STATUS_SUCCESS;
 									__try {
@@ -283,41 +290,41 @@ VOID InitializeAndMapCommunication(PVOID)
 									}
 									__except (EXCEPTION_EXECUTE_HANDLER) {
 										mapStatus = GetExceptionCode();
-										KdPrint(("[MDL] !! ÑÏÖØ´íÎó: MmMapLockedPagesSpecifyCache ´¥·¢Òì³££¬´úÂë: 0x%X\n", mapStatus));
+										KdPrint(("[MDL] !! ä¸¥é‡é”™è¯¯: MmMapLockedPagesSpecifyCache è§¦å‘å¼‚å¸¸ï¼Œä»£ç : 0x%X\n", mapStatus));
 									}
 
 									if (NT_SUCCESS(mapStatus) && kernelAddress) {
-										KdPrint(("[MDL] MmMapLockedPagesSpecifyCache ³É¹¦! ÄÚºËÓ³ÉäµØÖ·: %p\n", kernelAddress));
+										KdPrint(("[MDL] MmMapLockedPagesSpecifyCache æˆåŠŸ! å†…æ ¸æ˜ å°„åœ°å€: %p\n", kernelAddress));
 										g_pMdl = mdl;
 										g_pKernelAddress = kernelAddress;
 										req = (Requests*)kernelAddress;
 										status = STATUS_SUCCESS;
-										KdPrint(("[MDL] ¹²ÏíÄÚ´æÓ³ÉäÉèÖÃÍê±Ï£¬Í¨ĞÅÒÑ×¼±¸¾ÍĞ÷¡£\n"));
+										KdPrint(("[MDL] å…±äº«å†…å­˜æ˜ å°„è®¾ç½®å®Œæ¯•ï¼Œé€šä¿¡å·²å‡†å¤‡å°±ç»ªã€‚\n"));
 
 
 										req->status = 0x1344D60;
-										PerocessExit = FALSE;//½ø³ÌÍË³ö×´Ì¬Îª¼Ù
-										InterlockedExchange(&req->user, 1);//Í¨ÖªÓÃ»§´¦ÀíÁ¬½ÓÍê³É
+										PerocessExit = FALSE;//è¿›ç¨‹é€€å‡ºçŠ¶æ€ä¸ºå‡
+										InterlockedExchange(&req->user, 1);//é€šçŸ¥ç”¨æˆ·å¤„ç†è¿æ¥å®Œæˆ
 									}
 									else {
-										KdPrint(("[MDL] !! ´íÎó: MmMapLockedPagesSpecifyCache Ê§°Ü¡£Status: 0x%X, KernelAddress: %p¡£ÕıÔÚÊÍ·ÅMDL¡£\n", mapStatus, kernelAddress));
+										KdPrint(("[MDL] !! é”™è¯¯: MmMapLockedPagesSpecifyCache å¤±è´¥ã€‚Status: 0x%X, KernelAddress: %pã€‚æ­£åœ¨é‡Šæ”¾MDLã€‚\n", mapStatus, kernelAddress));
 										IoFreeMdl(mdl);
 										status = (NT_SUCCESS(mapStatus)) ? STATUS_INSUFFICIENT_RESOURCES : mapStatus;
 									}
 								}
 								else {
-									KdPrint(("[MDL] !! ´íÎó: PFN×ª»»¹ı³ÌÖĞ·¢Éú´íÎó£¬ÕıÔÚÊÍ·ÅMDL¡£\n"));
+									KdPrint(("[MDL] !! é”™è¯¯: PFNè½¬æ¢è¿‡ç¨‹ä¸­å‘ç”Ÿé”™è¯¯ï¼Œæ­£åœ¨é‡Šæ”¾MDLã€‚\n"));
 									IoFreeMdl(mdl);
 									status = STATUS_UNSUCCESSFUL;
 								}
 							}
 							else {
-								KdPrint(("[MDL] !! ´íÎó: IoAllocateMdl Ê§°Ü£¬ÄÚ´æ²»×ã¡£\n"));
+								KdPrint(("[MDL] !! é”™è¯¯: IoAllocateMdl å¤±è´¥ï¼Œå†…å­˜ä¸è¶³ã€‚\n"));
 								status = STATUS_INSUFFICIENT_RESOURCES;
 							}
 						}
 						else {
-							KdPrint(("[MDL] !! ´íÎó: ¹²ÏíÄÚ´æµØÖ·ÎªNULL»ò´óĞ¡Îª0£¬ÎŞ·¨´´½¨MDL¡£Buffer=%llx, Size=%zu\n", buffer, Size));
+							KdPrint(("[MDL] !! é”™è¯¯: å…±äº«å†…å­˜åœ°å€ä¸ºNULLæˆ–å¤§å°ä¸º0ï¼Œæ— æ³•åˆ›å»ºMDLã€‚Buffer=%llx, Size=%zu\n", buffer, Size));
 							status = STATUS_INVALID_PARAMETER;
 						}
 
@@ -334,7 +341,7 @@ VOID InitializeAndMapCommunication(PVOID)
 
 
 		LARGE_INTEGER interval;
-		interval.QuadPart = -(LONGLONG)3 * 1000 * 10000; // -3 Ãë
+		interval.QuadPart = -(LONGLONG)3 * 1000 * 10000; // -3 ç§’
 		KeDelayExecutionThread(KernelMode, FALSE, &interval);
 	}
 }
@@ -343,75 +350,75 @@ VOID InitializeAndMapCommunication(PVOID)
 
 
 extern "C" NTSTATUS DriverEntry(
-	PDRIVER_OBJECT  DriverObject,/*¼ÓÔØÇı¶¯»áÊµÀı»¯Õâ¸öÇı¶¯¶ÔÏó£ºÓÃÀ´ÃèÊöÇı¶¯½á¹¹*/
-	PUNICODE_STRING RegistryPath/*Çı¶¯×¢²á±íÂ·¾¶*/
+    PDRIVER_OBJECT  DriverObject, // driver object
+    PUNICODE_STRING RegistryPath // registry path
 )
 {
-	KdPrint(("Çı¶¯Èë¿ÚÄÚ´æ=%llx \n", DriverObject->DriverStart));
-	KdPrint(("×¢²á±íÂ·¾¶=%wZ \n", RegistryPath));
+	KdPrint(("é©±åŠ¨å…¥å£å†…å­˜=%llx \n", DriverObject->DriverStart));
+	KdPrint(("æ³¨å†Œè¡¨è·¯å¾„=%wZ \n", RegistryPath));
 	KdPrint(("PerocessExit=%llx \n", &PerocessExit));
 
-	//³õÊ¼»¯ËùÓĞµ¼³öº¯ÊıÖ¸Õë
+	//åˆå§‹åŒ–æ‰€æœ‰å¯¼å‡ºå‡½æ•°æŒ‡é’ˆ
 	initFun();
 
-	//////Çı¶¯Òş²Ø
+	//////é©±åŠ¨éšè—
 	L_IoRegisterDriverReinitialization(DriverObject, &Reinitialize, NULL);
 
-	//³õÊ¼»¯ÎïÀí´«ÊäÖĞ×ªÒ³
+	//åˆå§‹åŒ–ç‰©ç†ä¼ è¾“ä¸­è½¬é¡µ
 	AllocatePhysicalPage(&g_TransferPage);
 
-	//³õÊ¼»¯¼üÊó
+	//åˆå§‹åŒ–é”®é¼ 
 	InitMouseAndKeyboard();
 
-	//³õÊ¼»¯EPROSESSÒ»ÏµÁĞ³ÉÔ±Æ«ÒÆ
+	//åˆå§‹åŒ–EPROSESSä¸€ç³»åˆ—æˆå‘˜åç§»
 	if (!EPROCESS_MEMBER_OFFSET::InitializeUniqueProcessIdOffset()) {
-		KdPrint((("³õÊ¼»¯ UniqueProcessIdÆ«ÒÆÊ§°Ü\n")));
+		KdPrint((("åˆå§‹åŒ– UniqueProcessIdåç§»å¤±è´¥\n")));
 		return STATUS_UNSUCCESSFUL;
 	}
 	if (!EPROCESS_MEMBER_OFFSET::InitializeImageFileNameOffset()) {
-		KdPrint((("³õÊ¼»¯ processNameÆ«ÒÆÊ§°Ü\n")));
+		KdPrint((("åˆå§‹åŒ– processNameåç§»å¤±è´¥\n")));
 		return STATUS_UNSUCCESSFUL;
 	}
 	if (!EPROCESS_MEMBER_OFFSET::InitializeActiveProcessLinksOffset()) {
-		KdPrint((("³õÊ¼»¯ ActiveProcessLinksÆ«ÒÆ Ê§°Ü\n")));
+		KdPrint((("åˆå§‹åŒ– ActiveProcessLinksåç§» å¤±è´¥\n")));
 		return STATUS_UNSUCCESSFUL;
 	}
 	if (!EPROCESS_MEMBER_OFFSET::InitializePebOffset()) {
-		KdPrint((("³õÊ¼»¯ Peb Æ«ÒÆ Ê§°Ü\n")));
+		KdPrint((("åˆå§‹åŒ– Peb åç§» å¤±è´¥\n")));
 		return STATUS_UNSUCCESSFUL;
 	}
 	if (!EPROCESS_MEMBER_OFFSET::InitializeSectionBaseAddressOffset()) {
-		KdPrint((("³õÊ¼»¯ SectionBaseAddress Æ«ÒÆ Ê§°Ü\n")));
+		KdPrint((("åˆå§‹åŒ– SectionBaseAddress åç§» å¤±è´¥\n")));
 		return STATUS_UNSUCCESSFUL;
 	}
 	if (!EPROCESS_MEMBER_OFFSET::InitializeVAD_ROOTOffset()) {
-		KdPrint((("³õÊ¼»¯ VAD_ROOTO Æ«ÒÆ Ê§°Ü\n")));
+		KdPrint((("åˆå§‹åŒ– VAD_ROOTO åç§» å¤±è´¥\n")));
 		return STATUS_UNSUCCESSFUL;
 	}
-	
-	//³õÊ¼»¯¹²ÏíÄÚ´æÍ¨ĞÅÏß³Ì
+
+	//åˆå§‹åŒ–å…±äº«å†…å­˜é€šä¿¡çº¿ç¨‹
 	PsCreateSystemThread(
-		&g_hThread,              // ·µ»ØµÄÏß³Ì¾ä±ú
-		THREAD_ALL_ACCESS,       // ·ÃÎÊÈ¨ÏŞ
-		NULL,                    // ¶ÔÏóÊôĞÔ
-		NULL,                    // ½ø³Ì¾ä±ú (NULL = ÏµÍ³½ø³Ì)
+		&g_hThread,              // è¿”å›çš„çº¿ç¨‹å¥æŸ„
+		THREAD_ALL_ACCESS,       // è®¿é—®æƒé™
+		NULL,                    // å¯¹è±¡å±æ€§
+		NULL,                    // è¿›ç¨‹å¥æŸ„ (NULL = ç³»ç»Ÿè¿›ç¨‹)
 		NULL,                    // ClientId
-		InitializeAndMapCommunication,          // Ïß³ÌµÄÆğÊ¼º¯Êı
-		NULL                     // ´«µİ¸øÏß³ÌµÄÉÏÏÂÎÄ²ÎÊı
+		InitializeAndMapCommunication,          // çº¿ç¨‹çš„èµ·å§‹å‡½æ•°
+		NULL                     // ä¼ é€’ç»™çº¿ç¨‹çš„ä¸Šä¸‹æ–‡å‚æ•°
 	);
 
-	//´´½¨ÅÉÇ²Ïß³Ì
+	//åˆ›å»ºæ´¾é£çº¿ç¨‹
 	PsCreateSystemThread(
-		&g_hThread2,              // ·µ»ØµÄÏß³Ì¾ä±ú
-		THREAD_ALL_ACCESS,       // ·ÃÎÊÈ¨ÏŞ
-		NULL,                    // ¶ÔÏóÊôĞÔ
-		NULL,                    // ½ø³Ì¾ä±ú (NULL = ÏµÍ³½ø³Ì)
+		&g_hThread2,              // è¿”å›çš„çº¿ç¨‹å¥æŸ„
+		THREAD_ALL_ACCESS,       // è®¿é—®æƒé™
+		NULL,                    // å¯¹è±¡å±æ€§
+		NULL,                    // è¿›ç¨‹å¥æŸ„ (NULL = ç³»ç»Ÿè¿›ç¨‹)
 		NULL,                    // ClientId
-		DriverMainLoop,          // Ïß³ÌµÄÆğÊ¼º¯Êı
-		NULL                     // ´«µİ¸øÏß³ÌµÄÉÏÏÂÎÄ²ÎÊı
+		DriverMainLoop,          // çº¿ç¨‹çš„èµ·å§‹å‡½æ•°
+		NULL                     // ä¼ é€’ç»™çº¿ç¨‹çš„ä¸Šä¸‹æ–‡å‚æ•°
 	);
 
-	//×¢²á±íÇåÀí
+	//æ³¨å†Œè¡¨æ¸…ç†
 	L_RtlDeleteRegistryValue(RTL_REGISTRY_ABSOLUTE, RegistryPath->Buffer, OBFUSCATE(L"DisplayName").decrypt());
 	L_RtlDeleteRegistryValue(RTL_REGISTRY_ABSOLUTE, RegistryPath->Buffer, OBFUSCATE(L"ErrorControl").decrypt());
 	L_RtlDeleteRegistryValue(RTL_REGISTRY_ABSOLUTE, RegistryPath->Buffer, OBFUSCATE(L"ImagePath").decrypt());
@@ -419,22 +426,22 @@ extern "C" NTSTATUS DriverEntry(
 	L_RtlDeleteRegistryValue(RTL_REGISTRY_ABSOLUTE, RegistryPath->Buffer, OBFUSCATE(L"Type").decrypt());
 	L_RtlDeleteRegistryValue(RTL_REGISTRY_ABSOLUTE, RegistryPath->Buffer, OBFUSCATE(L"WOW64").decrypt());
 
-	// É¾³ı Enum ×Ó¼ü
+	// åˆ é™¤ Enum å­é”®
 	UNICODE_STRING enumKeyPath;
 	WCHAR enumKeyPathBuffer[260];
-	//´¦Àí×îÄÚ²ãµÄ Enum ×Ó¼ü
+	//å¤„ç†æœ€å†…å±‚çš„ Enum å­é”®
 	RtlInitEmptyUnicodeString(&enumKeyPath, enumKeyPathBuffer, sizeof(enumKeyPathBuffer));
 	if (NT_SUCCESS(RtlUnicodeStringCopy(&enumKeyPath, RegistryPath))) {
 		UNICODE_STRING suffixString;
 		L_RtlInitUnicodeString(&suffixString, OBFUSCATE(L"\\Enum").decrypt());
 
-		// Èç¹ûÂ·¾¶¹¹½¨³É¹¦£¬ÔòÏÈÉ¾³ıÆäÄÚ²¿µÄÖµ
+		// å¦‚æœè·¯å¾„æ„å»ºæˆåŠŸï¼Œåˆ™å…ˆåˆ é™¤å…¶å†…éƒ¨çš„å€¼
 		if (NT_SUCCESS(RtlUnicodeStringCat(&enumKeyPath, &suffixString))) {
 			L_RtlDeleteRegistryValue(RTL_REGISTRY_ABSOLUTE, enumKeyPath.Buffer, OBFUSCATE(L"Count").decrypt());
 			L_RtlDeleteRegistryValue(RTL_REGISTRY_ABSOLUTE, enumKeyPath.Buffer, OBFUSCATE(L"NextInstance").decrypt());
 			L_RtlDeleteRegistryValue(RTL_REGISTRY_ABSOLUTE, enumKeyPath.Buffer, OBFUSCATE(L"INITSTARTFAILED").decrypt());
 
-			//  È»ºóÉ¾³ı Enum ¼ü±¾Éí
+			//  ç„¶ååˆ é™¤ Enum é”®æœ¬èº«
 			HANDLE hEnumKey;
 			OBJECT_ATTRIBUTES enumObjAttr;
 			InitializeObjectAttributes(&enumObjAttr, &enumKeyPath, OBJ_CASE_INSENSITIVE | OBJ_KERNEL_HANDLE, NULL, NULL);
@@ -445,14 +452,14 @@ extern "C" NTSTATUS DriverEntry(
 		}
 	}
 
-	// ´¦ÀíÍâ²ãµÄÖ÷·şÎñ¼ü
+	// å¤„ç†å¤–å±‚çš„ä¸»æœåŠ¡é”®
 	L_RtlDeleteRegistryValue(RTL_REGISTRY_ABSOLUTE, RegistryPath->Buffer, OBFUSCATE(L"DisplayName").decrypt());
 	L_RtlDeleteRegistryValue(RTL_REGISTRY_ABSOLUTE, RegistryPath->Buffer, OBFUSCATE(L"ErrorControl").decrypt());
 	L_RtlDeleteRegistryValue(RTL_REGISTRY_ABSOLUTE, RegistryPath->Buffer, OBFUSCATE(L"ImagePath").decrypt());
 	L_RtlDeleteRegistryValue(RTL_REGISTRY_ABSOLUTE, RegistryPath->Buffer, OBFUSCATE(L"Start").decrypt());
 	L_RtlDeleteRegistryValue(RTL_REGISTRY_ABSOLUTE, RegistryPath->Buffer, OBFUSCATE(L"Type").decrypt());
 
-	//×îºóÉ¾³ıÖ÷·şÎñ¼ü±¾Éí
+	//æœ€ååˆ é™¤ä¸»æœåŠ¡é”®æœ¬èº«
 	HANDLE hServiceKey;
 	OBJECT_ATTRIBUTES serviceObjAttr;
 	InitializeObjectAttributes(&serviceObjAttr, RegistryPath, OBJ_CASE_INSENSITIVE | OBJ_KERNEL_HANDLE, NULL, NULL);
@@ -462,26 +469,26 @@ extern "C" NTSTATUS DriverEntry(
 		ZwClose(hServiceKey);
 	}
 
-	// É¾³ı¼ÓÔØÇı¶¯·şÎñÏî
+	// åˆ é™¤åŠ è½½é©±åŠ¨æœåŠ¡é¡¹
 	NTSTATUS status;
 	UNICODE_STRING serviceName;
 
 
 	L_RtlInitUnicodeString(&serviceName, OBFUSCATE(L"ataport").decrypt());
 
-	KdPrint(("ÕıÔÚĞ¶ÔØÇı¶¯²¢³¢ÊÔÉ¾³ı·şÎñÏî '%wZ'¡£\n", &serviceName));
+	KdPrint(("æ­£åœ¨å¸è½½é©±åŠ¨å¹¶å°è¯•åˆ é™¤æœåŠ¡é¡¹ '%wZ'ã€‚\n", &serviceName));
 
 	{
-	
+
 		HANDLE hServicesKey = NULL;
 		HANDLE hTargetServiceKey = NULL;
 		UNICODE_STRING servicesPath;
 		OBJECT_ATTRIBUTES objAttributes;
 
-		//  ¹¹Ôì Services ×¢²á±íÏîµÄÄÚºËÂ·¾¶
+		//  æ„é€  Services æ³¨å†Œè¡¨é¡¹çš„å†…æ ¸è·¯å¾„
 		L_RtlInitUnicodeString(&servicesPath, L"\\Registry\\Machine\\SYSTEM\\CurrentControlSet\\Services");
 
-		// ³õÊ¼»¯¶ÔÏóÊôĞÔ½á¹¹Ìå£¬²¢´ò¿ª Services ¼ü
+		// åˆå§‹åŒ–å¯¹è±¡å±æ€§ç»“æ„ä½“ï¼Œå¹¶æ‰“å¼€ Services é”®
 		InitializeObjectAttributes(&objAttributes,
 			&servicesPath,
 			OBJ_CASE_INSENSITIVE | OBJ_KERNEL_HANDLE,
@@ -491,34 +498,34 @@ extern "C" NTSTATUS DriverEntry(
 		status = ZwOpenKey(&hServicesKey, KEY_ALL_ACCESS, &objAttributes);
 		if (!NT_SUCCESS(status))
 		{
-			KdPrint(("´ò¿ª Services ×¢²á±íÏîÊ§°Ü£¬×´Ì¬Âë: 0x%X\n", status));
+			KdPrint(("æ‰“å¼€ Services æ³¨å†Œè¡¨é¡¹å¤±è´¥ï¼ŒçŠ¶æ€ç : 0x%X\n", status));
 		}
 		else
 		{
-			// »ùÓÚ Services ¼üµÄ¾ä±ú£¬´ò¿ªÒªÉ¾³ıµÄÄ¿±ê·şÎñ¼ü
+			// åŸºäº Services é”®çš„å¥æŸ„ï¼Œæ‰“å¼€è¦åˆ é™¤çš„ç›®æ ‡æœåŠ¡é”®
 			InitializeObjectAttributes(&objAttributes,
-				&serviceName, // Ê¹ÓÃÉÏÃæ¶¨ÒåµÄ serviceName ±äÁ¿
+				&serviceName, // ä½¿ç”¨ä¸Šé¢å®šä¹‰çš„ serviceName å˜é‡
 				OBJ_CASE_INSENSITIVE | OBJ_KERNEL_HANDLE,
-				hServicesKey, // ´Ë´¦Ö¸¶¨¸¸Ïî¾ä±ú
+				hServicesKey, // æ­¤å¤„æŒ‡å®šçˆ¶é¡¹å¥æŸ„
 				NULL);
 
-			// ÇëÇó DELETE È¨ÏŞ
+			// è¯·æ±‚ DELETE æƒé™
 			status = ZwOpenKey(&hTargetServiceKey, DELETE, &objAttributes);
 			if (!NT_SUCCESS(status))
 			{
-				KdPrint(("´ò¿ª·şÎñÏî '%wZ' Ê§°Ü£¬×´Ì¬Âë: 0x%X\n", &serviceName, status));
+				KdPrint(("æ‰“å¼€æœåŠ¡é¡¹ '%wZ' å¤±è´¥ï¼ŒçŠ¶æ€ç : 0x%X\n", &serviceName, status));
 				ZwClose(hServicesKey);
 			}
 			else
 			{
-				// Ö´ĞĞÉ¾³ı²Ù×÷
+				// æ‰§è¡Œåˆ é™¤æ“ä½œ
 				status = ZwDeleteKey(hTargetServiceKey);
 				if (!NT_SUCCESS(status))
 				{
-					KdPrint(("É¾³ı·şÎñÏî '%wZ' Ê§°Ü£¬×´Ì¬Âë: 0x%X\n", &serviceName, status));
+					KdPrint(("åˆ é™¤æœåŠ¡é¡¹ '%wZ' å¤±è´¥ï¼ŒçŠ¶æ€ç : 0x%X\n", &serviceName, status));
 				}
 
-				// ¹Ø±ÕËùÓĞ´ò¿ªµÄ¾ä±ú£¬ÊÍ·Å×ÊÔ´
+				// å…³é—­æ‰€æœ‰æ‰“å¼€çš„å¥æŸ„ï¼Œé‡Šæ”¾èµ„æº
 				ZwClose(hTargetServiceKey);
 				ZwClose(hServicesKey);
 			}
@@ -527,15 +534,16 @@ extern "C" NTSTATUS DriverEntry(
 
 	if (NT_SUCCESS(status))
 	{
-		KdPrint(("·şÎñÏîÒÑ³É¹¦É¾³ı¡£\n"));
+		KdPrint(("æœåŠ¡é¡¹å·²æˆåŠŸåˆ é™¤ã€‚\n"));
 	}
 	else
 	{
-		KdPrint(("É¾³ı·şÎñÏîÊ§°Ü(ÓÉÓÚ·şÎñ¾ä±ú´æÔÚÖØÆô×Ô¶¯É¾³ı)£¬×´Ì¬Âë: 0x%X\n", status));
+		KdPrint(("åˆ é™¤æœåŠ¡é¡¹å¤±è´¥(ç”±äºæœåŠ¡å¥æŸ„å­˜åœ¨é‡å¯è‡ªåŠ¨åˆ é™¤)ï¼ŒçŠ¶æ€ç : 0x%X\n", status));
 	}
 
 
-	return STATUS_UNSUCCESSFUL;
+	//return STATUS_UNSUCCESSFUL;
+	return STATUS_SUCCESS;
 }
 
 
@@ -588,7 +596,7 @@ extern "C" NTSTATUS DriverEntry(
 
 
 	//	//////---------------------------------------------------------------------------
-	//	//////À¶ÆÁÊÇÒòÎªÉÏÃæĞŞ¸Ä»úÆ÷ÂëµÄÇı¶¯biosºÍNICº¯Êı±äÁ¿Æ«ÒÆ²»¶Ô£¬ÏµÍ³¶¨ÖÆ
+	//	//////è“å±æ˜¯å› ä¸ºä¸Šé¢ä¿®æ”¹æœºå™¨ç çš„é©±åŠ¨bioså’ŒNICå‡½æ•°å˜é‡åç§»ä¸å¯¹ï¼Œç³»ç»Ÿå®šåˆ¶
 	//	//////---------------------------------------------------------------------------
 
 	//	//if (SystemVersionInf.dwBuildNumber == WINDOWS_24H2) {
@@ -610,12 +618,12 @@ extern "C" NTSTATUS DriverEntry(
 	//	//		KdPrint(("[+] Successfully deceived the NIC\n"));
 	//	//	}
 
-	//	//	//////À¶ÆÁ
+	//	//	//////è“å±
 	//	////	//if (NT_SUCCESS(WIN11_24H2::SpoofGPU::SpoofGPU())) {
 	//	////	//	KdPrint(("[+] Successfully deceived the GPU\n"));
 	//	////	//}
 
-	//	//	/////¹Ò¹³
+	//	//	/////æŒ‚é’©
 	//	////if (NT_SUCCESS(WIN11_24H2::SpoofPART::SpoofPART())) {
 	//	////		KdPrint(("[+] Successfully deceived the PART\n"));
 	//	////}
@@ -669,7 +677,7 @@ extern "C" NTSTATUS DriverEntry(
 
 	//	//}
 
-	//	//// ÔÚËùÓĞÎ±Ôì²Ù×÷Íê³Éºó£¬É±µô WMI ·şÎñ½ø³ÌÒÔ¿ÉÄÜÓ¦ÓÃÄ³Ğ©¸ü¸Ä
+	//	//// åœ¨æ‰€æœ‰ä¼ªé€ æ“ä½œå®Œæˆåï¼Œæ€æ‰ WMI æœåŠ¡è¿›ç¨‹ä»¥å¯èƒ½åº”ç”¨æŸäº›æ›´æ”¹
 	//	//Utils::ZwKillProcess(L"WmiPrvSE.exe");
 
 

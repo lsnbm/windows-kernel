@@ -2,9 +2,8 @@
 #include <ntifs.h>
 #include <intrin.h>
 
-// --- ½á¹¹Ìå¶¨Òå ---
+// --- ç»“æ„ä½“å®šä¹‰ ---
 
-// ÓÃÓÚ×îÖÕÎïÀíÄÚ´æ²Ù×÷µÄÖĞ×ªÒ³ĞÅÏ¢
 struct PHYSICAL_PAGE_INFO
 {
 	PVOID BaseAddress;
@@ -12,7 +11,6 @@ struct PHYSICAL_PAGE_INFO
 	PVOID PteAddress;
 };
 
-// ÖÕ¼«Òş±Î·½°¸µÄÉÏÏÂÎÄ½á¹¹Ìå£º»º´æÎïÀíÒ³±íÏîµÄÖµ
 struct STEALTH_RW_CONTEXT
 {
 	ULONG64 TargetCr3;
@@ -24,29 +22,46 @@ struct STEALTH_RW_CONTEXT
 	ULONG64 CachedPdeVaRange;
 };
 
-inline PHYSICAL_PAGE_INFO g_TransferPage;// ÓÃÓÚÎïÀíÖĞ×ªÒ³
-inline STEALTH_RW_CONTEXT  rwCtx;		//»º´æÎïÀíÒ³±íÏîµÄÖµ
+// å…¨å±€å˜é‡ (æ— é”ï¼Œè¯·ç¡®ä¿ç”¨æˆ·å±‚æ˜¯å•çº¿ç¨‹/äº’æ–¥è®¿é—®)
+inline PHYSICAL_PAGE_INFO g_TransferPage;
+inline STEALTH_RW_CONTEXT rwCtx;
 
+// --- å®‰å…¨è¾…åŠ©å‡½æ•° ---
 
-// ¼ì²éÎïÀíÒ³ÊÇ·ñÔÚÓĞĞ§ÎïÀíÄÚ´æ·¶Î§ÄÚ
+// [æ ¸å¿ƒå®‰å…¨æœºåˆ¶] ä½¿ç”¨ SEH æ•è·å†…å­˜è®¿é—®å¼‚å¸¸
+// é˜²æ­¢ User Buffer æ— æ•ˆ/æœªåˆ†é¡µ/åªè¯»å¯¼è‡´ç³»ç»Ÿè“å±
+inline BOOLEAN SafeCopyMemory(PVOID Dest, const PVOID Src, SIZE_T Size)
+{
+	__try {
+		// RtlCopyMemory å†…éƒ¨å¤„ç†äº†é‡å å’Œå¯¹é½ï¼Œæ¯”æ‰‹åŠ¨ __movsb æ›´ç¨³å¥
+		RtlCopyMemory(Dest, Src, Size);
+	}
+	__except (EXCEPTION_EXECUTE_HANDLER) {
+		// æ•è·åˆ°è®¿é—®è¿è§„ (0xC0000005)ï¼Œè¿”å›å¤±è´¥è€Œä¸æ˜¯è“å±
+		return FALSE;
+	}
+	return TRUE;
+}
+
+// æ£€æŸ¥ç‰©ç†é¡µæ˜¯å¦åœ¨æœ‰æ•ˆç‰©ç†å†…å­˜èŒƒå›´å†…
 inline bool IsPhysPageInRange(ULONG64 PhysAddress, ULONG64 Size)
 {
 	const ULONG64 PhysPageEnd = PhysAddress + Size - 1;
-	// »º´æ MmGetPhysicalMemoryRanges µÄ½á¹ûÒÔÌá¸ßĞÔÄÜ
 	static PPHYSICAL_MEMORY_RANGE g_PhysicalMemoryRanges = NULL;
 
 	if (!g_PhysicalMemoryRanges)
 	{
 		g_PhysicalMemoryRanges = MmGetPhysicalMemoryRanges();
-		if (!g_PhysicalMemoryRanges) return false; // ÎŞ·¨»ñÈ¡ÎïÀíÄÚ´æ·¶Î§
+		if (!g_PhysicalMemoryRanges) return false;
 	}
 
 	for (int i = 0; ; ++i)
 	{
 		const PHYSICAL_MEMORY_RANGE* range = &g_PhysicalMemoryRanges[i];
-		// ÁĞ±íÒÔÒ»¸ö¿ÕµÄÌõÄ¿½áÊø
 		if (!range->BaseAddress.QuadPart && !range->NumberOfBytes.QuadPart) break;
-		if (PhysAddress >= range->BaseAddress.QuadPart && PhysPageEnd < (range->BaseAddress.QuadPart + range->NumberOfBytes.QuadPart))
+
+		if (PhysAddress >= (ULONG64)range->BaseAddress.QuadPart &&
+			PhysPageEnd < ((ULONG64)range->BaseAddress.QuadPart + (ULONG64)range->NumberOfBytes.QuadPart))
 		{
 			return true;
 		}
@@ -54,50 +69,43 @@ inline bool IsPhysPageInRange(ULONG64 PhysAddress, ULONG64 Size)
 	return false;
 }
 
+// --- åˆå§‹åŒ–ä¸åˆ†é… ---
 
-// ·ÖÅäÓÃÓÚÓ³ÉäµÄÖĞ×ªÒ³
 inline ULONG AllocatePhysicalPage(PHYSICAL_PAGE_INFO* PhysicalPageInfo)
 {
-	// PTE»ùÖ·ÔÚÇı¶¯ÉúÃüÖÜÆÚÄÚÊÇ¹Ì¶¨µÄ£¬Ö»Ğè¼ÆËãÒ»´Î
 	static ULONG64 g_PteBaseForAlloc = 0;
 
 	if (!PhysicalPageInfo) return 22;
 	memset(PhysicalPageInfo, 0, sizeof(PHYSICAL_PAGE_INFO));
 
-	// --- ½öÔÚµÚÒ»´Îµ÷ÓÃÊ±¼ÆËãPTE»ùÖ· ---
 	if (g_PteBaseForAlloc == 0)
 	{
 		PHYSICAL_ADDRESS DirectoryTableBase;
 		DirectoryTableBase.QuadPart = (__readcr3() & ~0xFFF);
 		PULONG64 PML4Table = (PULONG64)MmGetVirtualForPhysical(DirectoryTableBase);
-		if (!PML4Table) return 0x106; 
+		if (!PML4Table) return 0x106;
 
 		for (ULONG64 index = 0; index < 512; ++index)
 		{
-			// Ñ°ÕÒ×ÔÓ³Éä(self-referencing)µÄPML4E
 			if ((PML4Table[index] & 1) && (((PML4Table[index] >> 12) & 0xFFFFFFFFFF) == (DirectoryTableBase.QuadPart >> 12)))
 			{
 				ULONG64 va_base = index << 39;
-				// Ê¹ÓÃ·ûºÅÀ©Õ¹¼ÆËã¹æ·¶µØÖ·
 				g_PteBaseForAlloc = (ULONG64)((INT64)(va_base << 16) >> 16);
 				break;
 			}
 		}
-
-		if (g_PteBaseForAlloc == 0) return 0x107; //Î´ÕÒµ½×ÔÓ³ÉäPML4E
+		if (g_PteBaseForAlloc == 0) return 0x107;
 	}
 
 	PVOID BaseAddress = MmAllocateMappingAddress(PAGE_SIZE, 'MyTg');
-	if (!BaseAddress) return 0x119; 
+	if (!BaseAddress) return 0x119;
 
-	// ¼ÆËã´ËÓ³ÉäµØÖ·¶ÔÓ¦µÄPTEµÄĞéÄâµØÖ·
 	PVOID PteAddress = (PVOID)(g_PteBaseForAlloc + 8 * ((reinterpret_cast<ULONG64>(BaseAddress) & 0xFFFFFFFFFFFFi64) >> 12));
 
-	// Ê¹ÓÃ MmIsAddressValid ÊÇ¼ì²éÄÚºËĞéÄâµØÖ·ÊÇ·ñÓĞĞ§µÄ±ê×¼·½·¨
 	if (!MmIsAddressValid(PteAddress))
 	{
 		MmFreeMappingAddress(BaseAddress, 'MyTg');
-		return 0x109; 
+		return 0x109;
 	}
 
 	PhysicalPageInfo->BaseAddress = BaseAddress;
@@ -106,7 +114,6 @@ inline ULONG AllocatePhysicalPage(PHYSICAL_PAGE_INFO* PhysicalPageInfo)
 	return 0;
 }
 
-// ÊÍ·ÅÖĞ×ªÒ³
 inline void FreePhysicalPage(PHYSICAL_PAGE_INFO* PageInfo)
 {
 	if (PageInfo && PageInfo->BaseAddress)
@@ -116,30 +123,49 @@ inline void FreePhysicalPage(PHYSICAL_PAGE_INFO* PageInfo)
 	}
 }
 
+// --- æ ¸å¿ƒå•é¡µè¯»å†™ (æ— é” + SEHä¿æŠ¤) ---
 
 inline ULONG ReadPhysicalSinglePage(const PHYSICAL_PAGE_INFO* TransferPageInfo, ULONG64 PhysAddress, PVOID Buffer, SIZE_T Size)
 {
+	// 1. ä¿®æ”¹ PTE æ˜ å°„åˆ°ç›®æ ‡ç‰©ç†åœ°å€
+	// ä¿ç•™åŸæœ‰å±æ€§ä½ï¼Œå¼ºåˆ¶è®¾ç½®ä¸º Present(1) | RW(2) = 3 (Kernel Mode)
+	// å¦‚æœéœ€è¦ User ä½ï¼Œå¯ç”¨ 0x7ï¼Œä½†åœ¨é©±åŠ¨ä¸­ 0x3 è¶³çŸ£
+	volatile ULONG64* pPte = (volatile ULONG64*)TransferPageInfo->PteAddress;
+	*pPte = (PhysAddress & ~0xFFFULL) | (*pPte & 0xFFF0000000000FFF) | 0x3;
 
-	// ĞŞ¸ÄPTEÒÔÓ³Éäµ½Ä¿±êÎïÀíµØÖ·£¬±£ÁôÔ­ÓĞµÄÈ¨ÏŞÎ»£¨Í¨³£ÊÇ¿É¶ÁĞ´µÈ£©
-	*(ULONG64*)TransferPageInfo->PteAddress = (PhysAddress & ~0xFFFULL) | (*(ULONG64*)TransferPageInfo->PteAddress & 0xFFF0000000000FFF) | 0x103;
-	// Ê¹TLBÖĞµÄ¾ÉÓ³ÉäÎŞĞ§
+	// 2. åˆ·æ–° TLB
 	__invlpg(TransferPageInfo->BaseAddress);
-	// ´ÓÓ³ÉäÁËĞÂÎïÀíµØÖ·µÄÖĞ×ªÒ³ÖĞ¿½±´Êı¾İ
-	__movsb((PUCHAR)Buffer, (PUCHAR)TransferPageInfo->BaseAddress + (PhysAddress & 0xFFF), Size);
+
+	// 3. å®‰å…¨æ‹·è´ (ä» æ˜ å°„é¡µ è¯»åˆ° Buffer)
+	// å¦‚æœ Buffer æ— æ•ˆï¼Œè¿™é‡Œä¼šæ•è·å¼‚å¸¸å¹¶è¿”å›é”™è¯¯ï¼Œè€Œä¸æ˜¯è“å±
+	if (!SafeCopyMemory(Buffer, (PUCHAR)TransferPageInfo->BaseAddress + (PhysAddress & 0xFFF), Size))
+	{
+		return 0xC0000005; // STATUS_ACCESS_VIOLATION
+	}
+
 	return 0;
 }
+
 inline ULONG WritePhysicalSinglePage(const PHYSICAL_PAGE_INFO* TransferPageInfo, ULONG64 PhysAddress, PVOID Buffer, SIZE_T Size)
 {
+	// 1. ä¿®æ”¹ PTE
+	volatile ULONG64* pPte = (volatile ULONG64*)TransferPageInfo->PteAddress;
+	*pPte = (PhysAddress & ~0xFFFULL) | (*pPte & 0xFFF0000000000FFF) | 0x3;
 
-	*(ULONG64*)TransferPageInfo->PteAddress = (PhysAddress & ~0xFFFULL) | (*(ULONG64*)TransferPageInfo->PteAddress & 0xFFF0000000000FFF) | 0x103;
+	// 2. åˆ·æ–° TLB
 	__invlpg(TransferPageInfo->BaseAddress);
-	__movsb((PUCHAR)TransferPageInfo->BaseAddress + (PhysAddress & 0xFFF), (PUCHAR)Buffer, Size);
+
+	// 3. å®‰å…¨æ‹·è´ (ä» Buffer å†™åˆ° æ˜ å°„é¡µ)
+	if (!SafeCopyMemory((PUCHAR)TransferPageInfo->BaseAddress + (PhysAddress & 0xFFF), Buffer, Size))
+	{
+		return 0xC0000005;
+	}
+
 	return 0;
 }
 
+// --- é¡µè¡¨éå†é€»è¾‘ (ä¿æŒåŸæ ·ï¼Œè°ƒç”¨å¸¦ä¿æŠ¤çš„å•é¡µè¯»å†™) ---
 
-
-// ×ª»»ÎªÎïÀíµØÖ·»º´æÒ³±íĞÅÏ¢²¢½øĞĞÎïÀí·¶Î§¼ì²é
 inline ULONG GetPhysPageInfoStealth(const PHYSICAL_PAGE_INFO* TransferPageInfo, ULONG64 Cr3, PVOID Va, PULONG64 pPhysicalPageBase, PULONG64 pPageSize, STEALTH_RW_CONTEXT* Context)
 {
 	if (!pPhysicalPageBase || !pPageSize || !Context) return 22;
@@ -177,11 +203,10 @@ inline ULONG GetPhysPageInfoStealth(const PHYSICAL_PAGE_INFO* TransferPageInfo, 
 	}
 	ppe_val = Context->CachedPpeVal;
 
-	if (ppe_val & 0x80) // 1GB ´óÒ³
+	if (ppe_val & 0x80) // 1GB å¤§é¡µ
 	{
 		*pPageSize = 0x40000000;
 		*pPhysicalPageBase = (ppe_val & 0x000FFFFFC0000000);
-		//ÔÚ´Ë½øĞĞÎïÀí·¶Î§¼ì²é
 		if (!IsPhysPageInRange(*pPhysicalPageBase, *pPageSize)) return 266;
 		return 0;
 	}
@@ -195,11 +220,10 @@ inline ULONG GetPhysPageInfoStealth(const PHYSICAL_PAGE_INFO* TransferPageInfo, 
 	}
 	pde_val = Context->CachedPdeVal;
 
-	if (pde_val & 0x80) // 2MB ´óÒ³
+	if (pde_val & 0x80) // 2MB å¤§é¡µ
 	{
 		*pPageSize = 0x200000;
 		*pPhysicalPageBase = (pde_val & 0x000FFFFFFE00000);
-		//  ÔÚ´Ë½øĞĞÎïÀí·¶Î§¼ì²é
 		if (!IsPhysPageInRange(*pPhysicalPageBase, *pPageSize)) return 267;
 		return 0;
 	}
@@ -207,13 +231,14 @@ inline ULONG GetPhysPageInfoStealth(const PHYSICAL_PAGE_INFO* TransferPageInfo, 
 	const ULONG64 pte_phys_addr = (pde_val & 0x000FFFFFFFFF000) + 8 * ((va_val >> 12) & 0x1FF);
 	if (ReadPhysicalSinglePage(TransferPageInfo, pte_phys_addr, &pte_val, 8) || (pte_val & 1) == 0) return 265;
 
-	*pPageSize = 0x1000; // 4KB Ò³
+	*pPageSize = 0x1000; // 4KB é¡µ
 	*pPhysicalPageBase = (pte_val & 0x000FFFFFFFFF000);
-	
-	//ÔÚ´Ë½øĞĞÎïÀí·¶Î§¼ì²é
+
 	if (!IsPhysPageInRange(*pPhysicalPageBase, *pPageSize)) return 268;
 	return 0;
 }
+
+// --- æœ€ç»ˆçš„è¯»å†™æ¥å£ (å¾ªç¯å¤„ç†) ---
 
 inline ULONG ReadPhysMemory(const PHYSICAL_PAGE_INFO* TransferPageInfo, ULONG64 DirectoryTableBase, PVOID Address, PVOID Buffer, ULONG TotalSize, STEALTH_RW_CONTEXT* Context)
 {
@@ -226,34 +251,25 @@ inline ULONG ReadPhysMemory(const PHYSICAL_PAGE_INFO* TransferPageInfo, ULONG64 
 
 	ULONG64 currentPagePhysBase = 0;
 	ULONG64 currentPageSize = 0;
-	// ×·×Ùµ±Ç°ÒÑÖªÎïÀíÒ³Ëù¶ÔÓ¦µÄĞéÄâµØÖ··¶Î§µÄÄ©Î²
 	ULONG64 currentPageVaEnd = currentVa;
 
 	while (bytesRemaining > 0)
 	{
-		// 1. ¼ì²éµ±Ç°VAÊÇ·ñÒÑ³¬³öÉÏÒ»¸öÒÑÖªÎïÀíÒ³µÄĞéÄâµØÖ··¶Î§
 		if (currentVa >= currentPageVaEnd)
 		{
-			// ÊÇ£¬ĞèÒªµ÷ÓÃGetPhysPageInfoStealthÖØĞÂ»ñÈ¡ÎïÀíÒ³ĞÅÏ¢
 			status = GetPhysPageInfoStealth(TransferPageInfo, DirectoryTableBase, (PVOID)currentVa, &currentPagePhysBase, &currentPageSize, Context);
 			if (status != 0) return status;
-
-			// ¼ÆËãµ±Ç°ÎïÀíÒ³¶ÔÓ¦µÄĞéÄâµØÖ··¶Î§µÄ½áÊøµØÖ·
 			currentPageVaEnd = (currentVa & ~(currentPageSize - 1)) + currentPageSize;
 		}
 
-		// 2. ¼ÆËãµ±Ç°VAÔÚµ±Ç°ÎïÀíÒ³ÖĞµÄ×îÖÕÎïÀíµØÖ·
 		const ULONG64 offsetInPage = currentVa & (currentPageSize - 1);
 		const ULONG64 finalPhysAddr = currentPagePhysBase + offsetInPage;
 
-		// 3. ¼ÆËã±¾´Î¿ÉÒÔÔÚÕâ¸öÎïÀí4KBÒ³ÄÚ´¦Àí¶àÉÙ×Ö½Ú
 		ULONG bytesToProcess = min(bytesRemaining, PAGE_SIZE - (ULONG)(finalPhysAddr & 0xFFF));
 
-		// 4. Ö´ĞĞµ¥Ò³ÎïÀí¶ÁÈ¡
 		status = ReadPhysicalSinglePage(TransferPageInfo, finalPhysAddr, currentBuffer, bytesToProcess);
 		if (status != 0) return status;
 
-		// 5. ¸üĞÂ¼ÆÊıÆ÷
 		bytesRemaining -= bytesToProcess;
 		currentBuffer += bytesToProcess;
 		currentVa += bytesToProcess;
@@ -261,8 +277,6 @@ inline ULONG ReadPhysMemory(const PHYSICAL_PAGE_INFO* TransferPageInfo, ULONG64 
 	return 0;
 }
 
-
-// Í³Ò»¸ßĞ§Ñ­»·µÄÎïÀíÄÚ´æĞ´Èëº¯Êı
 inline ULONG WritePhysMemory(const PHYSICAL_PAGE_INFO* TransferPageInfo, ULONG64 DirectoryTableBase, PVOID Address, PVOID Buffer, ULONG TotalSize, STEALTH_RW_CONTEXT* Context)
 {
 	if (!Address || !Buffer || !TotalSize || !TransferPageInfo || !Context || !DirectoryTableBase) return 22;
@@ -299,4 +313,3 @@ inline ULONG WritePhysMemory(const PHYSICAL_PAGE_INFO* TransferPageInfo, ULONG64
 	}
 	return 0;
 }
-

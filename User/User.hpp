@@ -7,10 +7,10 @@
 #include <fstream>
 #include <thread>
 #include <chrono>      // For std::chrono::milliseconds
-#include <ntddmou.h>   // Êó±ê ½á¹¹Ìå MOUSE_INPUT_DATA
-#include <ntddkbd.h>   // ¼üÅÌ ½á¹¹Ìå KEYBOARD_INPUT_DATA
+#include <ntddmou.h>   // ï¿½ï¿½ï¿½ ï¿½á¹¹ï¿½ï¿½ MOUSE_INPUT_DATA
+#include <ntddkbd.h>   // ï¿½ï¿½ï¿½ï¿½ ï¿½á¹¹ï¿½ï¿½ KEYBOARD_INPUT_DATA
 
-// ¶¨ÒåIOCTL¿ØÖÆÂë (¸ù¾ÝÄúµÄ¶¨Òå)
+// ï¿½ï¿½ï¿½ï¿½IOCTLï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¶ï¿½ï¿½ï¿½)
 #define IOCTL_READ_MEMORY           CTL_CODE(FILE_DEVICE_UNKNOWN, 0x9000, METHOD_NEITHER, FILE_ANY_ACCESS)
 #define IOCTL_WRITE_MEMORY          CTL_CODE(FILE_DEVICE_UNKNOWN, 0x9001, METHOD_NEITHER, FILE_ANY_ACCESS)
 #define IOCTL_GET_MODULE_BASE       CTL_CODE(FILE_DEVICE_UNKNOWN, 0x9002, METHOD_NEITHER, FILE_ANY_ACCESS)
@@ -25,7 +25,7 @@
 
 class AutoDriver {
 public:
-	// ¹¹Ôìº¯Êý: ¸ºÔðÐ´Èë¡¢°²×°ºÍÆô¶¯Çý¶¯£¬²¢´ò¿ªÉè±¸¾ä±ú
+	// ï¿½ï¿½ï¿½ìº¯ï¿½ï¿½: ï¿½ï¿½ï¿½ï¿½Ð´ï¿½ë¡¢ï¿½ï¿½×°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½è±¸ï¿½ï¿½ï¿½
 	AutoDriver(const std::wstring& deviceName, const unsigned char* driverBin, size_t driverLen)
 	{
 		AutoDriver::m_deviceName = deviceName;
@@ -35,69 +35,69 @@ public:
 
 		wchar_t tmp[MAX_PATH] = { 0 };
 		if (GetTempPathW(MAX_PATH, tmp) == 0) {
-			std::wcerr << L"[!] »ñÈ¡ÁÙÊ±Â·¾¶Ê§°Ü£¬´íÎó: " << GetLastError() << std::endl;
+			std::wcerr << L"[!] ï¿½ï¿½È¡ï¿½ï¿½Ê±Â·ï¿½ï¿½Ê§ï¿½Ü£ï¿½ï¿½ï¿½ï¿½ï¿½: " << GetLastError() << std::endl;
 			return;
 		}
 		m_tempDir = tmp;
-		m_driverPath = m_tempDir + L"72c9b540-4c42-4972-b4f7-08d56c243d3c.tmp"; // Ê¹ÓÃ¸ü¶ÀÌØµÄÃû³Æ
+		m_driverPath = m_tempDir + L"72c9b540-4c42-4972-b4f7-08d56c243d3c.tmp"; // Ê¹ï¿½Ã¸ï¿½ï¿½ï¿½ï¿½Øµï¿½ï¿½ï¿½ï¿½ï¿½
 
 		if (!writeDriverToFile()) {
-			std::wcerr << L"[!] Ð´ÈëÇý¶¯ÎÄ¼þÊ§°Ü" << std::endl;
+			std::wcerr << L"[!] Ð´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½Ê§ï¿½ï¿½" << std::endl;
 			return;
 		}
 
 		if (!installAndStartService()) {
-			std::wcerr << L"[!] ¼ÓÔØ»òÆô¶¯Çý¶¯·þÎñÊ§°Ü" << std::endl;
+			std::wcerr << L"[!] ï¿½ï¿½ï¿½Ø»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê§ï¿½ï¿½" << std::endl;
 			return;
 		}
 
 		openDeviceHandle();
 	}
 
-	// Îö¹¹º¯Êý: ¸ºÔð¹Ø±ÕÉè±¸¾ä±ú¡¢Ð¶ÔØÇý¶¯²¢ÇåÀíÎÄ¼þ
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½: ï¿½ï¿½ï¿½ï¿½Ø±ï¿½ï¿½è±¸ï¿½ï¿½ï¿½ï¿½ï¿½Ð¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½
 	~AutoDriver() {
 		if (m_hDevice != INVALID_HANDLE_VALUE) {
 			CloseHandle(m_hDevice);
 		}
 
 		if (uninstallService()) {
-			std::wcout << L"[+] Çý¶¯·þÎñÐ¶ÔØ³É¹¦" << std::endl;
+			std::wcout << L"[+] ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¶ï¿½Ø³É¹ï¿½" << std::endl;
 		}
 		else {
-			std::wcerr << L"[!] Çý¶¯·þÎñÐ¶ÔØÊ§°Ü" << std::endl;
+			std::wcerr << L"[!] ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¶ï¿½ï¿½Ê§ï¿½ï¿½" << std::endl;
 		}
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(500));
 		if (DeleteFileW(m_driverPath.c_str())) {
-			std::wcout << L"[+] ÁÙÊ±Çý¶¯ÎÄ¼þÉ¾³ý³É¹¦" << std::endl;
+			std::wcout << L"[+] ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½É¾ï¿½ï¿½ï¿½É¹ï¿½" << std::endl;
 		}
 		else {
-			std::wcerr << L"[*] É¾³ýÇý¶¯ÎÄ¼þÊ§°Ü£¬ÒÑ°²ÅÅÔÚÏµÍ³ÖØÆôÊ±É¾³ý" << std::endl;
+			std::wcerr << L"[*] É¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½Ê§ï¿½Ü£ï¿½ï¿½Ñ°ï¿½ï¿½ï¿½ï¿½ï¿½ÏµÍ³ï¿½ï¿½ï¿½ï¿½Ê±É¾ï¿½ï¿½" << std::endl;
 			MoveFileExW(m_driverPath.c_str(), nullptr, MOVEFILE_DELAY_UNTIL_REBOOT);
 		}
 	}
 
-	// ¼ì²éÇý¶¯ÊÇ·ñ³É¹¦¼ÓÔØ²¢×¼±¸¾ÍÐ÷
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½É¹ï¿½ï¿½ï¿½ï¿½Ø²ï¿½×¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	static inline __forceinline bool IsInitialized() {
 		return m_hDevice != INVALID_HANDLE_VALUE;
 	}
 
-	// ÉèÖÃÈ«¾ÖÄ¿±ê½ø³ÌID
+	// ï¿½ï¿½ï¿½ï¿½È«ï¿½ï¿½Ä¿ï¿½ï¿½ï¿½ï¿½ï¿½ID
 	static inline __forceinline  void SetTargetProcessId(uint32_t pid) {
 		if (!pid) return;
 		s_targetPid = pid;
-		m_ioPacket.TargetProcessId = pid;//ÏÈÕ¼Î»·ÀÖ¹À¶ÆÁ£¬ºóÐøÐÞ¸Ä
-		//Í¨ÖªÒ»´ÎÇý¶¯
+		m_ioPacket.TargetProcessId = pid;//ï¿½ï¿½Õ¼Î»ï¿½ï¿½Ö¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Þ¸ï¿½
+		//Í¨ÖªÒ»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		DeviceIoControl(m_hDevice, IOCTL_NULL_IO, &m_ioPacket, sizeof(DriverPacket), &m_ioPacket, sizeof(DriverPacket), &m_bytesReturned, nullptr);
 
 	}
-	// »ñÈ¡µ±Ç°Ä¿±ê½ø³ÌID
+	// ï¿½ï¿½È¡ï¿½ï¿½Ç°Ä¿ï¿½ï¿½ï¿½ï¿½ï¿½ID
 	static inline __forceinline  uint32_t GetTargetProcessId() {
 		return s_targetPid;
 	}
 
 
-	// --- ÄÚ´æ²Ù×÷ ---
+	// --- ï¿½Ú´ï¿½ï¿½ï¿½ï¿½ ---
 	template<typename T>
 	static inline __forceinline   T Read(uintptr_t address) { T value = {}; KernelReadMemory(reinterpret_cast<PVOID>(address), &value, sizeof(T)); return value; }
 
@@ -127,7 +127,7 @@ public:
 		return std::wstring(buf.data());
 	}
 
-	// --- ÊäÈëÄ£Äâ ---
+	// --- ï¿½ï¿½ï¿½ï¿½Ä£ï¿½ï¿½ ---
 
 	static inline __forceinline    bool SendKeyboardEvent(USHORT UnitId, USHORT MakeCode, USHORT Flags, USHORT Reserved, ULONG ExtraInformation) {
 		m_ioPacket.KeyboardData.UnitId = UnitId;
@@ -153,7 +153,7 @@ public:
 	}
 
 
-	// --- ½ø³Ì¹ÜÀí ---
+	// --- ï¿½ï¿½ï¿½Ì¹ï¿½ï¿½ï¿½ ---
 	static inline __forceinline   bool TerminateTargetProcess(int pid) {
 		m_ioPacket.TargetProcessId = pid;
 
@@ -172,7 +172,7 @@ public:
 	}
 
 private:
-	// ÓëÇý¶¯Í¨ÐÅµÄÊý¾Ý°ü½á¹¹ (¸ù¾ÝÄúµÄ¶¨Òå)
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¨ï¿½Åµï¿½ï¿½ï¿½ï¿½Ý°ï¿½ï¿½á¹¹ (ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¶ï¿½ï¿½ï¿½)
 	struct DriverPacket {
 		// Memory operation fields
 		UINT32      TargetProcessId;
@@ -189,12 +189,12 @@ private:
 		MOUSE_INPUT_DATA    MouseData;
 		KEYBOARD_INPUT_DATA KeyboardData;
 
-		// ÒªÌáÉýµÄ¾ä±ú
+		// Òªï¿½ï¿½ï¿½ï¿½ï¿½Ä¾ï¿½ï¿½
 		HANDLE      ProcessHandle;
 	};
 
-	// =========== Ö÷ÒªÐÞ¸ÄµãÔÚÕâÀï ===========
-	// Ê¹ÓÃ inline static ÔÚÀàÄÚÖ±½Ó³õÊ¼»¯¾²Ì¬³ÉÔ±±äÁ¿ (C++17+)
+	// =========== ï¿½ï¿½Òªï¿½Þ¸Äµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ===========
+	// Ê¹ï¿½ï¿½ inline static ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö±ï¿½Ó³ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½Ì¬ï¿½ï¿½Ô±ï¿½ï¿½ï¿½ï¿½ (C++17+)
 	inline static HANDLE m_hDevice = INVALID_HANDLE_VALUE;
 	inline static std::wstring m_deviceName;
 	inline static std::wstring m_tempDir;
@@ -205,12 +205,12 @@ private:
 	inline static DriverPacket m_ioPacket = {};
 	inline static DWORD m_bytesReturned = 0;
 
-	// ¾²Ì¬Ä¿±êPID£¬ÓÉËùÓÐÊµÀý¹²Ïí (Ô­´úÂëÒÑÕýÈ·Ê¹ÓÃ inline)
+	// ï¿½ï¿½Ì¬Ä¿ï¿½ï¿½PIDï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Êµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ (Ô­ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È·Ê¹ï¿½ï¿½ inline)
 	static inline uint32_t s_targetPid = 0;
 	// =======================================
 
 
-	// --- µ×²ãÄÚºËÍ¨ÐÅ·â×° ---
+	// --- ï¿½×²ï¿½ï¿½Úºï¿½Í¨ï¿½Å·ï¿½×° ---
 	static inline __forceinline   bool KernelReadMemory(PVOID address, PVOID buffer, SIZE_T size) {
 
 		m_ioPacket.TargetProcessId = s_targetPid;
@@ -242,7 +242,7 @@ private:
 
 
 
-	// --- ·þÎñÓëÎÄ¼þ¹ÜÀí ---
+	// --- ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ ---
 	static inline __forceinline   bool writeDriverToFile() {
 		std::ofstream file(m_driverPath, std::ios::binary);
 		if (!file) return false;
@@ -254,14 +254,14 @@ private:
 		SC_HANDLE scm = OpenSCManagerW(nullptr, nullptr, SC_MANAGER_ALL_ACCESS);
 		if (!scm) return false;
 
-		// ³¢ÊÔ´ò¿ª²¢É¾³ýÒÑ´æÔÚµÄ¾É·þÎñ£¬È·±£È«ÐÂ°²×°
+		// ï¿½ï¿½ï¿½Ô´ò¿ª²ï¿½É¾ï¿½ï¿½ï¿½Ñ´ï¿½ï¿½ÚµÄ¾É·ï¿½ï¿½ï¿½È·ï¿½ï¿½È«ï¿½Â°ï¿½×°
 		SC_HANDLE service = OpenServiceW(scm, L"AutoDriverService", SERVICE_STOP | DELETE);
 		if (service) {
 			SERVICE_STATUS status;
 			ControlService(service, SERVICE_CONTROL_STOP, &status);
 			DeleteService(service);
 			CloseServiceHandle(service);
-			// µÈ´ý·þÎñ±»³¹µ×É¾³ý
+			// ï¿½È´ï¿½ï¿½ï¿½ï¿½ñ±»³ï¿½ï¿½ï¿½É¾ï¿½ï¿½
 			std::this_thread::sleep_for(std::chrono::seconds(1));
 		}
 
@@ -278,7 +278,7 @@ private:
 
 		if (!service) {
 			if (GetLastError() == ERROR_SERVICE_EXISTS) {
-				// Èç¹û·þÎñÈÔÈ»´æÔÚ£¬³¢ÊÔÆô¶¯Ëü
+				// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È»ï¿½ï¿½ï¿½Ú£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 				service = OpenServiceW(scm, L"AutoDriverService", SERVICE_START);
 			}
 			else {
@@ -296,7 +296,7 @@ private:
 
 	static inline __forceinline   void openDeviceHandle() {
 		m_hDevice = CreateFileW(
-			m_deviceName.c_str(), // <-- Ê¹ÓÃ´«ÈëµÄÉè±¸Ãû
+			m_deviceName.c_str(), // <-- Ê¹ï¿½Ã´ï¿½ï¿½ï¿½ï¿½ï¿½è±¸ï¿½ï¿½
 			GENERIC_READ | GENERIC_WRITE,
 			FILE_SHARE_READ | FILE_SHARE_WRITE,
 			nullptr,
@@ -305,10 +305,10 @@ private:
 			nullptr
 		);
 		if (m_hDevice == INVALID_HANDLE_VALUE) {
-			std::wcerr << L"[!] ´ò¿ªÉè±¸¾ä±úÊ§°Ü (" << m_deviceName << L")£¬´íÎó: " << GetLastError() << std::endl;
+			std::wcerr << L"[!] ï¿½ï¿½ï¿½è±¸ï¿½ï¿½ï¿½Ê§ï¿½ï¿½ (" << m_deviceName << L")ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½: " << GetLastError() << std::endl;
 		}
 		else {
-			std::wcout << L"[+] Éè±¸¾ä±úÒÑ³É¹¦´ò¿ª (" << m_deviceName << L")" << std::endl;
+			std::wcout << L"[+] ï¿½è±¸ï¿½ï¿½ï¿½ï¿½Ñ³É¹ï¿½ï¿½ï¿½ (" << m_deviceName << L")" << std::endl;
 		}
 	}
 

@@ -1,9 +1,9 @@
-//ÕÒµ½¼üÊóÇı¶¯µÄ»Øµ÷º¯ÊıµØÖ·ºÍÉè±¸¶ÔÏóµØÖ·£¬²¢µ÷ÓÃÊµÏÖÄ£Äâ
+//æ‰¾åˆ°é”®é¼ é©±åŠ¨çš„å›è°ƒå‡½æ•°åœ°å€å’Œè®¾å¤‡å¯¹è±¡åœ°å€ï¼Œå¹¶è°ƒç”¨å®ç°æ¨¡æ‹Ÿ
 
 #pragma once
 #include<ntifs.h>
-#include <ntddmou.h>   // Êó±ê ½á¹¹Ìå MOUSE_INPUT_DATA
-#include <ntddkbd.h>   // ¼üÅÌ ½á¹¹ÌåKEYBOARD_INPUT_DATA
+#include <ntddmou.h>   // é¼ æ ‡ ç»“æ„ä½“ MOUSE_INPUT_DATA
+#include <ntddkbd.h>   // é”®ç›˜ ç»“æ„ä½“KEYBOARD_INPUT_DATA
 
 extern "C"  POBJECT_TYPE* IoDriverObjectType;
 
@@ -337,10 +337,10 @@ inline NTSTATUS SearchKdbServiceCallBack() {
 }
 
 
-// ³õÊ¼»¯¼üÊóÄ£ÄâÄ£¿é
+// åˆå§‹åŒ–é”®é¼ æ¨¡æ‹Ÿæ¨¡å—
 inline NTSTATUS InitMouseAndKeyboard()
 {
-	//Êó±êÉè±¸ºÍ»Øµ÷º¯ÊıÖ¸Õë³õÊ¼»¯
+	//é¼ æ ‡è®¾å¤‡å’Œå›è°ƒå‡½æ•°æŒ‡é’ˆåˆå§‹åŒ–
 	if (MouseDeviceObject == NULL || MouseClassServiceCallback == NULL) {
 
 		NTSTATUS mouStatus = SearchMouServiceCallBack();
@@ -353,7 +353,7 @@ inline NTSTATUS InitMouseAndKeyboard()
 			KdPrint(("[-] Failed to initialize mouse simulation. Status: 0x%X\n", mouStatus));
 		}
 	}
-	//¼üÅÌÉè±¸ºÍ»Øµ÷º¯ÊıÖ¸Õë³õÊ¼»¯
+	//é”®ç›˜è®¾å¤‡å’Œå›è°ƒå‡½æ•°æŒ‡é’ˆåˆå§‹åŒ–
 	if (KeyboardDeviceObject == NULL || KeyboardClassServiceCallback == NULL) {
 
 		NTSTATUS kbdStatus = SearchKdbServiceCallBack();
@@ -375,7 +375,7 @@ inline NTSTATUS InitMouseAndKeyboard()
 
 
 
-// ¼üÅÌÄ£Äâº¯Êı
+// é”®ç›˜æ¨¡æ‹Ÿå‡½æ•°
 inline void KeyboardSimulation(PKEYBOARD_INPUT_DATA Data)
 {
 	if (!KeyboardClassServiceCallback || !KeyboardDeviceObject || !Data) {
@@ -384,15 +384,15 @@ inline void KeyboardSimulation(PKEYBOARD_INPUT_DATA Data)
 
 	ULONG InputDataConsumed = 0;
 
-	// [ĞŞÕı] Ö±½ÓÊ¹ÓÃµ÷ÓÃÕß´«ÈëµÄÖ¸Õë£¬¶ø²»ÊÇ´´½¨¾Ö²¿¿½±´
+	// [ä¿®æ­£] ç›´æ¥ä½¿ç”¨è°ƒç”¨è€…ä¼ å…¥çš„æŒ‡é’ˆï¼Œè€Œä¸æ˜¯åˆ›å»ºå±€éƒ¨æ‹·è´
 	PKEYBOARD_INPUT_DATA KbdInputDataStart = Data;
 	PKEYBOARD_INPUT_DATA KbdInputDataEnd = KbdInputDataStart + 1;
 
-	// µ÷ÓÃ»Øµ÷º¯Êı
+	// è°ƒç”¨å›è°ƒå‡½æ•°
 	KeyboardClassServiceCallback(KeyboardDeviceObject, KbdInputDataStart, KbdInputDataEnd, &InputDataConsumed);
 }
 
-// Êó±êÄ£Äâº¯Êı
+// é¼ æ ‡æ¨¡æ‹Ÿå‡½æ•°
 inline void MouseSimulation(PMOUSE_INPUT_DATA Data)
 {
 	if (!MouseClassServiceCallback || !MouseDeviceObject || !Data) {
@@ -401,10 +401,10 @@ inline void MouseSimulation(PMOUSE_INPUT_DATA Data)
 
 	ULONG InputDataConsumed = 0;
 
-	// [ĞŞÕı] Ö±½ÓÊ¹ÓÃµ÷ÓÃÕß´«ÈëµÄÖ¸Õë
+	// [ä¿®æ­£] ç›´æ¥ä½¿ç”¨è°ƒç”¨è€…ä¼ å…¥çš„æŒ‡é’ˆ
 	PMOUSE_INPUT_DATA MouseInputDataStart = Data;
 	PMOUSE_INPUT_DATA MouseInputDataEnd = MouseInputDataStart + 1;
 
-	// µ÷ÓÃ»Øµ÷º¯Êı
+	// è°ƒç”¨å›è°ƒå‡½æ•°
 	MouseClassServiceCallback(MouseDeviceObject, MouseInputDataStart, MouseInputDataEnd, &InputDataConsumed);
 }

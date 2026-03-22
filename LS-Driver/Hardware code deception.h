@@ -1,7 +1,7 @@
 //
-////windbg¼ÓÔØ¹«¹²·ûºÅ·şÎñÆ÷				.sympath srv*c:\symbols*https://msdl.microsoft.com/download/symbols
-////Ç¿ÖÆÖØĞÂ¼ÓÔØÄÚºË·ûºÅ					.reload /f nt
-////Ç¿ÖÆ¼ÓÔØ ndis.sys µÄ·ûºÅ				.reload /f ndis.sys
+////windbgåŠ è½½å…¬å…±ç¬¦å·æœåŠ¡å™¨				.sympath srv*c:\symbols*https://msdl.microsoft.com/download/symbols
+////å¼ºåˆ¶é‡æ–°åŠ è½½å†…æ ¸ç¬¦å·					.reload /f nt
+////å¼ºåˆ¶åŠ è½½ ndis.sys çš„ç¬¦å·				.reload /f ndis.sys
 //
 //#pragma once
 //#include <ata.h>
@@ -22,7 +22,7 @@
 //extern  C_PsGetProcessImageFileName L_PsGetProcessImageFileName;
 //
 ////==================================================================================
-//// 1. Windows ÄÚºË½á¹¹ºÍº¯Êı¶¨Òå (Kernel Definitions)
+//// 1. Windows å†…æ ¸ç»“æ„å’Œå‡½æ•°å®šä¹‰ (Kernel Definitions)
 ////==================================================================================
 //namespace WinKernel
 //{
@@ -260,13 +260,13 @@
 //
 //
 ////==================================================================================
-//// 2. Í¨ÓÃ¹¤¾ßº¯Êı (Utility Functions)
+//// 2. é€šç”¨å·¥å…·å‡½æ•° (Utility Functions)
 ////==================================================================================
 //namespace Utils
 //{
 //
 //
-//	//É±ËÀ½ø³Ì
+//	//æ€æ­»è¿›ç¨‹
 //	NTSTATUS ZwKillProcess(LPCWSTR ProcessName) {
 //
 //		NTSTATUS Result = STATUS_UNSUCCESSFUL;
@@ -319,7 +319,7 @@
 //		return Result;
 //	}
 //
-//	//»ñÈ¡ÄÚºËÇı¶¯Ä£¿é»ùÖ·
+//	//è·å–å†…æ ¸é©±åŠ¨æ¨¡å—åŸºå€
 //	PVOID GetKernelModuleBase(const char* moduleName) {
 //		PVOID address = nullptr;
 //		ULONG size = 0;
@@ -364,7 +364,7 @@
 //		return address;
 //	}
 //
-//	//ÌØÕ÷ÂëÉ¨Ãè
+//	//ç‰¹å¾ç æ‰«æ
 //	PVOID FindPatternImage(PVOID base, const char* pattern, const char* mask)
 //	{
 //		const size_t maskLength = strlen(mask);
@@ -416,23 +416,23 @@
 //
 //
 //	//==================================================================================
-//	// 3. Î±Ôì×¢²á±íÓë±êÊ¶ÎÄ¼ş (Spoof Registry and Identifier Files)
+//	// 3. ä¼ªé€ æ³¨å†Œè¡¨ä¸æ ‡è¯†æ–‡ä»¶ (Spoof Registry and Identifier Files)
 //	//==================================================================================
 //	namespace SpoofREG
 //	{
-//		// Î±Ôì×¢²á±í¼üÖµºÍÌØ¶¨µÄ±êÊ¶·ûÎÄ¼ş
+//		// ä¼ªé€ æ³¨å†Œè¡¨é”®å€¼å’Œç‰¹å®šçš„æ ‡è¯†ç¬¦æ–‡ä»¶
 //		NTSTATUS SpoofIdentifiers() {
-//			// Ê¹ÓÃ¾²Ì¬²¼¶ûÖµÈ·±£´Ëº¯ÊıµÄºËĞÄÂß¼­Ö»³É¹¦Ö´ĞĞÒ»´Î
+//			// ä½¿ç”¨é™æ€å¸ƒå°”å€¼ç¡®ä¿æ­¤å‡½æ•°çš„æ ¸å¿ƒé€»è¾‘åªæˆåŠŸæ‰§è¡Œä¸€æ¬¡
 //			static BOOLEAN Enable = FALSE;
 //			if (Enable) {
 //				return STATUS_SUCCESS;
 //			}
 //
 //			NTSTATUS Result = STATUS_UNSUCCESSFUL;
-//			BOOLEAN bAnySuccess = FALSE; // ±êÖ¾£ºÊÇ·ñÓĞÈÎºÎÒ»¸ö²Ù×÷³É¹¦
+//			BOOLEAN bAnySuccess = FALSE; // æ ‡å¿—ï¼šæ˜¯å¦æœ‰ä»»ä½•ä¸€ä¸ªæ“ä½œæˆåŠŸ
 //
 //			//================================================
-//			// ²¿·Ö 1: Î±Ôì×¢²á±íÖĞµÄ GUID
+//			// éƒ¨åˆ† 1: ä¼ªé€ æ³¨å†Œè¡¨ä¸­çš„ GUID
 //			//================================================
 //			KdPrint(("[*] Spoofing registry GUIDs...\n"));
 //
@@ -440,14 +440,14 @@
 //			Result = ExUuidCreate(&newGuid);
 //			if (!NT_SUCCESS(Result)) {
 //				KdPrint(("[-] CRITICAL: Failed to create UUID. Error: 0x%X\n", Result));
-//				// UUID´´½¨Ê§°ÜÊÇÖÂÃüµÄ£¬ºóĞøÒÀÀµËüµÄ²Ù×÷ÎŞ·¨½øĞĞ
+//				// UUIDåˆ›å»ºå¤±è´¥æ˜¯è‡´å‘½çš„ï¼Œåç»­ä¾èµ–å®ƒçš„æ“ä½œæ— æ³•è¿›è¡Œ
 //			}
 //			else {
 //				WCHAR guidBuffer[40];
 //				UNICODE_STRING guidString;
 //				RtlInitEmptyUnicodeString(&guidString, guidBuffer, sizeof(guidBuffer));
 //
-//				// ½«GUID½á¹¹Ìå¸ñÊ½»¯ÎªUNICODE×Ö·û´®
+//				// å°†GUIDç»“æ„ä½“æ ¼å¼åŒ–ä¸ºUNICODEå­—ç¬¦ä¸²
 //				Result = RtlUnicodeStringPrintf(
 //					&guidString,
 //					L"%08lX-%04hX-%04hX-%02hhX%02hhX-%02hhX%02hhX%02hhX%02hhX%02hhX%02hhX",
@@ -460,7 +460,7 @@
 //					KdPrint(("[-] CRITICAL: Failed to format GUID to string. Error: 0x%X\n", Result));
 //				}
 //				else {
-//					// ´ıÎ±ÔìµÄ×¢²á±í¼üÖµÁĞ±í
+//					// å¾…ä¼ªé€ çš„æ³¨å†Œè¡¨é”®å€¼åˆ—è¡¨
 //					const WCHAR* szKeysToSpoof[][2] = {
 //						{ L"\\Registry\\Machine\\Software\\Microsoft\\SQMClient", L"MachineId" },
 //						{ L"\\Registry\\Machine\\Software\\Microsoft\\Cryptography", L"MachineGuid" },
@@ -470,7 +470,7 @@
 //					};
 //
 //					for (SIZE_T i = 0; i < ARRAYSIZE(szKeysToSpoof); i++) {
-//						// Ğ´ÈëGUID×Ö·û´®
+//						// å†™å…¥GUIDå­—ç¬¦ä¸²
 //						if (NT_SUCCESS(RtlWriteRegistryValue(RTL_REGISTRY_ABSOLUTE, szKeysToSpoof[i][0], szKeysToSpoof[i][1], REG_SZ, guidString.Buffer, guidString.Length + sizeof(WCHAR)))) {
 //							bAnySuccess = TRUE;
 //						}
@@ -479,10 +479,10 @@
 //			}
 //
 //			//================================================
-//			// ²¿·Ö 2: Î±Ôì×¢²á±íÖĞµÄÆäËû±êÊ¶·û
+//			// éƒ¨åˆ† 2: ä¼ªé€ æ³¨å†Œè¡¨ä¸­çš„å…¶ä»–æ ‡è¯†ç¬¦
 //			//================================================
 //
-//			// Î±Ôì¶ş½øÖÆÀàĞÍµÄ×¢²á±íÖµ
+//			// ä¼ªé€ äºŒè¿›åˆ¶ç±»å‹çš„æ³¨å†Œè¡¨å€¼
 //			{
 //				UCHAR randomBinaryData[32];
 //				ULONG seed = KeQueryTimeIncrement();
@@ -496,7 +496,7 @@
 //				}
 //			}
 //
-//			// ÇåÀí¹ÒÔØÉè±¸ĞÅÏ¢
+//			// æ¸…ç†æŒ‚è½½è®¾å¤‡ä¿¡æ¯
 //			{
 //				const WCHAR* volumeLetters[] = { L"A", L"B", L"C", L"D", L"E", L"F", L"G", L"H", L"I", L"J", L"K", L"L", L"M", L"N", L"O", L"P", L"Q", L"R", L"S", L"T", L"U", L"V", L"W", L"X", L"Y", L"Z" };
 //				WCHAR volumeValueName[32];
@@ -510,7 +510,7 @@
 //			}
 //
 //			//================================================
-//			// ²¿·Ö 3: Î±Ôì MachineGuid.txt ÎÄ¼ş (Ô­ SpoofFile Âß¼­)
+//			// éƒ¨åˆ† 3: ä¼ªé€  MachineGuid.txt æ–‡ä»¶ (åŸ SpoofFile é€»è¾‘)
 //			//================================================
 //			KdPrint(("[*] Spoofing identifier files...\n"));
 //
@@ -547,7 +547,7 @@
 //						ZwClose(hFile);
 //
 //						if (NT_SUCCESS(fileStatus)) {
-//							bAnySuccess = TRUE; // ÎÄ¼şĞ´Èë³É¹¦Ò²ËãÕûÌå³É¹¦
+//							bAnySuccess = TRUE; // æ–‡ä»¶å†™å…¥æˆåŠŸä¹Ÿç®—æ•´ä½“æˆåŠŸ
 //						}
 //					}
 //				}
@@ -555,15 +555,15 @@
 //			}
 //
 //			//================================================
-//			// ×îÖÕ×´Ì¬ÅĞ¶Ï
+//			// æœ€ç»ˆçŠ¶æ€åˆ¤æ–­
 //			//================================================
 //			if (bAnySuccess) {
 //				KdPrint(("[+] SpoofIdentifiers: One or more identifiers were successfully spoofed.\n"));
-//				Enable = TRUE;      // ±ê¼ÇÒÑ³É¹¦Ö´ĞĞ£¬ÏÂ´Î²»ÔÙ½øÈë
-//				return STATUS_SUCCESS; // Ö»ÒªÓĞÈÎÒâÒ»¸ö³É¹¦£¬¾Í·µ»ØÕûÌå³É¹¦
+//				Enable = TRUE;      // æ ‡è®°å·²æˆåŠŸæ‰§è¡Œï¼Œä¸‹æ¬¡ä¸å†è¿›å…¥
+//				return STATUS_SUCCESS; // åªè¦æœ‰ä»»æ„ä¸€ä¸ªæˆåŠŸï¼Œå°±è¿”å›æ•´ä½“æˆåŠŸ
 //			}
 //
-//			// Èç¹ûÃ»ÓĞÈÎºÎ²Ù×÷³É¹¦£¬Ôò·µ»Ø×îºóÒ»¸öÓöµ½µÄ´íÎó´úÂë»òÄ¬ÈÏÊ§°Ü´úÂë
+//			// å¦‚æœæ²¡æœ‰ä»»ä½•æ“ä½œæˆåŠŸï¼Œåˆ™è¿”å›æœ€åä¸€ä¸ªé‡åˆ°çš„é”™è¯¯ä»£ç æˆ–é»˜è®¤å¤±è´¥ä»£ç 
 //			KdPrint(("[-] SpoofIdentifiers: All spoofing attempts failed.\n"));
 //			return (NT_SUCCESS(Result) ? STATUS_UNSUCCESSFUL : Result);
 //		}
@@ -571,7 +571,7 @@
 //
 //
 //	//==================================================================================
-//	// 3. Î±Ôì´ÅÅÌĞòÁĞºÅ 
+//	// 3. ä¼ªé€ ç£ç›˜åºåˆ—å·
 //	//==================================================================================
 //	namespace SpoofHDD
 //	{
@@ -588,7 +588,7 @@
 //
 //		typedef struct _TELEMETRY_UNIT_EXTENSION
 //		{
-//			int SmartMask;//¼à¿Ø¿ªÆô±êÖ¾
+//			int SmartMask;//ç›‘æ§å¼€å¯æ ‡å¿—
 //		} TELEMETRY_UNIT_EXTENSION, * PTELEMETRY_UNIT_EXTENSION;
 //
 //		typedef struct _RAID_UNIT_EXTENSION
@@ -611,7 +611,7 @@
 //
 //		typedef __int64(__fastcall* RaidUnitRegisterInterfaces)(PRAID_UNIT_EXTENSION a1);
 //
-//		// Î±ÔìÓ²ÅÌĞòÁĞºÅ
+//		// ä¼ªé€ ç¡¬ç›˜åºåˆ—å·
 //		NTSTATUS SpoofHDD()
 //		{
 //			PVOID base = GetKernelModuleBase("storport.sys");
@@ -731,14 +731,14 @@
 //
 //
 //	//==================================================================================
-//	// 5. Î±ÔìSMBIOS (Spoof SMBIOS)
+//	// 5. ä¼ªé€ SMBIOS (Spoof SMBIOS)
 //	//==================================================================================
 //	namespace SpoofSMBIOS
 //	{
 //		using namespace Utils;
 //
 //
-//		// SMBIOS  µÄµ¥±íÍ·
+//		// SMBIOS  çš„å•è¡¨å¤´
 //		typedef struct
 //		{
 //			UINT8   Type;
@@ -853,7 +853,7 @@
 //			UINT8* Entry;
 //		} RAW_SMBIOS;
 //
-//		//ĞŞ¸ÄSMBIOS ±íÄÚ´æ
+//		//ä¿®æ”¹SMBIOS è¡¨å†…å­˜
 //		NTSTATUS SpoofSMBIOS1()
 //		{
 //			PVOID base = GetKernelModuleBase("ntoskrnl.exe");
@@ -991,7 +991,7 @@
 //			return STATUS_SUCCESS;
 //		}
 //
-//		//ÆÆ»µ±í½á¹¹
+//		//ç ´åè¡¨ç»“æ„
 //		NTSTATUS SpoofSMBIOS2() {
 //			static BOOLEAN Enable = FALSE;
 //			NTSTATUS Result = STATUS_SUCCESS;
@@ -1046,7 +1046,7 @@
 //
 //
 //	//==================================================================================
-//	// 6. Î±ÔìÍø¿¨ (Spoof NIC)
+//	// 6. ä¼ªé€ ç½‘å¡ (Spoof NIC)
 //	//==================================================================================
 //	namespace SpoofNIC
 //	{
@@ -1054,29 +1054,29 @@
 //		using namespace WinKernel;
 //
 //		//------------------------------------------------
-//		// ½á¹¹Ìå¶¨Òå (ÒÑ¾«¼ò£¬Ö»±£ÁôÄÚ´æĞŞ¸ÄËùĞè)
+//		// ç»“æ„ä½“å®šä¹‰ (å·²ç²¾ç®€ï¼Œåªä¿ç•™å†…å­˜ä¿®æ”¹æ‰€éœ€)
 //		//------------------------------------------------
 //
-//		// ÎïÀíµØÖ· (ÈçMACµØÖ·) ½á¹¹
+//		// ç‰©ç†åœ°å€ (å¦‚MACåœ°å€) ç»“æ„
 //		typedef struct _IF_PHYSICAL_ADDRESS_LH {
 //			USHORT Length;
 //			UCHAR Address[32];
 //		} IF_PHYSICAL_ADDRESS_LH, * PIF_PHYSICAL_ADDRESS_LH;
 //
-//		// NDIS ½Ó¿Ú¿é£¬°üº¬ÎïÀíµØÖ·ĞÅÏ¢
+//		// NDIS æ¥å£å—ï¼ŒåŒ…å«ç‰©ç†åœ°å€ä¿¡æ¯
 //		typedef struct _NDIS_IF_BLOCK {
 //			char _padding_0[0x464];
 //			IF_PHYSICAL_ADDRESS_LH ifPhysAddress;        // 0x464
 //			IF_PHYSICAL_ADDRESS_LH PermanentPhysAddress; // 0x486
 //		} NDIS_IF_BLOCK, * PNDIS_IF_BLOCK;
 //
-//		// ÄÚºË×Ö·û´®½á¹¹ (À´×Ôndis.sysµÄ¶¨Òå)
+//		// å†…æ ¸å­—ç¬¦ä¸²ç»“æ„ (æ¥è‡ªndis.sysçš„å®šä¹‰)
 //		typedef struct _KSTRING {
 //			char _padding_0[0x10];
-//			WCHAR Buffer[1]; // 0x10, Êµ¼Ê´óĞ¡¿É±ä
+//			WCHAR Buffer[1]; // 0x10, å®é™…å¤§å°å¯å˜
 //		} KSTRING, * PKSTRING;
 //
-//		// NDIS ¹ıÂËÆ÷¿é£¬ÓÃÓÚ±éÀúÏµÍ³ÖĞµÄÍøÂçÊÊÅäÆ÷
+//		// NDIS è¿‡æ»¤å™¨å—ï¼Œç”¨äºéå†ç³»ç»Ÿä¸­çš„ç½‘ç»œé€‚é…å™¨
 //		typedef struct _NDIS_FILTER_BLOCK {
 //			char _padding_0[0x8];
 //			struct _NDIS_FILTER_BLOCK* NextFilter; // 0x8
@@ -1086,13 +1086,13 @@
 //
 //
 //		//------------------------------------------------
-//		// Ä£¿é¼¶¾²Ì¬/È«¾Ö±äÁ¿ (ÒÑ¾«¼ò)
+//		// æ¨¡å—çº§é™æ€/å…¨å±€å˜é‡ (å·²ç²¾ç®€)
 //		//------------------------------------------------
 //		static DWORD g_Seed = 0;
 //
 //
 //		//------------------------------------------------
-//		// ÄÚ²¿¸¨Öúº¯Êı (Ö»±£ÁôºËĞÄËã·¨)
+//		// å†…éƒ¨è¾…åŠ©å‡½æ•° (åªä¿ç•™æ ¸å¿ƒç®—æ³•)
 //		//------------------------------------------------
 //		static DWORD Internal_Random(DWORD* seed) {
 //			DWORD s = *seed * 1103515245 + 12345;
@@ -1118,24 +1118,24 @@
 //
 //
 //		NTSTATUS SpoofNIC() {
-//			// --- È·±£ÖÖ×ÓÖ»ÔÚÊ×´Îµ÷ÓÃÊ±±»¶¯Ì¬³õÊ¼»¯ ---
+//			// --- ç¡®ä¿ç§å­åªåœ¨é¦–æ¬¡è°ƒç”¨æ—¶è¢«åŠ¨æ€åˆå§‹åŒ– ---
 //			static BOOLEAN g_SeedInitialized = FALSE;
 //			if (!g_SeedInitialized)
 //			{
 //				LARGE_INTEGER time;
-//				KeQuerySystemTime(&time); // »ñÈ¡µ±Ç°¸ß¾«¶ÈÏµÍ³Ê±¼ä
+//				KeQuerySystemTime(&time); // è·å–å½“å‰é«˜ç²¾åº¦ç³»ç»Ÿæ—¶é—´
 //				g_Seed = time.LowPart ^ time.HighPart;
-//				g_SeedInitialized = TRUE; // ±ê¼ÇÖÖ×ÓÒÑ¾­³õÊ¼»¯£¬·ÀÖ¹ÖØ¸´ÉèÖÃ
+//				g_SeedInitialized = TRUE; // æ ‡è®°ç§å­å·²ç»åˆå§‹åŒ–ï¼Œé˜²æ­¢é‡å¤è®¾ç½®
 //			}
 //
-//			// ²éÕÒ²¢ĞŞ¸Ä ndis.sys ÖĞµÄÍø¿¨ĞÅÏ¢
+//			// æŸ¥æ‰¾å¹¶ä¿®æ”¹ ndis.sys ä¸­çš„ç½‘å¡ä¿¡æ¯
 //			PVOID base = GetKernelModuleBase(OBFUSCATE("ndis.sys").decrypt());
 //			if (!base) {
 //				KdPrint((OBFUSCATE("SpoofNIC: ! Failed to get \"ndis.sys\" base address!\n").decrypt()));
 //				return STATUS_NOT_FOUND;
 //			}
 //
-//			// Í¨¹ıÌØÕ÷ÂëÉ¨Ãè¶¨Î» ndisGlobalFilterList
+//			// é€šè¿‡ç‰¹å¾ç æ‰«æå®šä½ ndisGlobalFilterList
 //			PNDIS_FILTER_BLOCK ndisGlobalFilterList = (PNDIS_FILTER_BLOCK)FindPatternImage(base,
 //				OBFUSCATE("\x40\x8A\xF0\x48\x8B\x05").decrypt(), OBFUSCATE("xxxxxx").decrypt());
 //			if (!ndisGlobalFilterList) {
@@ -1143,7 +1143,7 @@
 //				return STATUS_NOT_FOUND;
 //			}
 //
-//			// Í¨¹ıÌØÕ÷ÂëÉ¨Ãè¶¨Î» IfBlock µÄÆ«ÒÆÁ¿
+//			// é€šè¿‡ç‰¹å¾ç æ‰«æå®šä½ IfBlock çš„åç§»é‡
 //			DWORD* ndisFilter_IfBlock_pattern = (DWORD*)FindPatternImage(base,
 //				OBFUSCATE("\x48\x85\x00\x0F\x84\x00\x00\x00\x00\x00\x8B\x00\x00\x00\x00\x00\x33").decrypt(), OBFUSCATE("xx?xx?????x???xxx").decrypt());
 //			if (!ndisFilter_IfBlock_pattern) {
@@ -1151,7 +1151,7 @@
 //				return STATUS_NOT_FOUND;
 //			}
 //
-//			// ´ÓÌØÕ÷ÂëÖĞÌáÈ¡Æ«ÒÆÁ¿²¢¼ÆËã×îÖÕµØÖ·
+//			// ä»ç‰¹å¾ç ä¸­æå–åç§»é‡å¹¶è®¡ç®—æœ€ç»ˆåœ°å€
 //			DWORD ndisFilter_IfBlock_offset = *(DWORD*)((char*)ndisFilter_IfBlock_pattern + 12);
 //			ndisGlobalFilterList = (PNDIS_FILTER_BLOCK)((char*)ndisGlobalFilterList + 3);
 //			ndisGlobalFilterList = *(PNDIS_FILTER_BLOCK*)((char*)ndisGlobalFilterList + 7 + *(int*)((char*)ndisGlobalFilterList + 3));
@@ -1159,7 +1159,7 @@
 //			for (PNDIS_FILTER_BLOCK filter = ndisGlobalFilterList; filter; filter = filter->NextFilter) {
 //				PNDIS_IF_BLOCK block = *(PNDIS_IF_BLOCK*)((char*)filter + ndisFilter_IfBlock_offset);
 //				if (block && filter->FilterInstanceName && filter->FilterInstanceName->Buffer) {
-//					// --- ºËĞÄÂß¼­: Ö±½ÓĞŞ¸ÄÄÚ´æÖĞµÄ MAC µØÖ· ---
+//					// --- æ ¸å¿ƒé€»è¾‘: ç›´æ¥ä¿®æ”¹å†…å­˜ä¸­çš„ MAC åœ°å€ ---
 //					Internal_SpoofBuffer(g_Seed, block->ifPhysAddress.Address, block->ifPhysAddress.Length);
 //					Internal_SpoofBuffer(g_Seed, block->PermanentPhysAddress.Address, block->PermanentPhysAddress.Length);
 //				}
@@ -1170,92 +1170,92 @@
 //	}
 //
 //	//==================================================================================
-//	// 7. Î±ÔìGPU (Spoof GPU)
+//	// 7. ä¼ªé€ GPU (Spoof GPU)
 //	//==================================================================================
 //	namespace SpoofGPU {
 //
 //		NTSTATUS SpoofGpuControl(PDEVICE_OBJECT pDevice, PIRP IRP) {
-//			// Ê×ÏÈ£¬½«IRPÔ­·â²»¶¯µØ´«µİ¸øÔ­Ê¼µÄÇı¶¯³ÌĞòº¯Êı
+//			// é¦–å…ˆï¼Œå°†IRPåŸå°ä¸åŠ¨åœ°ä¼ é€’ç»™åŸå§‹çš„é©±åŠ¨ç¨‹åºå‡½æ•°
 //			NTSTATUS Result = pDevice->DriverObject->MajorFunction[28](pDevice, IRP);
 //
 //			PIO_STACK_LOCATION pIoStack = IoGetCurrentIrpStackLocation(IRP);
 //
-//			// È·±£ pIoStack ÓĞĞ§£¬²¢ÇÒÊÇÎÒÃÇÏëÒªHookµÄÄ¿±êIOCTL
+//			// ç¡®ä¿ pIoStack æœ‰æ•ˆï¼Œå¹¶ä¸”æ˜¯æˆ‘ä»¬æƒ³è¦Hookçš„ç›®æ ‡IOCTL
 //			if (pIoStack != NULL && pIoStack->Parameters.DeviceIoControl.IoControlCode == 0x8DE0008 /*IOCTL_NVIDIA_SMIL*/) {
 //
-//				// Ö»ÓĞÔÚÔ­Ê¼µ÷ÓÃ³É¹¦ÇÒ»º³åÇøÓĞĞ§Ê±²Å½øĞĞ´¦Àí
+//				// åªæœ‰åœ¨åŸå§‹è°ƒç”¨æˆåŠŸä¸”ç¼“å†²åŒºæœ‰æ•ˆæ—¶æ‰è¿›è¡Œå¤„ç†
 //				if (NT_SUCCESS(Result) && IRP->UserBuffer != NULL) {
 //
 //					char* pKernelBuffer = (char*)ExAllocatePoolWithTag(NonPagedPool, 512 /*IOCTL_NVIDIA_SMIL_MAX*/, 'LS');
 //					if (pKernelBuffer == NULL) {
-//						// ´íÎó£ºÄÚºËÄÚ´æ·ÖÅäÊ§°Ü
+//						// é”™è¯¯ï¼šå†…æ ¸å†…å­˜åˆ†é…å¤±è´¥
 //						KdPrint(("[-] SpoofGpuControl: Failed to allocate kernel buffer.\n"));
 //					}
 //					else {
 //						__try {
-//							// Ì½Õë¼ì²éÓÃ»§»º³åÇøÊÇ·ñ¿É¶Á
+//							// æ¢é’ˆæ£€æŸ¥ç”¨æˆ·ç¼“å†²åŒºæ˜¯å¦å¯è¯»
 //							ProbeForRead(IRP->UserBuffer, 512, sizeof(UCHAR));
 //
-//							// ½«ÓÃ»§»º³åÇøµÄÄÚÈİ°²È«µØ¿½±´µ½ÎÒÃÇµÄÄÚºË»º³åÇø
+//							// å°†ç”¨æˆ·ç¼“å†²åŒºçš„å†…å®¹å®‰å…¨åœ°æ‹·è´åˆ°æˆ‘ä»¬çš„å†…æ ¸ç¼“å†²åŒº
 //							RtlCopyMemory(pKernelBuffer, IRP->UserBuffer, 512);
 //
-//							// ÔÚÎÒÃÇ×Ô¼ºµÄÄÚºË»º³åÇøÖĞ°²È«µØËÑË÷ "GPU-" ×Ö·û´®
+//							// åœ¨æˆ‘ä»¬è‡ªå·±çš„å†…æ ¸ç¼“å†²åŒºä¸­å®‰å…¨åœ°æœç´¢ "GPU-" å­—ç¬¦ä¸²
 //							for (INT Index = 0; Index < (512 - 4); Index++) {
 //								if (memcmp(pKernelBuffer + Index, "GPU-", 4) == 0) {
-//									// Ì½Õë¼ì²éÓÃ»§»º³åÇøÊÇ·ñ¿ÉĞ´
+//									// æ¢é’ˆæ£€æŸ¥ç”¨æˆ·ç¼“å†²åŒºæ˜¯å¦å¯å†™
 //									ProbeForWrite(IRP->UserBuffer, 512, sizeof(UCHAR));
 //
-//									// Ö±½ÓÔÚÓÃ»§»º³åÇøÖĞ½« "GPU-" µÄ 'G' Ìæ»»Îª NULL ½áÊø·û£¬ÊµÏÖ½Ø¶Ï
+//									// ç›´æ¥åœ¨ç”¨æˆ·ç¼“å†²åŒºä¸­å°† "GPU-" çš„ 'G' æ›¿æ¢ä¸º NULL ç»“æŸç¬¦ï¼Œå®ç°æˆªæ–­
 //									((char*)IRP->UserBuffer)[Index] = '\0';
 //
-//									// ÈÎÎñÍê³É£¬ÍË³öÑ­»·
+//									// ä»»åŠ¡å®Œæˆï¼Œé€€å‡ºå¾ªç¯
 //									break;
 //								}
 //							}
 //						}
 //						__except (EXCEPTION_EXECUTE_HANDLER) {
-//							// ´íÎó£º·ÃÎÊÓÃ»§Ä£Ê½ÄÚ´æÊ±·¢ÉúÒì³£
+//							// é”™è¯¯ï¼šè®¿é—®ç”¨æˆ·æ¨¡å¼å†…å­˜æ—¶å‘ç”Ÿå¼‚å¸¸
 //							KdPrint(("[-] SpoofGpuControl: Exception 0x%X caught while accessing UserBuffer.\n", GetExceptionCode()));
 //						}
 //
-//						// ÊÍ·ÅÄÚºËÄÚ´æ
+//						// é‡Šæ”¾å†…æ ¸å†…å­˜
 //						ExFreePoolWithTag(pKernelBuffer, 'LS');
 //					}
 //				}
 //			}
 //
-//			// ·µ»ØÔ­Ê¼º¯ÊıµÄÖ´ĞĞ½á¹û
+//			// è¿”å›åŸå§‹å‡½æ•°çš„æ‰§è¡Œç»“æœ
 //			return Result;
 //		}
 //
 //		NTSTATUS SpoofGPU() {
 //			static BOOLEAN Enable = FALSE;
-//			NTSTATUS Result = STATUS_UNSUCCESSFUL; // ³õÊ¼»¯ÎªÊ§°Ü×´Ì¬
+//			NTSTATUS Result = STATUS_UNSUCCESSFUL; // åˆå§‹åŒ–ä¸ºå¤±è´¥çŠ¶æ€
 //
 //			if (Enable == FALSE) {
 //				UNICODE_STRING ObjeName = RTL_CONSTANT_STRING(L"\\Driver\\nvlddmkm");
 //				PDRIVER_OBJECT DriverObj = NULL;
 //
-//				// ³¢ÊÔ»ñÈ¡NVIDIAÇı¶¯¶ÔÏó
+//				// å°è¯•è·å–NVIDIAé©±åŠ¨å¯¹è±¡
 //				Result = L_ObReferenceObjectByName(&ObjeName, OBJ_CASE_INSENSITIVE, 0, 0, *IoDriverObjectType, KernelMode, 0, &DriverObj);
 //				if (!NT_SUCCESS(Result)) {
-//					// ´íÎó£ºÕÒ²»µ½»òÎŞ·¨ÒıÓÃNVIDIAÇı¶¯¶ÔÏó
+//					// é”™è¯¯ï¼šæ‰¾ä¸åˆ°æˆ–æ— æ³•å¼•ç”¨NVIDIAé©±åŠ¨å¯¹è±¡
 //					KdPrint(("[-] SpoofGPU: Failed to get reference to %wZ. Status: 0x%X\n", &ObjeName, Result));
-//					return Result; // Ö±½Ó·µ»ØÊ§°Ü
+//					return Result; // ç›´æ¥è¿”å›å¤±è´¥
 //				}
 //
-//				// ³É¹¦»ñÈ¡¶ÔÏó£¬ÏÖÔÚ½øĞĞHook
+//				// æˆåŠŸè·å–å¯¹è±¡ï¼Œç°åœ¨è¿›è¡ŒHook
 //				*(PVOID*)&DriverObj->MajorFunction[28] = InterlockedExchangePointer((PVOID*)&DriverObj->MajorFunction[14], (PVOID)SpoofGpuControl);
 //
-//				// ½â³ı¶ÔÇı¶¯¶ÔÏóµÄÒıÓÃ
+//				// è§£é™¤å¯¹é©±åŠ¨å¯¹è±¡çš„å¼•ç”¨
 //				ObfDereferenceObject(DriverObj);
 //
-//				// ±ê¼ÇÎªÒÑÆôÓÃ£¬²¢ÉèÖÃ×îÖÕ·µ»ØÖµÎª³É¹¦
+//				// æ ‡è®°ä¸ºå·²å¯ç”¨ï¼Œå¹¶è®¾ç½®æœ€ç»ˆè¿”å›å€¼ä¸ºæˆåŠŸ
 //				Enable = TRUE;
 //				Result = STATUS_SUCCESS;
 //			}
 //			else {
-//				// Èç¹ûÒÑ¾­ÆôÓÃ£¬Ö±½Ó·µ»Ø³É¹¦
+//				// å¦‚æœå·²ç»å¯ç”¨ï¼Œç›´æ¥è¿”å›æˆåŠŸ
 //				Result = STATUS_SUCCESS;
 //			}
 //
@@ -1267,16 +1267,16 @@
 //
 //
 //	//==================================================================================
-//	// 8. Î±Ôì·ÖÇø GUID (Spoof PART)
+//	// 8. ä¼ªé€ åˆ†åŒº GUID (Spoof PART)
 //	//==================================================================================
 //	namespace SpoofPART {
 //
 //		static ULONG g_PartSeed = 0;
 //
-//		// Ç°ÏòÉùÃ÷£¬ÒòÎª SpoofVOLUMES ¿ÉÄÜĞèÒªµ÷ÓÃ
+//		// å‰å‘å£°æ˜ï¼Œå› ä¸º SpoofVOLUMES å¯èƒ½éœ€è¦è°ƒç”¨
 //		NTSTATUS BuildCompletion(PIO_STACK_LOCATION pIoStack, PIRP IRP, PIO_COMPLETION_ROUTINE Routine);
 //
-//		// Íê³ÉÀı³Ì£º×¨ÃÅÓÃÓÚĞŞ¸Ä IOCTL_DISK_GET_DRIVE_LAYOUT_EX
+//		// å®Œæˆä¾‹ç¨‹ï¼šä¸“é—¨ç”¨äºä¿®æ”¹ IOCTL_DISK_GET_DRIVE_LAYOUT_EX
 //		NTSTATUS PartLayoutCompletion(PDEVICE_OBJECT pDevice, PIRP IRP, PVOID Context) {
 //			UNREFERENCED_PARAMETER(pDevice);
 //			struct _COMPLETION_CONTEXT { PVOID Buffer; ULONG BufferLength; PVOID OldContext; PIO_COMPLETION_ROUTINE OldRoutine; } Request;
@@ -1304,7 +1304,7 @@
 //			return STATUS_MORE_PROCESSING_REQUIRED;
 //		}
 //
-//		// Íê³ÉÀı³Ì£º×¨ÃÅÓÃÓÚĞŞ¸Ä IOCTL_DISK_GET_PARTITION_INFO_EX
+//		// å®Œæˆä¾‹ç¨‹ï¼šä¸“é—¨ç”¨äºä¿®æ”¹ IOCTL_DISK_GET_PARTITION_INFO_EX
 //		NTSTATUS PartInfoCompletion(PDEVICE_OBJECT pDevice, PIRP IRP, PVOID Context) {
 //			UNREFERENCED_PARAMETER(pDevice);
 //			struct _COMPLETION_CONTEXT { PVOID Buffer; ULONG BufferLength; PVOID OldContext; PIO_COMPLETION_ROUTINE OldRoutine; } Request;
@@ -1389,7 +1389,7 @@
 //
 //
 //	//==================================================================================
-//	// 9. Î±Ôì¾í GUID (Spoof VOLUMES)
+//	// 9. ä¼ªé€ å· GUID (Spoof VOLUMES)
 //	//==================================================================================
 //	namespace SpoofVOLUMES
 //	{
@@ -1445,7 +1445,7 @@
 //
 //							if (NT_SUCCESS(Result)) {
 //
-//								// Éú³ÉĞÂµÄGUID
+//								// ç”Ÿæˆæ–°çš„GUID
 //								GUID newGuid;
 //								Result = ExUuidCreate(&newGuid);
 //
@@ -1453,7 +1453,7 @@
 //								UNICODE_STRING guidString;
 //								RtlInitEmptyUnicodeString(&guidString, guidBuffer, sizeof(guidBuffer));
 //
-//								// ½«GUID½á¹¹Ìå¸ñÊ½»¯ÎªUNICODE×Ö·û´®
+//								// å°†GUIDç»“æ„ä½“æ ¼å¼åŒ–ä¸ºUNICODEå­—ç¬¦ä¸²
 //								Result = RtlUnicodeStringPrintf(
 //									&guidString,
 //									L"%08lX-%04hX-%04hX-%02hhX%02hhX-%02hhX%02hhX%02hhX%02hhX%02hhX%02hhX",
@@ -1530,7 +1530,7 @@
 //
 //
 //
-//								// Éú³ÉĞÂµÄGUID
+//								// ç”Ÿæˆæ–°çš„GUID
 //								GUID newGuid;
 //								Result = ExUuidCreate(&newGuid);
 //
@@ -1538,7 +1538,7 @@
 //								UNICODE_STRING guidString;
 //								RtlInitEmptyUnicodeString(&guidString, guidBuffer, sizeof(guidBuffer));
 //
-//								// ½«GUID½á¹¹Ìå¸ñÊ½»¯ÎªUNICODE×Ö·û´®
+//								// å°†GUIDç»“æ„ä½“æ ¼å¼åŒ–ä¸ºUNICODEå­—ç¬¦ä¸²
 //								Result = RtlUnicodeStringPrintf(
 //									&guidString,
 //									L"%08lX-%04hX-%04hX-%02hhX%02hhX-%02hhX%02hhX%02hhX%02hhX%02hhX%02hhX",
@@ -1610,23 +1610,23 @@
 //
 //
 //	//==================================================================================
-//	// 3. Î±Ôì×¢²á±íÓë±êÊ¶ÎÄ¼ş (Spoof Registry and Identifier Files)
+//	// 3. ä¼ªé€ æ³¨å†Œè¡¨ä¸æ ‡è¯†æ–‡ä»¶ (Spoof Registry and Identifier Files)
 //	//==================================================================================
 //	namespace SpoofREG
 //	{
-//		// Î±Ôì×¢²á±í¼üÖµºÍÌØ¶¨µÄ±êÊ¶·ûÎÄ¼ş
+//		// ä¼ªé€ æ³¨å†Œè¡¨é”®å€¼å’Œç‰¹å®šçš„æ ‡è¯†ç¬¦æ–‡ä»¶
 //		NTSTATUS SpoofIdentifiers() {
-//			// Ê¹ÓÃ¾²Ì¬²¼¶ûÖµÈ·±£´Ëº¯ÊıµÄºËĞÄÂß¼­Ö»³É¹¦Ö´ĞĞÒ»´Î
+//			// ä½¿ç”¨é™æ€å¸ƒå°”å€¼ç¡®ä¿æ­¤å‡½æ•°çš„æ ¸å¿ƒé€»è¾‘åªæˆåŠŸæ‰§è¡Œä¸€æ¬¡
 //			static BOOLEAN Enable = FALSE;
 //			if (Enable) {
 //				return STATUS_SUCCESS;
 //			}
 //
 //			NTSTATUS Result = STATUS_UNSUCCESSFUL;
-//			BOOLEAN bAnySuccess = FALSE; // ±êÖ¾£ºÊÇ·ñÓĞÈÎºÎÒ»¸ö²Ù×÷³É¹¦
+//			BOOLEAN bAnySuccess = FALSE; // æ ‡å¿—ï¼šæ˜¯å¦æœ‰ä»»ä½•ä¸€ä¸ªæ“ä½œæˆåŠŸ
 //
 //			//================================================
-//			// ²¿·Ö 1: Î±Ôì×¢²á±íÖĞµÄ GUID
+//			// éƒ¨åˆ† 1: ä¼ªé€ æ³¨å†Œè¡¨ä¸­çš„ GUID
 //			//================================================
 //			KdPrint(("[*] Spoofing registry GUIDs...\n"));
 //
@@ -1634,14 +1634,14 @@
 //			Result = ExUuidCreate(&newGuid);
 //			if (!NT_SUCCESS(Result)) {
 //				KdPrint(("[-] CRITICAL: Failed to create UUID. Error: 0x%X\n", Result));
-//				// UUID´´½¨Ê§°ÜÊÇÖÂÃüµÄ£¬ºóĞøÒÀÀµËüµÄ²Ù×÷ÎŞ·¨½øĞĞ
+//				// UUIDåˆ›å»ºå¤±è´¥æ˜¯è‡´å‘½çš„ï¼Œåç»­ä¾èµ–å®ƒçš„æ“ä½œæ— æ³•è¿›è¡Œ
 //			}
 //			else {
 //				WCHAR guidBuffer[40];
 //				UNICODE_STRING guidString;
 //				RtlInitEmptyUnicodeString(&guidString, guidBuffer, sizeof(guidBuffer));
 //
-//				// ½«GUID½á¹¹Ìå¸ñÊ½»¯ÎªUNICODE×Ö·û´®
+//				// å°†GUIDç»“æ„ä½“æ ¼å¼åŒ–ä¸ºUNICODEå­—ç¬¦ä¸²
 //				Result = RtlUnicodeStringPrintf(
 //					&guidString,
 //					L"%08lX-%04hX-%04hX-%02hhX%02hhX-%02hhX%02hhX%02hhX%02hhX%02hhX%02hhX",
@@ -1654,7 +1654,7 @@
 //					KdPrint(("[-] CRITICAL: Failed to format GUID to string. Error: 0x%X\n", Result));
 //				}
 //				else {
-//					// ´ıÎ±ÔìµÄ×¢²á±í¼üÖµÁĞ±í
+//					// å¾…ä¼ªé€ çš„æ³¨å†Œè¡¨é”®å€¼åˆ—è¡¨
 //					const WCHAR* szKeysToSpoof[][2] = {
 //						{ L"\\Registry\\Machine\\Software\\Microsoft\\SQMClient", L"MachineId" },
 //						{ L"\\Registry\\Machine\\Software\\Microsoft\\Cryptography", L"MachineGuid" },
@@ -1664,7 +1664,7 @@
 //					};
 //
 //					for (SIZE_T i = 0; i < ARRAYSIZE(szKeysToSpoof); i++) {
-//						// Ğ´ÈëGUID×Ö·û´®
+//						// å†™å…¥GUIDå­—ç¬¦ä¸²
 //						if (NT_SUCCESS(RtlWriteRegistryValue(RTL_REGISTRY_ABSOLUTE, szKeysToSpoof[i][0], szKeysToSpoof[i][1], REG_SZ, guidString.Buffer, guidString.Length + sizeof(WCHAR)))) {
 //							bAnySuccess = TRUE;
 //						}
@@ -1673,10 +1673,10 @@
 //			}
 //
 //			//================================================
-//			// ²¿·Ö 2: Î±Ôì×¢²á±íÖĞµÄÆäËû±êÊ¶·û
+//			// éƒ¨åˆ† 2: ä¼ªé€ æ³¨å†Œè¡¨ä¸­çš„å…¶ä»–æ ‡è¯†ç¬¦
 //			//================================================
 //
-//			// Î±Ôì¶ş½øÖÆÀàĞÍµÄ×¢²á±íÖµ
+//			// ä¼ªé€ äºŒè¿›åˆ¶ç±»å‹çš„æ³¨å†Œè¡¨å€¼
 //			{
 //				UCHAR randomBinaryData[32];
 //				ULONG seed = KeQueryTimeIncrement();
@@ -1690,7 +1690,7 @@
 //				}
 //			}
 //
-//			// ÇåÀí¹ÒÔØÉè±¸ĞÅÏ¢
+//			// æ¸…ç†æŒ‚è½½è®¾å¤‡ä¿¡æ¯
 //			{
 //				const WCHAR* volumeLetters[] = { L"A", L"B", L"C", L"D", L"E", L"F", L"G", L"H", L"I", L"J", L"K", L"L", L"M", L"N", L"O", L"P", L"Q", L"R", L"S", L"T", L"U", L"V", L"W", L"X", L"Y", L"Z" };
 //				WCHAR volumeValueName[32];
@@ -1704,7 +1704,7 @@
 //			}
 //
 //			//================================================
-//			// ²¿·Ö 3: Î±Ôì MachineGuid.txt ÎÄ¼ş (Ô­ SpoofFile Âß¼­)
+//			// éƒ¨åˆ† 3: ä¼ªé€  MachineGuid.txt æ–‡ä»¶ (åŸ SpoofFile é€»è¾‘)
 //			//================================================
 //			KdPrint(("[*] Spoofing identifier files...\n"));
 //
@@ -1741,7 +1741,7 @@
 //						ZwClose(hFile);
 //
 //						if (NT_SUCCESS(fileStatus)) {
-//							bAnySuccess = TRUE; // ÎÄ¼şĞ´Èë³É¹¦Ò²ËãÕûÌå³É¹¦
+//							bAnySuccess = TRUE; // æ–‡ä»¶å†™å…¥æˆåŠŸä¹Ÿç®—æ•´ä½“æˆåŠŸ
 //						}
 //					}
 //				}
@@ -1749,15 +1749,15 @@
 //			}
 //
 //			//================================================
-//			// ×îÖÕ×´Ì¬ÅĞ¶Ï
+//			// æœ€ç»ˆçŠ¶æ€åˆ¤æ–­
 //			//================================================
 //			if (bAnySuccess) {
 //				KdPrint(("[+] SpoofIdentifiers: One or more identifiers were successfully spoofed.\n"));
-//				Enable = TRUE;      // ±ê¼ÇÒÑ³É¹¦Ö´ĞĞ£¬ÏÂ´Î²»ÔÙ½øÈë
-//				return STATUS_SUCCESS; // Ö»ÒªÓĞÈÎÒâÒ»¸ö³É¹¦£¬¾Í·µ»ØÕûÌå³É¹¦
+//				Enable = TRUE;      // æ ‡è®°å·²æˆåŠŸæ‰§è¡Œï¼Œä¸‹æ¬¡ä¸å†è¿›å…¥
+//				return STATUS_SUCCESS; // åªè¦æœ‰ä»»æ„ä¸€ä¸ªæˆåŠŸï¼Œå°±è¿”å›æ•´ä½“æˆåŠŸ
 //			}
 //
-//			// Èç¹ûÃ»ÓĞÈÎºÎ²Ù×÷³É¹¦£¬Ôò·µ»Ø×îºóÒ»¸öÓöµ½µÄ´íÎó´úÂë»òÄ¬ÈÏÊ§°Ü´úÂë
+//			// å¦‚æœæ²¡æœ‰ä»»ä½•æ“ä½œæˆåŠŸï¼Œåˆ™è¿”å›æœ€åä¸€ä¸ªé‡åˆ°çš„é”™è¯¯ä»£ç æˆ–é»˜è®¤å¤±è´¥ä»£ç 
 //			KdPrint(("[-] SpoofIdentifiers: All spoofing attempts failed.\n"));
 //			return (NT_SUCCESS(Result) ? STATUS_UNSUCCESSFUL : Result);
 //		}
@@ -1765,7 +1765,7 @@
 //
 //
 //	//==================================================================================
-//	// 3. Î±Ôì´ÅÅÌĞòÁĞºÅ  idaÄæÏò»ñÈ¡½á¹¹ÌåºÍº¯ÊıÌØÕ÷
+//	// 3. ä¼ªé€ ç£ç›˜åºåˆ—å·  idaé€†å‘è·å–ç»“æ„ä½“å’Œå‡½æ•°ç‰¹å¾
 //	//==================================================================================
 //	namespace SpoofHDD
 //	{
@@ -1805,7 +1805,7 @@
 //			char _tail[0x5F0];
 //		} RAID_UNIT_EXTENSION, * PRAID_UNIT_EXTENSION;
 //
-//		// º¯ÊıÖ¸ÕëÀàĞÍ¶¨Òå
+//		// å‡½æ•°æŒ‡é’ˆç±»å‹å®šä¹‰
 //		typedef __int64(__fastcall* RaidUnitRegisterInterfaces_t)(PRAID_UNIT_EXTENSION a1);
 //
 //
@@ -1826,7 +1826,7 @@
 //
 //
 //			NTSTATUS status = STATUS_NOT_FOUND;
-//			for (int i = 0; i < 2; i++) { // ±éÀú RaidPort0 ºÍ RaidPort1
+//			for (int i = 0; i < 2; i++) { // éå† RaidPort0 å’Œ RaidPort1
 //				PDEVICE_OBJECT raidDeviceChain = nullptr;
 //				{
 //					wchar_t raidBuffer[32];
@@ -1850,32 +1850,32 @@
 //
 //				PDEVICE_OBJECT currentDevice = raidDeviceChain;
 //				while (currentDevice) {
-//					// È·±£ÎÒÃÇ²Ù×÷µÄÊÇ´ÅÅÌÉè±¸
+//					// ç¡®ä¿æˆ‘ä»¬æ“ä½œçš„æ˜¯ç£ç›˜è®¾å¤‡
 //					if (currentDevice->DeviceType == FILE_DEVICE_DISK) {
 //						PRAID_UNIT_EXTENSION extension = static_cast<PRAID_UNIT_EXTENSION>(currentDevice->DeviceExtension);
 //						if (extension) {
-//							// »ñÈ¡Ô­Ê¼ĞòÁĞºÅµÄ³¤¶ÈºÍ»º³åÇøÖ¸Õë
+//							// è·å–åŸå§‹åºåˆ—å·çš„é•¿åº¦å’Œç¼“å†²åŒºæŒ‡é’ˆ
 //							USHORT length = extension->_Identity.Identity.SerialNumber.Length;
 //							char* serialBuffer = extension->_Identity.Identity.SerialNumber.Buffer;
 //
 //							if (length > 0 && serialBuffer) {
 //
-//								// 1. (¿ÉÑ¡) ±¸·İÔ­Ê¼ĞòÁĞºÅÒÔ±ã´òÓ¡ÈÕÖ¾
+//								// 1. (å¯é€‰) å¤‡ä»½åŸå§‹åºåˆ—å·ä»¥ä¾¿æ‰“å°æ—¥å¿—
 //								char originalSerial[256];
 //								RtlZeroMemory(originalSerial, sizeof(originalSerial));
 //								RtlCopyMemory(originalSerial, serialBuffer, min(length, 255));
 //
-//								// 2. ×¼±¸Ëæ»úÊıÖÖ×ÓºÍ×Ö·û¼¯
+//								// 2. å‡†å¤‡éšæœºæ•°ç§å­å’Œå­—ç¬¦é›†
 //								static const char hexChars[] = "0123456789ABCDEF";
 //								auto seed = KeQueryTimeIncrement();
 //
-//								// 3. ±éÀú²¢ĞŞ¸ÄÔ­Ê¼»º³åÇøÖĞµÄÃ¿Ò»¸ö×Ö·û
+//								// 3. éå†å¹¶ä¿®æ”¹åŸå§‹ç¼“å†²åŒºä¸­çš„æ¯ä¸€ä¸ªå­—ç¬¦
 //								for (USHORT n = 0; n < length; ++n) {
-//									// VMwareĞéÄâ´ÅÅÌµÄĞòÁĞºÅ¿ÉÄÜ°üº¬µã(.)»òÏÂ»®Ïß(_)£¬ÎÒÃÇ¿ÉÒÔÑ¡ÔñÌø¹ıËüÃÇ
+//									// VMwareè™šæ‹Ÿç£ç›˜çš„åºåˆ—å·å¯èƒ½åŒ…å«ç‚¹(.)æˆ–ä¸‹åˆ’çº¿(_)ï¼Œæˆ‘ä»¬å¯ä»¥é€‰æ‹©è·³è¿‡å®ƒä»¬
 //									if (serialBuffer[n] == '.' || serialBuffer[n] == '_') {
 //										continue;
 //									}
-//									// Ò²¿ÉÒÔÌø¹ı¿Õ¸ñ£¬ÒòÎªÄ³Ğ©ÎïÀíÓ²ÅÌÓÃ¿Õ¸ñÌî³äÄ©Î²
+//									// ä¹Ÿå¯ä»¥è·³è¿‡ç©ºæ ¼ï¼Œå› ä¸ºæŸäº›ç‰©ç†ç¡¬ç›˜ç”¨ç©ºæ ¼å¡«å……æœ«å°¾
 //									if (serialBuffer[n] == ' ') {
 //										continue;
 //									}
@@ -1884,15 +1884,15 @@
 //									serialBuffer[n] = hexChars[key];
 //								}
 //
-//								// 4. ´òÓ¡ĞŞ¸ÄÇ°ºóµÄ¶Ô±ÈÈÕÖ¾
+//								// 4. æ‰“å°ä¿®æ”¹å‰åçš„å¯¹æ¯”æ—¥å¿—
 //								KdPrint(("[+] Changed disk serial from '%s' to '%s'.\n", originalSerial, serialBuffer));
 //								status = STATUS_SUCCESS;
 //
 //
-//								// ÖØÖÃÆäËû¿ÉÄÜ±»¼à¿ØµÄÒ£²âÊı¾İ
+//								// é‡ç½®å…¶ä»–å¯èƒ½è¢«ç›‘æ§çš„é¥æµ‹æ•°æ®
 //								extension->_Telemetry.Telemetry.NvmeCriticalWarning = 0;
 //
-//								// µ÷ÓÃ½Ó¿ÚÊ¹ÆäÖØĞÂÓ¦ÓÃ»òÖØĞÂ»º´æÎÒÃÇĞŞ¸Ä¹ıµÄĞÅÏ¢
+//								// è°ƒç”¨æ¥å£ä½¿å…¶é‡æ–°åº”ç”¨æˆ–é‡æ–°ç¼“å­˜æˆ‘ä»¬ä¿®æ”¹è¿‡çš„ä¿¡æ¯
 //								registerInterfaces(extension);
 //							}
 //						}
@@ -1906,7 +1906,7 @@
 //
 //
 //	//==================================================================================
-//	// 5. Î±ÔìSMBIOS (Spoof SMBIOS)
+//	// 5. ä¼ªé€ SMBIOS (Spoof SMBIOS)
 //	//==================================================================================
 //	namespace SpoofSMBIOS
 //	{
@@ -1921,61 +1921,61 @@
 //
 //			PVOID ntosBase = GetKernelModuleBase("ntoskrnl.exe");
 //			if (!ntosBase) {
-//				// ´íÎóÊä³ö: »ñÈ¡ÄÚºË»ùÖ·Ê§°Ü (±£Áô)
-//				DbgPrint("[-] SpoofSMBIOS: »ñÈ¡ ntoskrnl.exe »ùÖ·Ê§°Ü¡£\n");
+//				// é”™è¯¯è¾“å‡º: è·å–å†…æ ¸åŸºå€å¤±è´¥ (ä¿ç•™)
+//				DbgPrint("[-] SpoofSMBIOS: è·å– ntoskrnl.exe åŸºå€å¤±è´¥ã€‚\n");
 //				return STATUS_NOT_FOUND;
 //			}
-//			//Ã¿¸öÏµÍ³²»Ò»Ñù¸ù¾İÏµÍ³¶¨ÖÆÆ«ÒÆ!!!
+//			//æ¯ä¸ªç³»ç»Ÿä¸ä¸€æ ·æ ¹æ®ç³»ç»Ÿå®šåˆ¶åç§»!!!
 //			/*
-//			 * [WmipSMBiosTablePhysicalAddress µÄÆ«ÒÆÁ¿]
-//			 * ¸ÃÖµÊÇÊ¹ÓÃ WinDbg ÄÚºËµ÷ÊÔÆ÷ÔÚÌØ¶¨ Windows ÄÚºË°æ±¾ÉÏ¼ÆËãµÃ³öµÄ¡£
-//			 * ¼ÆËã¹«Ê½: Æ«ÒÆÁ¿ = ±äÁ¿µØÖ· - Ä£¿é»ùµØÖ·
+//			 * [WmipSMBiosTablePhysicalAddress çš„åç§»é‡]
+//			 * è¯¥å€¼æ˜¯ä½¿ç”¨ WinDbg å†…æ ¸è°ƒè¯•å™¨åœ¨ç‰¹å®š Windows å†…æ ¸ç‰ˆæœ¬ä¸Šè®¡ç®—å¾—å‡ºçš„ã€‚
+//			 * è®¡ç®—å…¬å¼: åç§»é‡ = å˜é‡åœ°å€ - æ¨¡å—åŸºåœ°å€
 //			 * ---------------------------------------------------------------------
-//			 * ±äÁ¿µØÖ· (   x nt!*WmipSMBiosTablePhysicalAddress*    ): fffff802`d4dd60e8
-//			 * Ä£¿é»ùµØÖ· (   lm m nt   ):                      fffff802`d3e00000
+//			 * å˜é‡åœ°å€ (   x nt!*WmipSMBiosTablePhysicalAddress*    ): fffff802`d4dd60e8
+//			 * æ¨¡å—åŸºåœ°å€ (   lm m nt   ):                      fffff802`d3e00000
 //			 * ---------------------------------------------------------------------
-//			 * ¼ÆËã½á¹û (? fffff802`d4dd60e8 - fffff802`d3e00000): 0xFD60E8
+//			 * è®¡ç®—ç»“æœ (? fffff802`d4dd60e8 - fffff802`d3e00000): 0xFD60E8
 //			 */
 //
-//			//ida:¼ÓÔØntoskrnl,NamesËÑË÷WmipSMBiosTablePhysicalAddress»ñµÃÆ«ÒÆ
+//			//ida:åŠ è½½ntoskrnl,Namesæœç´¢WmipSMBiosTablePhysicalAddressè·å¾—åç§»
 //			ULONGLONG offset_WmipSMBios = 0xFD60E8;
 //
 //			/*
-//			 * [ExpBootEnvironmentInformation µÄÆ«ÒÆÁ¿]
-//			 * ¸ÃÖµÊÇÊ¹ÓÃ WinDbg ÄÚºËµ÷ÊÔÆ÷ÔÚÌØ¶¨ Windows ÄÚºË°æ±¾ÉÏ¼ÆËãµÃ³öµÄ¡£
-//			 * ¼ÆËã¹«Ê½: Æ«ÒÆÁ¿ = ±äÁ¿µØÖ· - Ä£¿é»ùµØÖ·
+//			 * [ExpBootEnvironmentInformation çš„åç§»é‡]
+//			 * è¯¥å€¼æ˜¯ä½¿ç”¨ WinDbg å†…æ ¸è°ƒè¯•å™¨åœ¨ç‰¹å®š Windows å†…æ ¸ç‰ˆæœ¬ä¸Šè®¡ç®—å¾—å‡ºçš„ã€‚
+//			 * è®¡ç®—å…¬å¼: åç§»é‡ = å˜é‡åœ°å€ - æ¨¡å—åŸºåœ°å€
 //			 * ---------------------------------------------------------------------
-//			 * ±äÁ¿µØÖ· (x nt!*ExpBootEnvironmentInformation*): fffff802`d4cfe0a0
-//			 * Ä£¿é»ùµØÖ· (lm m nt):                         fffff802`d3e00000
+//			 * å˜é‡åœ°å€ (x nt!*ExpBootEnvironmentInformation*): fffff802`d4cfe0a0
+//			 * æ¨¡å—åŸºåœ°å€ (lm m nt):                         fffff802`d3e00000
 //			 * ---------------------------------------------------------------------
-//			 * ¼ÆËã½á¹û (? fffff802`d4cfe0a0 - fffff802`d3e00000): 0xEFE0A0
+//			 * è®¡ç®—ç»“æœ (? fffff802`d4cfe0a0 - fffff802`d3e00000): 0xEFE0A0
 //			 */
-//			 //ida:¼ÓÔØntoskrnl,NamesËÑË÷ExpBootEnvironmentInformation»ñµÃÆ«ÒÆ
+//			 //ida:åŠ è½½ntoskrnl,Namesæœç´¢ExpBootEnvironmentInformationè·å¾—åç§»
 //			ULONGLONG offset_ExpBoot = 0xEFE0A0;
 //
 //
-//			// ¼ÆËãÁ½¸öÄ¿±êµÄ×îÖÕĞéÄâµØÖ·
+//			// è®¡ç®—ä¸¤ä¸ªç›®æ ‡çš„æœ€ç»ˆè™šæ‹Ÿåœ°å€
 //			PPHYSICAL_ADDRESS pWmipSMBiosTablePhysicalAddress = (PPHYSICAL_ADDRESS)((PUCHAR)ntosBase + offset_WmipSMBios);
 //			PVOID pExpBootEnvironmentInformation = (PVOID)((PUCHAR)ntosBase + offset_ExpBoot);
 //
 //
-//			// Ö´ĞĞËùÓĞĞŞ¸Ä²Ù×÷
+//			// æ‰§è¡Œæ‰€æœ‰ä¿®æ”¹æ“ä½œ
 //			__try {
-//				// ²Ù×÷ 1: Ëæ»ú»¯Æô¶¯»·¾³ĞÅÏ¢
+//				// æ“ä½œ 1: éšæœºåŒ–å¯åŠ¨ç¯å¢ƒä¿¡æ¯
 //				ULONG seed = (ULONG)KeQueryInterruptTime();
 //				for (SIZE_T i = 0; i < 16; i++) {
 //					seed = (seed * 0x343FD + 0x269EC3) + (ULONG)i;
 //					((PUCHAR)pExpBootEnvironmentInformation)[i] = (UCHAR)(RtlRandomEx(&seed) & 0xFF);
 //				}
 //
-//				// ²Ù×÷ 2: ÇåÁã SMBIOS ±íµÄÎïÀíµØÖ·
+//				// æ“ä½œ 2: æ¸…é›¶ SMBIOS è¡¨çš„ç‰©ç†åœ°å€
 //				pWmipSMBiosTablePhysicalAddress->QuadPart = 0;
 //
 //				Spoofed = TRUE;
 //			}
 //			__except (EXCEPTION_EXECUTE_HANDLER) {
-//				// ´íÎóÊä³ö: ÄÚ´æĞŞ¸ÄÊ±·¢ÉúÒì³£ (±£Áô)
-//				DbgPrint("[-] SpoofSMBIOS: ÔÚĞŞ¸ÄÄÚ´æÆÚ¼ä·¢ÉúÒì³£¡£\n");
+//				// é”™è¯¯è¾“å‡º: å†…å­˜ä¿®æ”¹æ—¶å‘ç”Ÿå¼‚å¸¸ (ä¿ç•™)
+//				DbgPrint("[-] SpoofSMBIOS: åœ¨ä¿®æ”¹å†…å­˜æœŸé—´å‘ç”Ÿå¼‚å¸¸ã€‚\n");
 //				return GetExceptionCode();
 //			}
 //
@@ -1985,7 +1985,7 @@
 //	}
 //
 //	//==================================================================================
-//	// 6. Î±ÔìÍø¿¨ (Spoof NIC) 
+//	// 6. ä¼ªé€ ç½‘å¡ (Spoof NIC)
 //	//==================================================================================
 //
 //	namespace SpoofNIC
@@ -1993,7 +1993,7 @@
 //		using namespace Utils;
 //		using namespace WinKernel;
 //
-//		// --- ÄúÔ­À´µÄ½á¹¹Ìå¶¨Òå (±£³Ö²»±ä) ---
+//		// --- æ‚¨åŸæ¥çš„ç»“æ„ä½“å®šä¹‰ (ä¿æŒä¸å˜) ---
 //		typedef struct _IF_PHYSICAL_ADDRESS_LH {
 //			USHORT Length;
 //			UCHAR Address[32];
@@ -2018,7 +2018,7 @@
 //		} NDIS_FILTER_BLOCK, * PNDIS_FILTER_BLOCK;
 //
 //
-//		// --- ÄúÔ­À´µÄ¸¨Öúº¯Êı (±£³Ö²»±ä) ---
+//		// --- æ‚¨åŸæ¥çš„è¾…åŠ©å‡½æ•° (ä¿æŒä¸å˜) ---
 //		static DWORD g_Seed = 0;
 //
 //		static DWORD Internal_Random(DWORD* seed) {
@@ -2044,7 +2044,7 @@
 //		}
 //
 //
-//		// --- ¾­¹ıÔöÇ¿µÄ SpoofNIC µ÷ÊÔº¯Êı ---
+//		// --- ç»è¿‡å¢å¼ºçš„ SpoofNIC è°ƒè¯•å‡½æ•° ---
 //		NTSTATUS SpoofNIC()
 //		{
 //			KdPrint(("[SpoofNIC] ==> Function entered.\n"));
@@ -2066,25 +2066,25 @@
 //			}
 //			KdPrint(("[SpoofNIC] ndis.sys base address found at: %p\n", base));
 //
-//			//IDA£ºNamesËÑË÷ndisGlobalFilterList»ñÈ¡Æ«ÒÆ
+//			//IDAï¼šNamesæœç´¢ndisGlobalFilterListè·å–åç§»
 //			ULONGLONG ndisGlobalFilterList_Offset = 0x123638;
-//			//IDA£ºLoacal TypesËÑË÷_NDIS_FILTER_BLOCK»ñÈ¡³ÉÔ±IfBlockÆ«ÒÆ
+//			//IDAï¼šLoacal Typesæœç´¢_NDIS_FILTER_BLOCKè·å–æˆå‘˜IfBlockåç§»
 //			DWORD IfBlock_Offset = 0x2B0;
 //
 //			KdPrint(("[SpoofNIC] Using ndisGlobalFilterList_Offset: 0x%llX\n", ndisGlobalFilterList_Offset));
 //			KdPrint(("[SpoofNIC] Using IfBlock_Offset: 0x%X\n", IfBlock_Offset));
 //
-//			// Ê¹ÓÃÆ«ÒÆÁ¿Ö±½Ó¼ÆËã³ö ndisGlobalFilterList È«¾Ö±äÁ¿×ÔÉíµÄµØÖ·
+//			// ä½¿ç”¨åç§»é‡ç›´æ¥è®¡ç®—å‡º ndisGlobalFilterList å…¨å±€å˜é‡è‡ªèº«çš„åœ°å€
 //			PNDIS_FILTER_BLOCK* p_ndisGlobalFilterList = (PNDIS_FILTER_BLOCK*)((PUCHAR)base + ndisGlobalFilterList_Offset);
 //			KdPrint(("[SpoofNIC] Calculated address of ndisGlobalFilterList pointer variable: %p\n", p_ndisGlobalFilterList));
 //
-//			// ±£»¤ÄÚ´æ·ÃÎÊ£¬·ÀÖ¹ÒòµØÖ·ÎŞĞ§µ¼ÖÂÀ¶ÆÁ
+//			// ä¿æŠ¤å†…å­˜è®¿é—®ï¼Œé˜²æ­¢å› åœ°å€æ— æ•ˆå¯¼è‡´è“å±
 //			__try
 //			{
-//				// ½âÒıÓÃÒ»´Î£¬»ñÈ¡Á´±íµÄµÚÒ»¸ö½ÚµãµÄµØÖ·
+//				// è§£å¼•ç”¨ä¸€æ¬¡ï¼Œè·å–é“¾è¡¨çš„ç¬¬ä¸€ä¸ªèŠ‚ç‚¹çš„åœ°å€
 //				PNDIS_FILTER_BLOCK ndisGlobalFilterList = *p_ndisGlobalFilterList;
 //
-//				// ÕâÊÇ×î¹Ø¼üµÄ¼ì²éµãÖ®Ò»£¡Èç¹ûÕâÀïÎªNULL£¬Ñ­»·½«²»»áÖ´ĞĞ¡£
+//				// è¿™æ˜¯æœ€å…³é”®çš„æ£€æŸ¥ç‚¹ä¹‹ä¸€ï¼å¦‚æœè¿™é‡Œä¸ºNULLï¼Œå¾ªç¯å°†ä¸ä¼šæ‰§è¡Œã€‚
 //				KdPrint(("[SpoofNIC] Value of ndisGlobalFilterList (list head): %p\n", ndisGlobalFilterList));
 //
 //				if (!ndisGlobalFilterList) {
@@ -2098,10 +2098,10 @@
 //					filterCount++;
 //					KdPrint(("[SpoofNIC] [%d] Processing filter block at: %p\n", filterCount, filter));
 //
-//					// Ê¹ÓÃÎÒÃÇÕÒµ½µÄ½á¹¹Ìå³ÉÔ±Æ«ÒÆÁ¿À´¶¨Î» IfBlock
+//					// ä½¿ç”¨æˆ‘ä»¬æ‰¾åˆ°çš„ç»“æ„ä½“æˆå‘˜åç§»é‡æ¥å®šä½ IfBlock
 //					PNDIS_IF_BLOCK IfBlock = *(PNDIS_IF_BLOCK*)((PUCHAR)filter + IfBlock_Offset);
 //
-//	
+//
 //					KdPrint(("[SpoofNIC]   -> Potential IfBlock pointer value: %p\n", IfBlock));
 //
 //					if (IfBlock && filter->FilterInstanceName && filter->FilterInstanceName->Buffer && IfBlock->ifPhysAddress.Length == 6)
@@ -2112,15 +2112,15 @@
 //							IfBlock->ifPhysAddress.Address[2], IfBlock->PermanentPhysAddress.Address[3],
 //							IfBlock->ifPhysAddress.Address[4], IfBlock->ifPhysAddress.Address[5]));
 //
-//						// --- ºËĞÄÂß¼­: Ö±½ÓĞŞ¸ÄÄÚ´æÖĞµÄ MAC µØÖ· ---
+//						// --- æ ¸å¿ƒé€»è¾‘: ç›´æ¥ä¿®æ”¹å†…å­˜ä¸­çš„ MAC åœ°å€ ---
 //						Internal_SpoofBuffer(g_Seed, IfBlock->ifPhysAddress.Address, IfBlock->ifPhysAddress.Length);
 //						Internal_SpoofBuffer(g_Seed, IfBlock->PermanentPhysAddress.Address, IfBlock->PermanentPhysAddress.Length);
 //
-//						//È·±£Éú³ÉµÄMACµØÖ·ÊÇÓĞĞ§µÄµ¥²¥¡¢±¾µØ¹ÜÀíµØÖ·
-//						// ·ÀÖ¹Éú³É¶à²¥µØÖ·£¨×îµÍÎ»Îª1£©µ¼ÖÂÍøÂçÒì³£
-//						IfBlock->ifPhysAddress.Address[0] &= 0xFE; // ½«×îµÍÎ»ÖÃÎª0 (µ¥²¥)
-//						IfBlock->ifPhysAddress.Address[0] |= 0x02; // ½«µ¹ÊıµÚ¶şÎ»ÖÃÎª1 (±¾µØ¹ÜÀí)
-//						// ¶ÔÓÀ¾ÃµØÖ·Ò²×öÍ¬Ñù²Ù×÷
+//						//ç¡®ä¿ç”Ÿæˆçš„MACåœ°å€æ˜¯æœ‰æ•ˆçš„å•æ’­ã€æœ¬åœ°ç®¡ç†åœ°å€
+//						// é˜²æ­¢ç”Ÿæˆå¤šæ’­åœ°å€ï¼ˆæœ€ä½ä½ä¸º1ï¼‰å¯¼è‡´ç½‘ç»œå¼‚å¸¸
+//						IfBlock->ifPhysAddress.Address[0] &= 0xFE; // å°†æœ€ä½ä½ç½®ä¸º0 (å•æ’­)
+//						IfBlock->ifPhysAddress.Address[0] |= 0x02; // å°†å€’æ•°ç¬¬äºŒä½ç½®ä¸º1 (æœ¬åœ°ç®¡ç†)
+//						// å¯¹æ°¸ä¹…åœ°å€ä¹ŸåšåŒæ ·æ“ä½œ
 //						IfBlock->PermanentPhysAddress.Address[0] &= 0xFE;
 //						IfBlock->PermanentPhysAddress.Address[0] |= 0x02;
 //
@@ -2149,92 +2149,92 @@
 //		}
 //	}
 //	//==================================================================================
-//	// 7. Î±ÔìGPU (Spoof GPU)
+//	// 7. ä¼ªé€ GPU (Spoof GPU)
 //	//==================================================================================
 //	namespace SpoofGPU {
 //
 //		NTSTATUS SpoofGpuControl(PDEVICE_OBJECT pDevice, PIRP IRP) {
-//			// Ê×ÏÈ£¬½«IRPÔ­·â²»¶¯µØ´«µİ¸øÔ­Ê¼µÄÇı¶¯³ÌĞòº¯Êı
+//			// é¦–å…ˆï¼Œå°†IRPåŸå°ä¸åŠ¨åœ°ä¼ é€’ç»™åŸå§‹çš„é©±åŠ¨ç¨‹åºå‡½æ•°
 //			NTSTATUS Result = pDevice->DriverObject->MajorFunction[28](pDevice, IRP);
 //
 //			PIO_STACK_LOCATION pIoStack = IoGetCurrentIrpStackLocation(IRP);
 //
-//			// È·±£ pIoStack ÓĞĞ§£¬²¢ÇÒÊÇÎÒÃÇÏëÒªHookµÄÄ¿±êIOCTL
+//			// ç¡®ä¿ pIoStack æœ‰æ•ˆï¼Œå¹¶ä¸”æ˜¯æˆ‘ä»¬æƒ³è¦Hookçš„ç›®æ ‡IOCTL
 //			if (pIoStack != NULL && pIoStack->Parameters.DeviceIoControl.IoControlCode == 0x8DE0008 /*IOCTL_NVIDIA_SMIL*/) {
 //
-//				// Ö»ÓĞÔÚÔ­Ê¼µ÷ÓÃ³É¹¦ÇÒ»º³åÇøÓĞĞ§Ê±²Å½øĞĞ´¦Àí
+//				// åªæœ‰åœ¨åŸå§‹è°ƒç”¨æˆåŠŸä¸”ç¼“å†²åŒºæœ‰æ•ˆæ—¶æ‰è¿›è¡Œå¤„ç†
 //				if (NT_SUCCESS(Result) && IRP->UserBuffer != NULL) {
 //
 //					char* pKernelBuffer = (char*)ExAllocatePoolWithTag(NonPagedPool, 512 /*IOCTL_NVIDIA_SMIL_MAX*/, 'LS');
 //					if (pKernelBuffer == NULL) {
-//						// ´íÎó£ºÄÚºËÄÚ´æ·ÖÅäÊ§°Ü
+//						// é”™è¯¯ï¼šå†…æ ¸å†…å­˜åˆ†é…å¤±è´¥
 //						KdPrint(("[-] SpoofGpuControl: Failed to allocate kernel buffer.\n"));
 //					}
 //					else {
 //						__try {
-//							// Ì½Õë¼ì²éÓÃ»§»º³åÇøÊÇ·ñ¿É¶Á
+//							// æ¢é’ˆæ£€æŸ¥ç”¨æˆ·ç¼“å†²åŒºæ˜¯å¦å¯è¯»
 //							ProbeForRead(IRP->UserBuffer, 512, sizeof(UCHAR));
 //
-//							// ½«ÓÃ»§»º³åÇøµÄÄÚÈİ°²È«µØ¿½±´µ½ÎÒÃÇµÄÄÚºË»º³åÇø
+//							// å°†ç”¨æˆ·ç¼“å†²åŒºçš„å†…å®¹å®‰å…¨åœ°æ‹·è´åˆ°æˆ‘ä»¬çš„å†…æ ¸ç¼“å†²åŒº
 //							RtlCopyMemory(pKernelBuffer, IRP->UserBuffer, 512);
 //
-//							// ÔÚÎÒÃÇ×Ô¼ºµÄÄÚºË»º³åÇøÖĞ°²È«µØËÑË÷ "GPU-" ×Ö·û´®
+//							// åœ¨æˆ‘ä»¬è‡ªå·±çš„å†…æ ¸ç¼“å†²åŒºä¸­å®‰å…¨åœ°æœç´¢ "GPU-" å­—ç¬¦ä¸²
 //							for (INT Index = 0; Index < (512 - 4); Index++) {
 //								if (memcmp(pKernelBuffer + Index, "GPU-", 4) == 0) {
-//									// Ì½Õë¼ì²éÓÃ»§»º³åÇøÊÇ·ñ¿ÉĞ´
+//									// æ¢é’ˆæ£€æŸ¥ç”¨æˆ·ç¼“å†²åŒºæ˜¯å¦å¯å†™
 //									ProbeForWrite(IRP->UserBuffer, 512, sizeof(UCHAR));
 //
-//									// Ö±½ÓÔÚÓÃ»§»º³åÇøÖĞ½« "GPU-" µÄ 'G' Ìæ»»Îª NULL ½áÊø·û£¬ÊµÏÖ½Ø¶Ï
+//									// ç›´æ¥åœ¨ç”¨æˆ·ç¼“å†²åŒºä¸­å°† "GPU-" çš„ 'G' æ›¿æ¢ä¸º NULL ç»“æŸç¬¦ï¼Œå®ç°æˆªæ–­
 //									((char*)IRP->UserBuffer)[Index] = '\0';
 //
-//									// ÈÎÎñÍê³É£¬ÍË³öÑ­»·
+//									// ä»»åŠ¡å®Œæˆï¼Œé€€å‡ºå¾ªç¯
 //									break;
 //								}
 //							}
 //						}
 //						__except (EXCEPTION_EXECUTE_HANDLER) {
-//							// ´íÎó£º·ÃÎÊÓÃ»§Ä£Ê½ÄÚ´æÊ±·¢ÉúÒì³£
+//							// é”™è¯¯ï¼šè®¿é—®ç”¨æˆ·æ¨¡å¼å†…å­˜æ—¶å‘ç”Ÿå¼‚å¸¸
 //							KdPrint(("[-] SpoofGpuControl: Exception 0x%X caught while accessing UserBuffer.\n", GetExceptionCode()));
 //						}
 //
-//						// ÊÍ·ÅÄÚºËÄÚ´æ
+//						// é‡Šæ”¾å†…æ ¸å†…å­˜
 //						ExFreePoolWithTag(pKernelBuffer, 'LS');
 //					}
 //				}
 //			}
 //
-//			// ·µ»ØÔ­Ê¼º¯ÊıµÄÖ´ĞĞ½á¹û
+//			// è¿”å›åŸå§‹å‡½æ•°çš„æ‰§è¡Œç»“æœ
 //			return Result;
 //		}
 //
 //		NTSTATUS SpoofGPU() {
 //			static BOOLEAN Enable = FALSE;
-//			NTSTATUS Result = STATUS_UNSUCCESSFUL; // ³õÊ¼»¯ÎªÊ§°Ü×´Ì¬
+//			NTSTATUS Result = STATUS_UNSUCCESSFUL; // åˆå§‹åŒ–ä¸ºå¤±è´¥çŠ¶æ€
 //
 //			if (Enable == FALSE) {
 //				UNICODE_STRING ObjeName = RTL_CONSTANT_STRING(L"\\Driver\\nvlddmkm");
 //				PDRIVER_OBJECT DriverObj = NULL;
 //
-//				// ³¢ÊÔ»ñÈ¡NVIDIAÇı¶¯¶ÔÏó
+//				// å°è¯•è·å–NVIDIAé©±åŠ¨å¯¹è±¡
 //				Result = L_ObReferenceObjectByName(&ObjeName, OBJ_CASE_INSENSITIVE, 0, 0, *IoDriverObjectType, KernelMode, 0, &DriverObj);
 //				if (!NT_SUCCESS(Result)) {
-//					// ´íÎó£ºÕÒ²»µ½»òÎŞ·¨ÒıÓÃNVIDIAÇı¶¯¶ÔÏó
+//					// é”™è¯¯ï¼šæ‰¾ä¸åˆ°æˆ–æ— æ³•å¼•ç”¨NVIDIAé©±åŠ¨å¯¹è±¡
 //					KdPrint(("[-] SpoofGPU: Failed to get reference to %wZ. Status: 0x%X\n", &ObjeName, Result));
-//					return Result; // Ö±½Ó·µ»ØÊ§°Ü
+//					return Result; // ç›´æ¥è¿”å›å¤±è´¥
 //				}
 //
-//				// ³É¹¦»ñÈ¡¶ÔÏó£¬ÏÖÔÚ½øĞĞHook
+//				// æˆåŠŸè·å–å¯¹è±¡ï¼Œç°åœ¨è¿›è¡ŒHook
 //				*(PVOID*)&DriverObj->MajorFunction[28] = InterlockedExchangePointer((PVOID*)&DriverObj->MajorFunction[14], (PVOID)SpoofGpuControl);
 //
-//				// ½â³ı¶ÔÇı¶¯¶ÔÏóµÄÒıÓÃ
+//				// è§£é™¤å¯¹é©±åŠ¨å¯¹è±¡çš„å¼•ç”¨
 //				ObfDereferenceObject(DriverObj);
 //
-//				// ±ê¼ÇÎªÒÑÆôÓÃ£¬²¢ÉèÖÃ×îÖÕ·µ»ØÖµÎª³É¹¦
+//				// æ ‡è®°ä¸ºå·²å¯ç”¨ï¼Œå¹¶è®¾ç½®æœ€ç»ˆè¿”å›å€¼ä¸ºæˆåŠŸ
 //				Enable = TRUE;
 //				Result = STATUS_SUCCESS;
 //			}
 //			else {
-//				// Èç¹ûÒÑ¾­ÆôÓÃ£¬Ö±½Ó·µ»Ø³É¹¦
+//				// å¦‚æœå·²ç»å¯ç”¨ï¼Œç›´æ¥è¿”å›æˆåŠŸ
 //				Result = STATUS_SUCCESS;
 //			}
 //
@@ -2246,14 +2246,14 @@
 //
 //
 //	//==================================================================================
-//	// 8. Î±Ôì·ÖÇø GUID (Spoof PART)
+//	// 8. ä¼ªé€ åˆ†åŒº GUID (Spoof PART)
 //	//==================================================================================
 //	namespace SpoofPART {
 //
 //		static ULONG g_PartSeed = 0;
 //
 //
-//		// Íê³ÉÀı³Ì£º×¨ÃÅÓÃÓÚĞŞ¸Ä IOCTL_DISK_GET_DRIVE_LAYOUT_EX
+//		// å®Œæˆä¾‹ç¨‹ï¼šä¸“é—¨ç”¨äºä¿®æ”¹ IOCTL_DISK_GET_DRIVE_LAYOUT_EX
 //		NTSTATUS PartLayoutCompletion(PDEVICE_OBJECT pDevice, PIRP IRP, PVOID Context) {
 //			UNREFERENCED_PARAMETER(pDevice);
 //			struct _COMPLETION_CONTEXT { PVOID Buffer; ULONG BufferLength; PVOID OldContext; PIO_COMPLETION_ROUTINE OldRoutine; } Request;
@@ -2281,7 +2281,7 @@
 //			return STATUS_MORE_PROCESSING_REQUIRED;
 //		}
 //
-//		// Íê³ÉÀı³Ì£º×¨ÃÅÓÃÓÚĞŞ¸Ä IOCTL_DISK_GET_PARTITION_INFO_EX
+//		// å®Œæˆä¾‹ç¨‹ï¼šä¸“é—¨ç”¨äºä¿®æ”¹ IOCTL_DISK_GET_PARTITION_INFO_EX
 //		NTSTATUS PartInfoCompletion(PDEVICE_OBJECT pDevice, PIRP IRP, PVOID Context) {
 //			UNREFERENCED_PARAMETER(pDevice);
 //			struct _COMPLETION_CONTEXT { PVOID Buffer; ULONG BufferLength; PVOID OldContext; PIO_COMPLETION_ROUTINE OldRoutine; } Request;
@@ -2368,7 +2368,7 @@
 //
 //
 //	//==================================================================================
-//	// 9. Î±Ôì¾í GUID (Spoof VOLUMES)
+//	// 9. ä¼ªé€ å· GUID (Spoof VOLUMES)
 //	//==================================================================================
 //	namespace SpoofVOLUMES
 //	{
@@ -2424,7 +2424,7 @@
 //
 //							if (NT_SUCCESS(Result)) {
 //
-//								// Éú³ÉĞÂµÄGUID
+//								// ç”Ÿæˆæ–°çš„GUID
 //								GUID newGuid;
 //								Result = ExUuidCreate(&newGuid);
 //
@@ -2432,7 +2432,7 @@
 //								UNICODE_STRING guidString;
 //								RtlInitEmptyUnicodeString(&guidString, guidBuffer, sizeof(guidBuffer));
 //
-//								// ½«GUID½á¹¹Ìå¸ñÊ½»¯ÎªUNICODE×Ö·û´®
+//								// å°†GUIDç»“æ„ä½“æ ¼å¼åŒ–ä¸ºUNICODEå­—ç¬¦ä¸²
 //								Result = RtlUnicodeStringPrintf(
 //									&guidString,
 //									L"%08lX-%04hX-%04hX-%02hhX%02hhX-%02hhX%02hhX%02hhX%02hhX%02hhX%02hhX",
@@ -2509,7 +2509,7 @@
 //
 //
 //
-//								// Éú³ÉĞÂµÄGUID
+//								// ç”Ÿæˆæ–°çš„GUID
 //								GUID newGuid;
 //								Result = ExUuidCreate(&newGuid);
 //
@@ -2517,7 +2517,7 @@
 //								UNICODE_STRING guidString;
 //								RtlInitEmptyUnicodeString(&guidString, guidBuffer, sizeof(guidBuffer));
 //
-//								// ½«GUID½á¹¹Ìå¸ñÊ½»¯ÎªUNICODE×Ö·û´®
+//								// å°†GUIDç»“æ„ä½“æ ¼å¼åŒ–ä¸ºUNICODEå­—ç¬¦ä¸²
 //								Result = RtlUnicodeStringPrintf(
 //									&guidString,
 //									L"%08lX-%04hX-%04hX-%02hhX%02hhX-%02hhX%02hhX%02hhX%02hhX%02hhX%02hhX",

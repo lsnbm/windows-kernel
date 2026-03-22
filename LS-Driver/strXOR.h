@@ -1,9 +1,9 @@
 #pragma once
 
-// ÄÚºËÄ£Ê½ÏÂÃ»ÓĞ±ê×¼¿â£¬ÎÒÃÇĞèÒª×Ô¼ºÊµÏÖËùĞèµÄ¹¦ÄÜ
+// å†…æ ¸æ¨¡å¼ä¸‹æ²¡æœ‰æ ‡å‡†åº“ï¼Œæˆ‘ä»¬éœ€è¦è‡ªå·±å®ç°æ‰€éœ€çš„åŠŸèƒ½
 namespace std_kernel {
 
-    // ¶¨Òå integer_sequence£¬ÓÃÓÚÔÚ±àÒëÊ±´æ´¢Ò»´®ÕûÊı
+    // å®šä¹‰ integer_sequenceï¼Œç”¨äºåœ¨ç¼–è¯‘æ—¶å­˜å‚¨ä¸€ä¸²æ•´æ•°
     template <typename T, T... Ints>
     struct integer_sequence {
         using value_type = T;
@@ -13,11 +13,11 @@ namespace std_kernel {
     template <size_t... Ints>
     using index_sequence = integer_sequence<size_t, Ints...>;
 
-    // Ê¹ÓÃÒ»ÖÖ¸ü¼æÈİµÄµİ¹é·½Ê½À´Éú³É integer_sequence
+    // ä½¿ç”¨ä¸€ç§æ›´å…¼å®¹çš„é€’å½’æ–¹å¼æ¥ç”Ÿæˆ integer_sequence
     template <size_t N, size_t... Next>
     struct index_sequence_builder : index_sequence_builder<N - 1, N - 1, Next...> {};
 
-    // µİ¹éµÄÖÕÖ¹Ìõ¼ş
+    // é€’å½’çš„ç»ˆæ­¢æ¡ä»¶
     template <size_t... Next>
     struct index_sequence_builder<0, Next...> {
         using type = index_sequence<Next...>;
@@ -28,8 +28,8 @@ namespace std_kernel {
 
 } // namespace std_kernel
 
-// Ê¹ÓÃ¸üÎÈ¶¨µÄ±àÒëÊ±ÖÖ×ÓÀ´Ìæ»» __TIME__ ---
-// __COUNTER__ ÊÇÒ»¸öÃ¿´ÎÊ¹ÓÃÊ±¶¼»á×ÔÔöµÄºê£¬ÍêÈ«·ûºÏ constexpr µÄÒªÇó
+// ä½¿ç”¨æ›´ç¨³å®šçš„ç¼–è¯‘æ—¶ç§å­æ¥æ›¿æ¢ __TIME__ ---
+// __COUNTER__ æ˜¯ä¸€ä¸ªæ¯æ¬¡ä½¿ç”¨æ—¶éƒ½ä¼šè‡ªå¢çš„å®ï¼Œå®Œå…¨ç¬¦åˆ constexpr çš„è¦æ±‚
 constexpr int time_seed_kernel = 'n' + 't' + 'o' + 's' + 'k' + 'r' + 'n' + 'l' + '.' + 'e' + 'x' + 'e' + __COUNTER__;
 
 template <typename T, size_t N>
@@ -58,7 +58,7 @@ private:
     mutable T mutable_data[N];
 };
 
-// ºê¶¨Òå±£³Ö²»±ä
+// å®å®šä¹‰ä¿æŒä¸å˜
 #define OBFUSCATE(s) ([]() { \
     constexpr XorStringKernel str(s); \
     return str; \

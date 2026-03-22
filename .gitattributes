@@ -1,0 +1,11 @@
+* text=auto eol=lf
+
+*.exe binary
+*.dll binary
+*.lib binary
+*.pdb binary
+*.obj binary
+*.ipdb binary
+*.iobj binary
+*.sys binary
+*.ilk binary

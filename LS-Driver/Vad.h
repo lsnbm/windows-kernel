@@ -7,19 +7,19 @@
 
 
 /*
-±éÀú VAD Ê÷»ñÈ¡Ä£¿é»ùµØÖ·ºÍ´óÐ¡µÄ²½Öè£º
+éåŽ† VAD æ ‘èŽ·å–æ¨¡å—åŸºåœ°å€å’Œå¤§å°çš„æ­¥éª¤ï¼š
 
-1.»ñÈ¡Ä£¿é»ùµØÖ·£¨dll£©
+1.èŽ·å–æ¨¡å—åŸºåœ°å€ï¼ˆdllï¼‰
 
-	ÐÞ½á¹¹:
-	Ö´ÐÐ dt nt!_MMVAD£¬È·ÈÏ MMVAD ½á¹¹ÌåµÄ¶¨Òå¡£
-	Ö´ÐÐ dt nt!_MMVAD_SHORT		È·ÈÏ MMVAD_SHORT ½á¹¹ÌåµÄ¶¨Òå¡£
-	Ö´ÐÐ dt nt!_MM_AVL_NODE		È·ÈÏ MM_AVL_NODE ½á¹¹ÌåµÄ¶¨Òå¡£ ¿ÉÄÜÃ»ÓÐÕâ¸ö½á¹¹Ìå£¬Ã»¹ØÏµ¡£
-	Ö´ÐÐ dt nt!_SUBSECTION		È·ÈÏ SUBSECTION ½á¹¹ÌåµÄ¶¨Òå¡£
-	Ö´ÐÐ dt nt!_CONTROL_AREA	È·ÈÏ CONTROL_AREA ½á¹¹ÌåµÄ¶¨Òå¡£
-	Ö´ÐÐ dt nt!_SEGMENT			È·ÈÏ SEGMENT ½á¹¹ÌåµÄ¶¨Òå¡£
-	Ö´ÐÐ dt nt!_EX_FAST_REF		È·ÈÏ EX_FAST_REF ½á¹¹ÌåµÄ¶¨Òå¡£
-	Ö´ÐÐ dt nt!_EX_PUSH_LOCK	È·ÈÏ EX_PUSH_LOCK ½á¹¹ÌåµÄ¶¨Òå¡£
+	ä¿®ç»“æž„:
+	æ‰§è¡Œ dt nt!_MMVADï¼Œç¡®è®¤ MMVAD ç»“æž„ä½“çš„å®šä¹‰ã€‚
+	æ‰§è¡Œ dt nt!_MMVAD_SHORT		ç¡®è®¤ MMVAD_SHORT ç»“æž„ä½“çš„å®šä¹‰ã€‚
+	æ‰§è¡Œ dt nt!_MM_AVL_NODE		ç¡®è®¤ MM_AVL_NODE ç»“æž„ä½“çš„å®šä¹‰ã€‚ å¯èƒ½æ²¡æœ‰è¿™ä¸ªç»“æž„ä½“ï¼Œæ²¡å…³ç³»ã€‚
+	æ‰§è¡Œ dt nt!_SUBSECTION		ç¡®è®¤ SUBSECTION ç»“æž„ä½“çš„å®šä¹‰ã€‚
+	æ‰§è¡Œ dt nt!_CONTROL_AREA	ç¡®è®¤ CONTROL_AREA ç»“æž„ä½“çš„å®šä¹‰ã€‚
+	æ‰§è¡Œ dt nt!_SEGMENT			ç¡®è®¤ SEGMENT ç»“æž„ä½“çš„å®šä¹‰ã€‚
+	æ‰§è¡Œ dt nt!_EX_FAST_REF		ç¡®è®¤ EX_FAST_REF ç»“æž„ä½“çš„å®šä¹‰ã€‚
+	æ‰§è¡Œ dt nt!_EX_PUSH_LOCK	ç¡®è®¤ EX_PUSH_LOCK ç»“æž„ä½“çš„å®šä¹‰ã€‚
 
 
 */
@@ -27,7 +27,7 @@
 
 
 
-// È«¾Ö·¶Î§µÄÇ°ÏòÉùÃ÷
+// å…¨å±€èŒƒå›´çš„å‰å‘å£°æ˜Ž
 struct _FILE_OBJECT;
 struct _EPROCESS;
 struct _MMPTE;
@@ -173,7 +173,7 @@ namespace WIN11_24H2 {
 
 
 
-	//±éÀú VAD 
+	//éåŽ† VAD
 	inline VOID VadpTraverseTree(IN PRTL_BALANCED_NODE pNode, IN::PUNICODE_STRING pTargetModuleNameUnicode, IN PVAD_SEARCH_RESULT pResult) {
 		if (!L_MmIsAddressValid(pNode) || pResult->Found) return;
 		PMMVAD pVad = (PMMVAD)pNode;
@@ -199,16 +199,16 @@ namespace WIN11_24H2 {
 
 
 
-		
-				// ¼ÆËãµ±Ç°VADÇøÓòµÄ»ùµØÖ·ºÍ´óÐ¡
+
+				// è®¡ç®—å½“å‰VADåŒºåŸŸçš„åŸºåœ°å€å’Œå¤§å°
 					::ULONG64 startingVpn = ((::ULONG64)pVad->Core.StartingVpnHigh << 32) | pVad->Core.StartingVpn;
 					::ULONG64 endingVpn = ((::ULONG64)pVad->Core.EndingVpnHigh << 32) | pVad->Core.EndingVpn;
 					::ULONG_PTR baseAddress = startingVpn << PAGE_SHIFT;
 					::ULONG_PTR moduleSize = ((endingVpn + 1) - startingVpn) << PAGE_SHIFT;
 
-					// Ê¹ÓÃKdPrintÊä³öÃ¿¸öÄ£¿éµÄÐÅÏ¢
+					// ä½¿ç”¨KdPrintè¾“å‡ºæ¯ä¸ªæ¨¡å—çš„ä¿¡æ¯
 					KdPrint(("[WIN11_24H2][VAD Traverse] Module: %wZ, Base: 0x%p, Size: 0x%p\n", &currentFileName, (PVOID)baseAddress, (PVOID)moduleSize));
-		
+
 
 
 					if (L_RtlCompareUnicodeString(&currentFileName, pTargetModuleNameUnicode, TRUE) == 0) {
@@ -221,7 +221,7 @@ namespace WIN11_24H2 {
 					}
 				}
 				__except (EXCEPTION_EXECUTE_HANDLER) {
-					// ´Ë´¦µÄÒì³£Í¨³£ÊÇÓÉÓÚÄÚ´æ¾ºÕù»òÒ³»»³öµ¼ÖÂ£¬¾²Ä¬´¦ÀíÒÔ±£Ö¤Çý¶¯ÎÈ¶¨ÐÔ¡£
+					// æ­¤å¤„çš„å¼‚å¸¸é€šå¸¸æ˜¯ç”±äºŽå†…å­˜ç«žäº‰æˆ–é¡µæ¢å‡ºå¯¼è‡´ï¼Œé™é»˜å¤„ç†ä»¥ä¿è¯é©±åŠ¨ç¨³å®šæ€§ã€‚
 				}
 			}
 		}
@@ -269,7 +269,7 @@ namespace WIN11_24H2 {
 			if (!pSearchResult) {
 				status = STATUS_INSUFFICIENT_RESOURCES;
 				KdPrint(("[WIN11_24H2] [-] ExAllocatePool2 failed. Status: 0x%X\n", status));
-				// Ìø×ªµ½ÇåÀí´úÂë¿é
+				// è·³è½¬åˆ°æ¸…ç†ä»£ç å—
 				goto Cleanup;
 			}
 			RtlZeroMemory(pSearchResult, sizeof(VAD_SEARCH_RESULT));
@@ -286,7 +286,7 @@ namespace WIN11_24H2 {
 							status = STATUS_SUCCESS;
 						}
 						else {
-							// ÐÞÕý 2: Ê¹ÓÃ %wZ ´òÓ¡ UNICODE_STRING£¬¸ü°²È«
+							// ä¿®æ­£ 2: ä½¿ç”¨ %wZ æ‰“å° UNICODE_STRINGï¼Œæ›´å®‰å…¨
 							KdPrint(("[WIN11_24H2] [i] VAD tree traversed, but module '%wZ' was not found.\n", &unicodeModuleName));
 							status = STATUS_NOT_FOUND;
 						}
@@ -308,7 +308,7 @@ namespace WIN11_24H2 {
 		}
 
 	Cleanup:
-		// ÐÞÕý 3: Ìí¼ÓÍ³Ò»µÄÇåÀí´úÂë¿é
+		// ä¿®æ­£ 3: æ·»åŠ ç»Ÿä¸€çš„æ¸…ç†ä»£ç å—
 		if (pSearchResult) {
 			L_ExFreePoolWithTag(pSearchResult, 'VSad');
 		}
@@ -425,7 +425,7 @@ namespace WIN11_23H2 {
 
 
 	inline VOID VadpTraverseTree(IN PRTL_BALANCED_NODE pNode, IN::PUNICODE_STRING pTargetModuleNameUnicode, IN PVAD_SEARCH_RESULT pResult) {
-		// (´Ëº¯ÊýÂß¼­Óë 24H2 °æ±¾ÍêÈ«ÏàÍ¬)
+		// (æ­¤å‡½æ•°é€»è¾‘ä¸Ž 24H2 ç‰ˆæœ¬å®Œå…¨ç›¸åŒ)
 		if (!L_MmIsAddressValid(pNode) || pResult->Found) return;
 		PMMVAD pVad = (PMMVAD)pNode;
 		VadpTraverseTree(pVad->Core.VadNode.s.Left, pTargetModuleNameUnicode, pResult);
@@ -449,13 +449,13 @@ namespace WIN11_23H2 {
 					currentFileName.MaximumLength = currentFileName.Length;
 
 
-					// ¼ÆËãµ±Ç°VADÇøÓòµÄ»ùµØÖ·ºÍ´óÐ¡
+					// è®¡ç®—å½“å‰VADåŒºåŸŸçš„åŸºåœ°å€å’Œå¤§å°
 					::ULONG64 startingVpn = ((::ULONG64)pVad->Core.StartingVpnHigh << 32) | pVad->Core.StartingVpn;
 					::ULONG64 endingVpn = ((::ULONG64)pVad->Core.EndingVpnHigh << 32) | pVad->Core.EndingVpn;
 					::ULONG_PTR baseAddress = startingVpn << PAGE_SHIFT;
 					::ULONG_PTR moduleSize = ((endingVpn + 1) - startingVpn) << PAGE_SHIFT;
 
-					// Ê¹ÓÃKdPrintÊä³öÃ¿¸öÄ£¿éµÄÐÅÏ¢
+					// ä½¿ç”¨KdPrintè¾“å‡ºæ¯ä¸ªæ¨¡å—çš„ä¿¡æ¯
 					KdPrint(("[WIN11_24H2][VAD Traverse] Module: %wZ, Base: 0x%p, Size: 0x%p\n", &currentFileName, (PVOID)baseAddress, (PVOID)moduleSize));
 
 					if (L_RtlCompareUnicodeString(&currentFileName, pTargetModuleNameUnicode, TRUE) == 0) {
@@ -494,7 +494,7 @@ namespace WIN11_23H2 {
 		status = L_RtlAnsiStringToUnicodeString(&unicodeModuleName, &ansiModuleName, TRUE);
 		if (!NT_SUCCESS(status)) {
 			KdPrint(("[WIN11_23H2] [-] RtlAnsiStringToUnicodeString failed for '%s'. Status: 0x%X\n", ModuleName, status));
-			// ´Ë´¦ÎÞÐèÇåÀí£¬ÒòÎª»¹Ã»ÓÐÆäËû×ÊÔ´±»·ÖÅä
+			// æ­¤å¤„æ— éœ€æ¸…ç†ï¼Œå› ä¸ºè¿˜æ²¡æœ‰å…¶ä»–èµ„æºè¢«åˆ†é…
 			return status;
 		}
 		isUnicodeStringAllocated = TRUE;
@@ -503,19 +503,19 @@ namespace WIN11_23H2 {
 		L_RtlInitUnicodeString(&exeSuffix, L".exe");
 
 		if (L_RtlSuffixUnicodeString(&exeSuffix, &unicodeModuleName, TRUE)) {
-			// Èç¹ûÊÇ .exe ÎÄ¼þ£¬Ö±½Ó»ñÈ¡ SectionBaseAddress
+			// å¦‚æžœæ˜¯ .exe æ–‡ä»¶ï¼Œç›´æŽ¥èŽ·å– SectionBaseAddress
 			*pBaseAddress = *(::PULONG_PTR)((::PUCHAR)pTargetProcess + EPROCESS_MEMBER_OFFSET::SectionBaseAddress);
 			status = STATUS_SUCCESS;
-			// ÐÞÕý 1: Ìø×ªµ½ÇåÀí´úÂë¿éÒÔÊÍ·Å unicodeModuleName
+			// ä¿®æ­£ 1: è·³è½¬åˆ°æ¸…ç†ä»£ç å—ä»¥é‡Šæ”¾ unicodeModuleName
 			goto Cleanup;
 		}
 		else {
-			// Èç¹ûÊÇ DLL ÎÄ¼þ£¬±éÀú VAD
+			// å¦‚æžœæ˜¯ DLL æ–‡ä»¶ï¼ŒéåŽ† VAD
 			pSearchResult = (PVAD_SEARCH_RESULT)L_ExAllocatePool2(POOL_FLAG_NON_PAGED, sizeof(VAD_SEARCH_RESULT), 'VSad');
 			if (!pSearchResult) {
 				status = STATUS_INSUFFICIENT_RESOURCES;
 				KdPrint(("[WIN11_23H2] [-] ExAllocatePool2 failed. Status: 0x%X\n", status));
-				// Ìø×ªµ½ÇåÀí´úÂë¿é
+				// è·³è½¬åˆ°æ¸…ç†ä»£ç å—
 				goto Cleanup;
 			}
 			RtlZeroMemory(pSearchResult, sizeof(VAD_SEARCH_RESULT));
@@ -532,7 +532,7 @@ namespace WIN11_23H2 {
 							status = STATUS_SUCCESS;
 						}
 						else {
-							// ÐÞÕý 2: Ê¹ÓÃ %wZ ´òÓ¡ UNICODE_STRING£¬Õâ²ÅÊÇ°²È«ºÍÕýÈ·µÄ·½Ê½
+							// ä¿®æ­£ 2: ä½¿ç”¨ %wZ æ‰“å° UNICODE_STRINGï¼Œè¿™æ‰æ˜¯å®‰å…¨å’Œæ­£ç¡®çš„æ–¹å¼
 							KdPrint(("[WIN11_23H2] [i] VAD tree traversed, but module '%wZ' was not found.\n", &unicodeModuleName));
 							status = STATUS_NOT_FOUND;
 						}
@@ -554,7 +554,7 @@ namespace WIN11_23H2 {
 		}
 
 	Cleanup:
-		// ÐÞÕý 3: Ìí¼ÓÍ³Ò»µÄÇåÀí´úÂë¿é£¬ÊÍ·ÅËùÓÐÒÑ·ÖÅäµÄ×ÊÔ´
+		// ä¿®æ­£ 3: æ·»åŠ ç»Ÿä¸€çš„æ¸…ç†ä»£ç å—ï¼Œé‡Šæ”¾æ‰€æœ‰å·²åˆ†é…çš„èµ„æº
 		if (pSearchResult) {
 			L_ExFreePoolWithTag(pSearchResult, 'VSad');
 		}
@@ -567,4 +567,295 @@ namespace WIN11_23H2 {
 
 
 
+}
+
+
+
+
+namespace WIN11_22H2 {
+
+	// åŸºç¡€ç»“æž„å®šä¹‰
+	typedef struct _RTL_BALANCED_NODE {
+		union {
+			struct _RTL_BALANCED_NODE* Children[2];
+			struct { struct _RTL_BALANCED_NODE* Left; struct _RTL_BALANCED_NODE* Right; } s;
+		};
+		union {
+			::UCHAR Red : 1;
+			::UCHAR Balance : 2;
+			::ULONG_PTR ParentValue;
+		} u;
+	} RTL_BALANCED_NODE, * PRTL_BALANCED_NODE;
+
+	typedef struct _RTL_AVL_TREE {
+		PRTL_BALANCED_NODE Root;
+	} RTL_AVL_TREE, * PRTL_AVL_TREE;
+
+	typedef union _EX_PUSH_LOCK {
+		struct { unsigned __int64 Locked : 1; unsigned __int64 Waiting : 1; unsigned __int64 Waking : 1; unsigned __int64 MultipleShared : 1; unsigned __int64 Shared : 60; };
+		::ULONG_PTR Value;
+		::PVOID Ptr;
+	} EX_PUSH_LOCK, * PEX_PUSH_LOCK;
+
+	typedef union _EX_FAST_REF {
+		::PVOID Object;
+		struct { unsigned __int64 RefCnt : 4; unsigned __int64 PtrValue : 60; };
+		::ULONG_PTR Value;
+	} EX_FAST_REF, * PEX_FAST_REF;
+
+	// ã€å…³é”®ä¿®æ­£ã€‘MMVAD_SHORT
+	// åœ¨ Win11 22H2 ä¸­ï¼Œæ­¤ç»“æž„ä½“å¤§å°åº”ä¸º 0x40
+	typedef struct _MMVAD_SHORT {
+		union {
+			RTL_BALANCED_NODE VadNode; // 0x00 - 0x18
+			struct { ::PVOID NextVad; ::PVOID ExtraCreateInfo; };
+		};
+		::ULONG StartingVpn;           // 0x18
+		::ULONG EndingVpn;             // 0x1C
+		::UCHAR StartingVpnHigh;       // 0x20
+		::UCHAR EndingVpnHigh;         // 0x21
+		::UCHAR CommitChargeHigh;      // 0x22
+		::UCHAR SpareNT64VadUChar;     // 0x23
+		volatile ::LONG ReferenceCount;// 0x24
+		EX_PUSH_LOCK PushLock;         // 0x28 - 0x30
+		::ULONG32 u_flags;             // 0x30
+		::ULONG32 u1_flags;            // 0x34
+		struct _MI_VAD_EVENT_BLOCK* EventList; // 0x38 - 0x40 (ç”¨äºŽå¯¹é½åˆ° 0x40)
+	} MMVAD_SHORT, * PMMVAD_SHORT;
+
+	// SEGMENT ç»“æž„
+	typedef struct _SEGMENT {
+		struct _CONTROL_AREA* ControlArea;
+		::ULONG TotalNumberOfPtes;
+		::ULONG SegmentFlags_placeholder;
+		::ULONG64 NumberOfCommittedPages;
+		::ULONG64 SizeOfSegment;
+		union {
+			struct _MMEXTEND_INFO* ExtendInfo;
+			::PVOID BasedAddress;
+		};
+		EX_PUSH_LOCK SegmentLock;
+		::ULONG64 u1_placeholder;
+		::ULONG64 u2_placeholder;
+		struct _MMPTE* PrototypePte;
+	} SEGMENT, * PSEGMENT;
+
+	// CONTROL_AREA ç»“æž„
+	typedef struct _CONTROL_AREA {
+		struct _SEGMENT* Segment;
+		union {
+			::LIST_ENTRY ListHead;
+			::PVOID AweContext;
+		};
+		::ULONG64 NumberOfSectionReferences;
+		::ULONG64 NumberOfPfnReferences;
+		::ULONG64 NumberOfMappedViews;
+		::ULONG64 NumberOfUserReferences;
+		::ULONG u_flags;
+		::ULONG u1_flags;
+		EX_FAST_REF FilePointer;       // åç§»é€šå¸¸ä¸º 0x40
+		volatile ::LONG ControlAreaLock;
+		::ULONG ModifiedWriteCount;
+		::PVOID WaitList;
+		union {
+			struct { ::PVOID Lookaside; ::PVOID PowerDomain; } u2_struct;
+			::ULONG64 u2_quadwords[2];
+		} u2_placeholder;
+		EX_PUSH_LOCK FileObjectLock;
+		volatile ::ULONG64 LockedPages;
+		::ULONG64 u3_flags;
+	} CONTROL_AREA, * PCONTROL_AREA;
+
+	// SUBSECTION ç»“æž„
+	typedef struct _SUBSECTION {
+		struct _CONTROL_AREA* ControlArea;
+		struct _MMPTE* SubsectionBase;
+		struct _SUBSECTION* NextSubsection;
+		union { RTL_AVL_TREE GlobalPerSessionHead; ::PVOID CreationWaitList; ::PVOID SessionDriverProtos; } u;
+		::ULONG32 SubsectionFlags;
+		::ULONG StartingSector;
+		::ULONG NumberOfFullSectors;
+		::ULONG PtesInSubsection;
+		::ULONG u1_flags;
+		::ULONG UnusedPtesAndFlags;
+	} SUBSECTION, * PSUBSECTION;
+
+	// ã€å…³é”®ä¿®æ­£ã€‘MMVAD ç»“æž„ä½“
+	// ç¡®ä¿ Subsection åœ¨ 0x48 åç§»å¤„
+	typedef struct _MMVAD {
+		MMVAD_SHORT Core;           // 0x00 - 0x40
+		union {
+			::ULONG32 LongFlags;
+			::ULONG32 VadFlags;
+		} u2;                       // 0x40 - 0x44
+		::ULONG32 Padding_u2;       // 0x44 - 0x48 (å¡«å……)
+
+		struct _SUBSECTION* Subsection; // 0x48 <-- å…³é”®åç§»
+
+		struct _MMPTE* FirstPrototypePte;
+		struct _MMPTE* LastContiguousPte;
+		::LIST_ENTRY ViewLinks;
+		struct _EPROCESS* VadsProcess;
+		::ULONG64 u4_flags_or_pAweInfo;
+		struct _FILE_OBJECT* FileObject;
+	} MMVAD, * PMMVAD;
+
+	typedef struct _VAD_SEARCH_RESULT {
+		::BOOLEAN Found;
+		::ULONG_PTR BaseAddress;
+		::ULONG_PTR ModuleSize;
+	} VAD_SEARCH_RESULT, * PVAD_SEARCH_RESULT;
+
+	// ---------------------------------------------------------
+	// VAD éåŽ†å‡½æ•°
+	// ---------------------------------------------------------
+	inline VOID VadpTraverseTree(IN PRTL_BALANCED_NODE pNode, IN::PUNICODE_STRING pTargetModuleNameUnicode, IN PVAD_SEARCH_RESULT pResult) {
+		if (!L_MmIsAddressValid(pNode) || pResult->Found) return;
+
+		PMMVAD pVad = (PMMVAD)pNode;
+
+		// é€’å½’å·¦å­æ ‘
+		VadpTraverseTree(pVad->Core.VadNode.s.Left, pTargetModuleNameUnicode, pResult);
+		if (pResult->Found) return;
+
+		::PFILE_OBJECT pFile = NULL;
+		::PUNICODE_STRING pFullPath = NULL;
+
+		// 1. å°è¯•ç›´æŽ¥èŽ·å– FileObject
+		if (pVad->FileObject != NULL && L_MmIsAddressValid(pVad->FileObject)) {
+			pFile = (::PFILE_OBJECT)pVad->FileObject;
+		}
+		// 2. å¦‚æžœæ²¡æœ‰ï¼Œå°è¯•é€šè¿‡ Subsection -> ControlArea èŽ·å–
+		else if (pVad->Subsection != NULL && L_MmIsAddressValid(pVad->Subsection)) {
+			// è¿™é‡Œå¦‚æžœç»“æž„ä½“å®šä¹‰é”™è¯¯ï¼Œä¼šå¯¼è‡´è¯»å–é”™è¯¯çš„å†…å­˜åœ°å€
+			if (pVad->Subsection->ControlArea != NULL && L_MmIsAddressValid(pVad->Subsection->ControlArea)) {
+				PCONTROL_AREA pCtrlArea = (PCONTROL_AREA)pVad->Subsection->ControlArea;
+				::PVOID rawFilePointer = pCtrlArea->FilePointer.Object;
+
+				// åŽ»é™¤ä½Žä½çš„å¼•ç”¨è®¡æ•°ä½ (EX_FAST_REF)
+				if (rawFilePointer != NULL) {
+					pFile = (::PFILE_OBJECT)((::ULONG_PTR)rawFilePointer & ~((::ULONG_PTR)sizeof(::PVOID) - 1));
+				}
+			}
+		}
+
+		if (pFile != NULL && L_MmIsAddressValid(pFile)) {
+			pFullPath = &pFile->FileName;
+			if (pFullPath->Buffer != NULL && pFullPath->Length > 0 && L_MmIsAddressValid(pFullPath->Buffer)) {
+				__try {
+					::UNICODE_STRING currentFileName;
+					RtlZeroMemory(&currentFileName, sizeof(::UNICODE_STRING));
+
+					// ç®€å•çš„æå–æ–‡ä»¶åé€»è¾‘ (ä»Žæœ€åŽä¸€ä¸ª \ å¼€å§‹)
+					::USHORT i;
+					for (i = (pFullPath->Length / sizeof(WCHAR)) - 1; i > 0; i--) {
+						if (pFullPath->Buffer[i] == L'\\') break;
+					}
+					::USHORT nameStartIndex = (i > 0 && pFullPath->Buffer[i] == L'\\') ? i + 1 : 0;
+					if (i == 0 && pFullPath->Buffer[0] == L'\\') nameStartIndex = 1;
+
+					currentFileName.Buffer = &pFullPath->Buffer[nameStartIndex];
+					currentFileName.Length = pFullPath->Length - (nameStartIndex * sizeof(WCHAR));
+					currentFileName.MaximumLength = currentFileName.Length;
+
+					// è°ƒè¯•è¾“å‡º
+					// ::ULONG64 startingVpn = ((::ULONG64)pVad->Core.StartingVpnHigh << 32) | pVad->Core.StartingVpn;
+					// ::ULONG_PTR baseAddress = startingVpn << PAGE_SHIFT;
+					// KdPrint(("[WIN11_22H2] Checking: %wZ at 0x%p\n", &currentFileName, (PVOID)baseAddress));
+
+					if (L_RtlCompareUnicodeString(&currentFileName, pTargetModuleNameUnicode, TRUE) == 0) {
+						::ULONG64 startingVpn = ((::ULONG64)pVad->Core.StartingVpnHigh << 32) | pVad->Core.StartingVpn;
+						::ULONG64 endingVpn = ((::ULONG64)pVad->Core.EndingVpnHigh << 32) | pVad->Core.EndingVpn;
+
+						pResult->BaseAddress = startingVpn << PAGE_SHIFT;
+						pResult->ModuleSize = ((endingVpn + 1) - startingVpn) << PAGE_SHIFT;
+						pResult->Found = TRUE;
+						return;
+					}
+				}
+				__except (EXCEPTION_EXECUTE_HANDLER) {
+					// å¿½ç•¥è®¿é—®å¼‚å¸¸
+				}
+			}
+		}
+
+		// é€’å½’å³å­æ ‘
+		VadpTraverseTree(pVad->Core.VadNode.s.Right, pTargetModuleNameUnicode, pResult);
+	}
+
+
+	inline ::NTSTATUS GetModuleBaseByVad_NoAttach(IN::PEPROCESS pTargetProcess, IN const char* ModuleName, OUT::PULONG_PTR pBaseAddress, OUT::PULONG_PTR pModuleSize) {
+		if (!pTargetProcess || !ModuleName || !pBaseAddress || !pModuleSize) {
+			return STATUS_INVALID_PARAMETER;
+		}
+
+		*pBaseAddress = 0;
+		*pModuleSize = 0;
+
+		::NTSTATUS status = STATUS_NOT_FOUND;
+		PVAD_SEARCH_RESULT pSearchResult = NULL;
+		::UNICODE_STRING unicodeModuleName;
+		::ANSI_STRING ansiModuleName;
+		::BOOLEAN isUnicodeStringAllocated = FALSE;
+
+		RtlZeroMemory(&unicodeModuleName, sizeof(::UNICODE_STRING));
+
+		L_RtlInitAnsiString(&ansiModuleName, ModuleName);
+		status = L_RtlAnsiStringToUnicodeString(&unicodeModuleName, &ansiModuleName, TRUE);
+		if (!NT_SUCCESS(status)) {
+			return status;
+		}
+		isUnicodeStringAllocated = TRUE;
+
+		UNICODE_STRING exeSuffix;
+		L_RtlInitUnicodeString(&exeSuffix, L".exe");
+
+		// å¦‚æžœæ˜¯ .exeï¼Œç›´æŽ¥ä»Ž SectionBaseAddress å–
+		if (L_RtlSuffixUnicodeString(&exeSuffix, &unicodeModuleName, TRUE)) {
+			*pBaseAddress = *(::PULONG_PTR)((::PUCHAR)pTargetProcess + EPROCESS_MEMBER_OFFSET::SectionBaseAddress);
+			status = STATUS_SUCCESS;
+			goto Cleanup;
+		}
+		else {
+			// å¦‚æžœæ˜¯ DLLï¼ŒéåŽ† VAD
+			pSearchResult = (PVAD_SEARCH_RESULT)L_ExAllocatePool2(POOL_FLAG_NON_PAGED, sizeof(VAD_SEARCH_RESULT), 'VSad');
+			if (!pSearchResult) {
+				status = STATUS_INSUFFICIENT_RESOURCES;
+				goto Cleanup;
+			}
+			RtlZeroMemory(pSearchResult, sizeof(VAD_SEARCH_RESULT));
+
+			__try {
+				::PVOID pVadRootTable = (::PVOID)((::PUCHAR)pTargetProcess + EPROCESS_MEMBER_OFFSET::VAD_ROOT);
+				if (L_MmIsAddressValid(pVadRootTable)) {
+					PRTL_BALANCED_NODE pRootNode = *(PRTL_BALANCED_NODE*)pVadRootTable;
+					if (pRootNode != NULL) {
+						VadpTraverseTree(pRootNode, &unicodeModuleName, pSearchResult);
+						if (pSearchResult->Found) {
+							*pBaseAddress = pSearchResult->BaseAddress;
+							*pModuleSize = pSearchResult->ModuleSize;
+							status = STATUS_SUCCESS;
+						}
+						else {
+							KdPrint(("[WIN11_22H2] Module '%wZ' not found in VAD.\n", &unicodeModuleName));
+							status = STATUS_NOT_FOUND;
+						}
+					}
+				}
+			}
+			__except (EXCEPTION_EXECUTE_HANDLER) {
+				status = GetExceptionCode();
+			}
+		}
+
+	Cleanup:
+		if (pSearchResult) {
+			L_ExFreePoolWithTag(pSearchResult, 'VSad');
+		}
+		if (isUnicodeStringAllocated) {
+			L_RtlFreeUnicodeString(&unicodeModuleName);
+		}
+
+		return status;
+	}
 }
